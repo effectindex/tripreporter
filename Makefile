@@ -4,6 +4,7 @@ tripreporter: deps-server build-server deps-ui build-ui run
 
 deps-server:
 	go get -u "github.com/go-sql-driver/mysql"
+	go get -u "github.com/joho/godotenv"
 	go mod tidy
 
 deps-ui:
