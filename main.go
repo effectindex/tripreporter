@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -8,22 +9,24 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/effectindex/tripreporter/ui"
+	"github.com/joho/godotenv"
 )
 
 var (
-	dev   = flag.Bool("dev", false, "Run in development mode, alongside `make dev`.")
-	proxy = NewProxy("http://localhost:8080") // used for `make dev-ui`
+	dev   = flag.Bool("dev", false, "Run in development mode, alongside `make dev-ui`.")
+	proxy *httputil.ReverseProxy
 )
 
 // NewProxy takes target host and creates a reverse proxy
 func NewProxy(target string) *httputil.ReverseProxy {
 	u, err := url.Parse(target)
 	if err != nil {
-		log.Fatalf("error making reverse proxy: %v\n", err)
+		log.Fatalf("error making reverse proxy: %v\n", err) // likely malformed addr
 		return nil
 	}
 
@@ -33,8 +36,17 @@ func NewProxy(target string) *httputil.ReverseProxy {
 func main() {
 	flag.Parse()
 
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("err loading .env file (copy the .env.example): %v\n", err)
+	}
+
+	if err := validateEnvKeys("DEV_PORT", "SRV_PORT"); err != nil {
+		log.Fatalf("missing .env variables (copy the .env.example): %v\n", err)
+	}
+
+	proxy = NewProxy("http://localhost:" + os.Getenv("DEV_PORT")) // proxy is used for `make dev-ui`
 	s := &http.Server{
-		Addr:        ":8888",
+		Addr:        "localhost:" + os.Getenv("SRV_PORT"),
 		Handler:     router(),
 		IdleTimeout: time.Minute,
 	}
@@ -102,4 +114,17 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func greetingAPI(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello, there!"))
+}
+
+func validateEnvKeys(keys ...string) error {
+	missing := make([]string, 0)
+	for _, key := range keys {
+		if os.Getenv(key) == "" {
+			missing = append(missing, key)
+		}
+	}
+	if len(missing) > 0 {
+		return errors.New("[" + strings.Join(missing, ", ") + "]")
+	}
+	return nil
 }
