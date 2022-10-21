@@ -1,4 +1,4 @@
-tripreporter: deps-server build-server deps-ui build-ui run
+tripreporter: deps-server build-server deps-ui build-ui
 
 # deps
 
@@ -26,6 +26,8 @@ build-ui: deps-ui
 
 run:
 	./tripreporter
+
+all: tripreporter run
 
 # run development (needs both dev and dev-ui separately)
 
