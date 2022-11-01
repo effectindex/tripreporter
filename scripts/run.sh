@@ -8,8 +8,8 @@ if [ -z "$(which docker)" ]; then
 fi
 
 # shellcheck disable=SC2039
-if ! source "$PWD/.env"; then
-  echo "failed to \`source .env\`, does it exist? exiting"
+if ! . "$PWD/.env"; then
+  echo "failed to \`. .env\`, does it exist? exiting"
   exit 1
 fi
 
