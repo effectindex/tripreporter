@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/effectindex/tripreporter/ui"
 	"github.com/effectindex/tripreporter/util"
+	"go.uber.org/zap"
 	"io/fs"
 	"net/http"
 	"net/http/httputil"
@@ -17,8 +18,8 @@ var (
 )
 
 // Setup manages functions that should be ready to use before
-func Setup(isDevelopment bool) {
-	proxy = util.NewProxy("http://localhost:" + os.Getenv("DEV_PORT"))
+func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
+	proxy = util.NewProxy("http://localhost:"+os.Getenv("DEV_PORT"), logger)
 	dev = isDevelopment
 }
 
