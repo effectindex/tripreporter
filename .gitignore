@@ -1,7 +1,7 @@
-.directory
-.idea
-tripreporter
 .env
+.idea/
+.directory
+tripreporter
 config/appendonlydir/
 config/redis.conf
 config/*.rdb
