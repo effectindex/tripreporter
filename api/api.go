@@ -2,14 +2,15 @@ package api
 
 import (
 	"fmt"
-	"github.com/effectindex/tripreporter/ui"
-	"github.com/effectindex/tripreporter/util"
-	"go.uber.org/zap"
 	"io/fs"
 	"net/http"
 	"net/http/httputil"
 	"os"
 	"strings"
+
+	"github.com/effectindex/tripreporter/ui"
+	"github.com/effectindex/tripreporter/util"
+	"go.uber.org/zap"
 )
 
 var (
