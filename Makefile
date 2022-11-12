@@ -3,6 +3,7 @@ tripreporter: deps-server build-server deps-ui build-ui
 # deps
 
 deps-server:
+	go get -u "github.com/georgysavva/scany"
 	go get -u "github.com/go-redis/redis"
 	go get -u "github.com/google/uuid"
 	go get -u "github.com/jackc/pgx"
