@@ -1,9 +1,10 @@
 package util
 
 import (
-	"go.uber.org/zap"
 	"net/http/httputil"
 	"net/url"
+
+	"go.uber.org/zap"
 )
 
 // NewProxy takes target host and creates a reverse proxy
