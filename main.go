@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"flag"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -37,10 +36,11 @@ func main() {
 		logger, err = zap.NewProduction()
 	}
 	if err != nil {
-		log.Fatal("Error making logger")
+		panic(err)
 	}
 	defer logger.Sync()
 	sLogger := logger.Sugar()
+	ctx := models.Context{Logger: sLogger}
 
 	// Load and validate .env
 	if err := godotenv.Load(); err != nil {
@@ -61,11 +61,11 @@ func main() {
 	}
 	randomID[5] |= 0x01 // Set least significant bit of first true
 	uuid.SetNodeID(randomID)
-	sLogger.Infof("initialized random NodeID: %s", hex.EncodeToString(randomID))
+	ctx.Logger.Infof("initialized random NodeID: %s", hex.EncodeToString(randomID))
 
 	// Setup required connections for postgresql and redis
-	sDB := db.SetupDB(sLogger)
-	rDB := db.SetupRedis(sLogger)
+	sDB := db.SetupDB(ctx.Logger)
+	rDB := db.SetupRedis(ctx.Logger)
 
 	defer sDB.Close()
 	defer func(rDB *redis.Client) {
@@ -75,8 +75,14 @@ func main() {
 		}
 	}(rDB)
 
+	// Set context database now that we have one
+	ctx.Database = sDB
+
+	// Setup wordlist
+	models.SetupWordlist(ctx)
+
 	// Setup proxy to webpack hot-reload server (for dev-ui) and regular http server (serves everything)
-	api.Setup(*dev, sLogger)
+	api.Setup(*dev, ctx.Logger)
 
 	// Setup http server
 	s := &http.Server{
@@ -85,17 +91,18 @@ func main() {
 		IdleTimeout: time.Minute,
 	}
 
-	if err := models.Test(sLogger, models.Context{Database: sDB}); err != nil {
-		sLogger.Warnw("failed to test logger", zap.Error(err))
-	}
+	a, _ := db.TestCreate(ctx)
+	_, _ = db.TestGet(a.ID, ctx)
+	_, _ = db.TestDelete(a.ID, ctx)
+
 	if *dev {
-		log.Printf("Running on %s in development mode...\n", s.Addr)
+		ctx.Logger.Infof("Running on %s in development mode...", s.Addr)
 	} else {
-		log.Printf("Running on %s in production mode...\n", s.Addr)
+		ctx.Logger.Infof("Running on %s in production mode...", s.Addr)
 	}
 
 	if err := s.ListenAndServe(); err != nil {
-		log.Printf("error in ListenAndServe: %v\n", err)
+		ctx.Logger.DPanicf("error in ListenAndServe: %v", err)
 	}
 }
 
