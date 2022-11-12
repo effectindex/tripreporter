@@ -46,6 +46,7 @@ var (
 	}
 )
 
+// SetupDB creates a new PostgreSQL connection
 func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
@@ -101,7 +102,7 @@ func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 	return dbPool
 }
 
-// SetupRedis create a new redis.Client instance
+// SetupRedis creates a new redis.Client instance
 func SetupRedis(logger *zap.SugaredLogger) *redis.Client {
 	rdc := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_HOST"),
@@ -110,8 +111,7 @@ func SetupRedis(logger *zap.SugaredLogger) *redis.Client {
 	})
 
 	// If connection doesn't work, panic
-	_, err := rdc.Ping(context.Background()).Result()
-	if err != nil {
+	if _, err := rdc.Ping(context.Background()).Result(); err != nil {
 		logger.Panic("Failed to ping Redis server")
 	}
 
