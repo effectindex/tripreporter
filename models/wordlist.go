@@ -40,23 +40,23 @@ func SetupWordlist(ctx Context) {
 	}
 }
 
-func (w *WordlistModel) Random(amount int) (string, error) { // TODO: Ensure functional
+func (w *WordlistModel) Random(amount int) string {
 	w.Context.Validate()
 
 	if amount <= 0 {
-		return "", nil
+		return ""
 	}
 
 	words := make([]string, 3)
 
 	for i := 0; i < amount; i++ {
 		if n, err := rand.Int(rand.Reader, WordlistLen); err != nil {
-			w.Logger.DPanicw("failed to make rand.Int", zap.Error(err))
-			return "", err
+			w.Logger.Panicw("failed to make rand.Int", zap.Error(err))
+			return ""
 		} else {
 			words[i] = Wordlist.Words[n.Int64()]
 		}
 	}
 
-	return strings.Join(words, "-"), nil
+	return strings.Join(words, "-")
 }
