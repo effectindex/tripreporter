@@ -58,6 +58,33 @@ func (e ErrorAccount) Error() string {
 }
 
 //
+// User operation related errors
+//
+
+type ErrorUser int64
+
+const (
+	ErrorUserUnknown ErrorUser = iota
+	ErrorUserNotSpecified
+	ErrorUserNotFound
+	ErrorUserNotDeleted
+)
+
+// TODO: i18n here
+func (e ErrorUser) Error() string {
+	switch e {
+	case ErrorUserNotSpecified:
+		return "No user was specified."
+	case ErrorUserNotFound:
+		return "The specified user was not found."
+	case ErrorUserNotDeleted:
+		return "Failed to delete user."
+	default:
+		return ErrorGenericUnknown.Error()
+	}
+}
+
+//
 // Context related errors
 //
 
