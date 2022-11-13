@@ -26,7 +26,7 @@ func SetupTime(ctx Context) {
 
 // Set returns if the time is set
 func (t *Time) Set() bool {
-	return t.Unix() != TimeZero.Unix()
+	return t.Unix() != TimeZero.Unix() && !t.IsZero()
 }
 
 // New creates a blank "unset" time
