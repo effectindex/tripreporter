@@ -78,8 +78,9 @@ func main() {
 	// Set context database now that we have one
 	ctx.Database = sDB
 
-	// Setup wordlist
+	// Setup wordlist and time models
 	models.SetupWordlist(ctx)
+	models.SetupTime(ctx)
 
 	// Setup proxy to webpack hot-reload server (for dev-ui) and regular http server (serves everything)
 	api.Setup(*dev, ctx.Logger)
@@ -90,10 +91,6 @@ func main() {
 		Handler:     api.Handler(),
 		IdleTimeout: time.Minute,
 	}
-
-	a, _ := db.TestCreate(ctx)
-	_, _ = db.TestGet(a.ID, ctx)
-	_, _ = db.TestDelete(a.ID, ctx)
 
 	if *dev {
 		ctx.Logger.Infof("Running on %s in development mode...", s.Addr)
