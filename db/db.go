@@ -16,7 +16,10 @@ var (
 			id uuid primary key,
 			email varchar(255) not null unique,
 			username varchar(255) not null unique,
-			password_hash varchar(255)
+			password_hash varchar(255) not null,
+			CHECK (accounts.email <> ''),
+			CHECK (accounts.username <> ''),
+			CHECK (accounts.password_hash <> '')
 		);`,
 		`create table if not exists users (
 			account_id uuid primary key references accounts(id),
