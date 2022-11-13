@@ -19,13 +19,13 @@ var (
 			password_hash varchar(255)
 		);`,
 		`create table if not exists users (
-			id uuid references accounts(id),
-			created timestamptz default to_timestamp(0),
+			account_id uuid primary key references accounts(id),
+			created timestamptz default null,
 			display_name varchar(255),
 			date_of_birth timestamptz default to_timestamp(0),
-			age int default -1,
-			height decimal default -1,
-			weight decimal default -1
+			age smallint default 0,
+			height decimal default 0,
+			weight decimal default 0
 		);`,
 	}
 	indexDefs = []string{
