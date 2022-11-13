@@ -38,23 +38,19 @@ func TestDelete(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
 }
 
 func TestCreate(ctx models.Context) (*models.Account, error) {
-	if username, err := models.Wordlist.Random(3); err != nil {
-		return nil, err
-	} else {
-		a := &models.Account{
-			Context:  ctx,
-			Type:     "Account",
-			Email:    "user@email.com",
-			Username: username,
-			Password: "examplePword",
-		}
-
-		if err := a.Post(); err != nil {
-			ctx.Logger.Warnw("Failed to make test account", "account", a, zap.Error(err))
-			return a, err
-		}
-
-		ctx.Logger.Infow("Created test account")
-		return a, nil
+	a := &models.Account{
+		Context:  ctx,
+		Type:     "Account",
+		Email:    "user@email.com",
+		Username: models.Wordlist.Random(3),
+		Password: "examplePword",
 	}
+
+	if err := a.Post(); err != nil {
+		ctx.Logger.Warnw("Failed to make test account", "account", a, zap.Error(err))
+		return a, err
+	}
+
+	ctx.Logger.Infow("Created test account")
+	return a, nil
 }
