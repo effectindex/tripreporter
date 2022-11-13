@@ -8,11 +8,14 @@ type ErrorGeneric int64
 
 const (
 	ErrorGenericUnknown ErrorGeneric = iota
+	ErrorNotImplemented
 )
 
 // TODO: i18n here
 func (e ErrorGeneric) Error() string {
 	switch e {
+	case ErrorNotImplemented:
+		return "This method is not implemented yet."
 	default:
 		return "An unknown error occurred."
 	}
