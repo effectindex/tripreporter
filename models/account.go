@@ -6,6 +6,16 @@ import (
 	"go.uber.org/zap"
 )
 
+type Account struct { // todo: this should be oauth / credentials. allow changing email or logging in with google
+	Context
+	Unique
+	Type     string `json:"type"`
+	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
+	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
+	Password string `json:"password_hash" db:"password_hash"`   // Required
+	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
+}
+
 func (a *Account) Get() error { // TODO: Implement a.verified / other params
 	db := a.DB()
 	defer db.Commit(context.Background())
