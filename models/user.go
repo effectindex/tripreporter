@@ -1,11 +1,15 @@
 package models
 
 import (
+	"context"
+
 	"github.com/shopspring/decimal"
+	"go.uber.org/zap"
 )
 
 type User struct { // todo: old name was Profile // todo: visible on public profile:
 	Context
+	Unique
 	Type        string          `json:"type"`
 	Created     Time            `json:"created" db:"created"`
 	DisplayName string          `json:"display_name" db:"display_name"`   // Optional
@@ -22,7 +26,28 @@ func (a *User) Get() error {
 }
 
 func (a *User) Post() error {
-	return ErrorNotImplemented
+	db := a.DB()
+	defer db.Commit(context.Background())
+
+	if a.NilUUID() {
+		return ErrorUserNotSpecified
+	}
+
+	if !a.Created.Set() {
+		a.Created.New()
+	}
+
+	if _, err := db.Exec(context.Background(),
+		`insert into users(account_id, created, display_name, date_of_birth, age, height, weight)
+		values($1, $2, $3, $4, $5, $6, $7);`,
+		a.ID, a.Created.String(), a.DisplayName, a.Birth.String(), a.Age, a.Height, a.Weight, // TODO: Medication / preferences in DB?
+	); err != nil {
+		a.Logger.Warnw("Failed to write account to DB", zap.Error(err))
+		_ = db.Rollback(context.Background())
+		return err
+	}
+
+	return nil
 }
 
 func (a *User) Patch() error {
