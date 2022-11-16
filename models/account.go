@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/georgysavva/scany/pgxscan"
 	"go.uber.org/zap"
+	"strconv"
+	"strings"
 )
 
 type Account struct { // todo: this should be oauth / credentials. allow changing email or logging in with google
@@ -16,7 +18,7 @@ type Account struct { // todo: this should be oauth / credentials. allow changin
 	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
 }
 
-func (a *Account) Get() error { // TODO: Implement a.verified / other params
+func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / other params
 	db := a.DB()
 	defer db.Commit(context.Background())
 
@@ -33,7 +35,7 @@ func (a *Account) Get() error { // TODO: Implement a.verified / other params
 		query = `where username = $1;`
 		queryArg = a.Username
 	} else {
-		return ErrorAccountNotSpecified
+		return a, ErrorAccountNotSpecified
 	}
 
 	var a1 []*Account
@@ -41,12 +43,12 @@ func (a *Account) Get() error { // TODO: Implement a.verified / other params
 		`select id, email, username, password_hash from accounts `+query, queryArg,
 	); err != nil {
 		a.Logger.Warnw("Failed to get account from DB", zap.Error(err))
-		return err
+		return a, err
 	} else if len(a1) == 0 {
-		return ErrorAccountNotFound
+		return a, ErrorAccountNotFound
 	} else if len(a1) > 1 { // This shouldn't happen
 		a.Logger.Errorw("Multiple accounts found for parameters", "account", a)
-		return ErrorAccountNotSpecified
+		return a, ErrorAccountNotSpecified
 	} else {
 		a.ID = a1[0].ID
 		a.Email = a1[0].Email
@@ -54,16 +56,15 @@ func (a *Account) Get() error { // TODO: Implement a.verified / other params
 		a.Password = a1[0].Password
 	}
 
-	// todo
-	return nil
+	return a, nil
 }
 
-func (a *Account) Post() error {
+func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post signup hook?
 	db := a.DB()
 	defer db.Commit(context.Background())
 
 	if err := a.InitUUID(a.Logger); err != nil {
-		return err
+		return a, err
 	}
 
 	if _, err := db.Exec(context.Background(),
@@ -80,21 +81,66 @@ func (a *Account) Post() error {
 			$4
 		);`,
 		a.ID,
-		a.Email,
-		a.Username,
+		a.Email,    // TODO: Validate emails
+		a.Username, // TODO: Validate usernames
 		a.Password, // TODO: Salt / verified in DB?
 	); err != nil {
 		a.Logger.Warnw("Failed to write account to DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
-		return err
+		return a, err
 	}
 
-	return nil
+	return a, nil
 }
 
-func (a *Account) Patch() error {
-	// todo
-	return nil
+func (a *Account) Patch() (*Account, error) {
+	db := a.DB()
+
+	if a.NilUUID() {
+		return a, ErrorAccountNotSpecified
+	}
+
+	fields := make([]interface{}, 0)
+	query := "update accounts set"
+	qNum := 0
+
+	if a.Email != "" { // TODO: Validate emails
+		qNum++
+		query += " email=$" + strconv.Itoa(qNum) + ","
+		fields = append(fields, a.Email)
+	}
+
+	if a.Username != "" { // TODO: Validate usernames
+		qNum++
+		query += " username=$" + strconv.Itoa(qNum) + ","
+		fields = append(fields, a.Username)
+	}
+
+	if a.Password != "" {
+		qNum++
+		query += " password_hash=$" + strconv.Itoa(qNum) + ","
+		fields = append(fields, a.Password)
+	}
+
+	// TODO: Implement a.Verified
+
+	query = strings.TrimSuffix(query, ",")
+	qNum++
+	query += " where id=$" + strconv.Itoa(qNum)
+	fields = append(fields, a.ID)
+
+	_, err := db.Exec(context.Background(), query, fields...)
+	a.Logger.Infow("patch account", "query", query, "fields", fields)
+
+	if err != nil {
+		a.Logger.Warnw("Failed to update account in DB", zap.Error(err))
+		_ = db.Rollback(context.Background())
+		return a, err
+	}
+
+	// Want to commit before Get()
+	db.Commit(context.Background())
+	return a.Get()
 }
 
 func (a *Account) Delete() error {
@@ -102,7 +148,7 @@ func (a *Account) Delete() error {
 	defer db.Commit(context.Background())
 
 	a1 := a.CopyIdentifiers()
-	if err := a1.Get(); err != nil {
+	if _, err := a1.Get(); err != nil {
 		return err
 	} else if a.Password != a1.Password {
 		return ErrorAccountPasswordMatch

@@ -12,7 +12,7 @@ func TestGet(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
 		Unique:  models.Unique{ID: uuid},
 	}
 
-	if err := a.Get(); err != nil {
+	if _, err := a.Get(); err != nil {
 		ctx.Logger.Warnw("Failed to get test account", "account", a, zap.Error(err))
 		return a, err
 	} else {
@@ -46,7 +46,7 @@ func TestCreate(ctx models.Context) (*models.Account, error) {
 		Password: "examplePword",
 	}
 
-	if err := a.Post(); err != nil {
+	if a, err := a.Post(); err != nil {
 		ctx.Logger.Warnw("Failed to make test account", "account", a, zap.Error(err))
 		return a, err
 	}
