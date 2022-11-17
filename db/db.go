@@ -22,7 +22,7 @@ var (
 			CHECK (accounts.password_hash <> '')
 		);`,
 		`create table if not exists users (
-			account_id uuid primary key references accounts(id),
+			account_id uuid primary key references accounts(id) on delete cascade,
 			created timestamptz not null default to_timestamp('0'),
 			display_name varchar(255),
 			date_of_birth timestamptz not null default to_timestamp('0'),
@@ -102,6 +102,7 @@ func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 		}
 	}
 	logger.Infof("Connected to SQL DB at %s:%s", dbHost, dbPort)
+
 	return dbPool
 }
 
