@@ -68,6 +68,7 @@ const (
 	ErrorUserNotSpecified
 	ErrorUserNotFound
 	ErrorUserNotDeleted
+	ErrorUserAccountStillExists
 )
 
 // TODO: i18n here
@@ -79,6 +80,8 @@ func (e ErrorUser) Error() string {
 		return "The specified user was not found."
 	case ErrorUserNotDeleted:
 		return "Failed to delete user."
+	case ErrorUserAccountStillExists:
+		return "The associated account with this user still exists."
 	default:
 		return ErrorGenericUnknown.Error()
 	}
