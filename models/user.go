@@ -21,8 +21,35 @@ type User struct { // todo: old name was Profile // todo: visible on public prof
 	Preferences UserPreferences `json:"preferences"`                      // User's preferences // TODO: Add to schema
 }
 
-func (a *User) Get() error {
-	return ErrorNotImplemented
+func (u *User) Get() (*User, error) {
+	db := u.DB()
+	defer db.Commit(context.Background())
+
+	if u.NilUUID() {
+		return u, ErrorUserNotSpecified
+	}
+
+	var u1 []*User
+	if err := pgxscan.Select(context.Background(), db, &u1,
+		`select created, display_name, date_of_birth, age, height, weight from users where account_id = $1;`, u.ID,
+	); err != nil {
+		u.Logger.Warnw("Failed to get user from DB", zap.Error(err))
+		return u, err
+	} else if len(u1) == 0 {
+		return u, ErrorUserNotFound
+	} else if len(u1) > 1 { // This shouldn't happen
+		u.Logger.Errorw("Multiple users found for parameters", "users", u1)
+		return u, ErrorUserNotSpecified
+	} else {
+		u.Created = u1[0].Created
+		u.DisplayName = u1[0].DisplayName
+		u.Birth = u1[0].Birth
+		u.Age = u1[0].Age
+		u.Height = u1[0].Height
+		u.Weight = u1[0].Weight
+	}
+
+	return u, nil
 }
 
 func (a *User) Post() error {
