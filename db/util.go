@@ -28,7 +28,7 @@ func TestDelete(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
 		Password: "examplePword",
 	}
 
-	if err := a.Delete(); err != nil {
+	if _, err := a.Delete(); err != nil {
 		ctx.Logger.Warnw("Failed to delete test account", "account", a, zap.Error(err))
 		return a, err
 	} else {
