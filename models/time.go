@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/jackc/pgtype"
 	"go.uber.org/zap"
 	"time"
 )
@@ -11,7 +12,7 @@ var (
 )
 
 type Time struct {
-	time.Time
+	pgtype.Timestamptz
 }
 
 func SetupTime(ctx Context) {
@@ -26,7 +27,7 @@ func SetupTime(ctx Context) {
 
 // Set returns if the time is set
 func (t *Time) Set() bool {
-	return t.Unix() != TimeZero.Unix() && !t.IsZero()
+	return t.Time.Unix() != TimeZero.Unix() && !t.Time.IsZero()
 }
 
 // New creates a blank "unset" time
