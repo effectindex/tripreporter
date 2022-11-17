@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"github.com/georgysavva/scany/pgxscan"
 
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
@@ -52,33 +53,33 @@ func (u *User) Get() (*User, error) {
 	return u, nil
 }
 
-func (a *User) Post() error {
-	db := a.DB()
+func (u *User) Post() (*User, error) {
+	db := u.DB()
 	defer db.Commit(context.Background())
 
-	if a.NilUUID() {
-		return ErrorUserNotSpecified
+	if u.NilUUID() {
+		return u, ErrorUserNotSpecified
 	}
 
-	if !a.Created.Set() {
-		a.Created.New()
+	if !u.Created.Set() {
+		u.Created.New()
 	}
 
 	if _, err := db.Exec(context.Background(),
 		`insert into users(account_id, created, display_name, date_of_birth, age, height, weight)
 		values($1, $2, $3, $4, $5, $6, $7);`,
-		a.ID, a.Created.String(), a.DisplayName, a.Birth.String(), a.Age, a.Height, a.Weight, // TODO: Medication / preferences in DB?
+		u.ID, u.Created.String(), u.DisplayName, u.Birth.String(), u.Age, u.Height, u.Weight, // TODO: Medication / preferences in DB?
 	); err != nil {
-		a.Logger.Warnw("Failed to write account to DB", zap.Error(err))
+		u.Logger.Warnw("Failed to write account to DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
-		return err
+		return u, err
 	}
 
-	return nil
+	return u, nil
 }
 
-func (a *User) Patch() error {
-	return ErrorNotImplemented
+func (u *User) Patch() (*User, error) {
+	return u, ErrorNotImplemented
 }
 
 func (u *User) Delete() (*User, error) {
@@ -100,8 +101,4 @@ func (u *User) Delete() (*User, error) {
 	}
 
 	return nil, nil
-}
-
-func (a *User) CopyIdentifiers() error {
-	return ErrorNotImplemented
 }
