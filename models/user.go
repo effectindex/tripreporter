@@ -54,8 +54,25 @@ func (a *User) Patch() error {
 	return ErrorNotImplemented
 }
 
-func (a *User) Delete() error {
-	return ErrorNotImplemented
+func (u *User) Delete() (*User, error) {
+	db := u.DB()
+	defer db.Commit(context.Background())
+
+	if _, err := (&Account{Context: u.Context, Unique: u.Unique}).Get(); err == nil {
+		return u, ErrorUserAccountStillExists
+	} else if err != ErrorAccountNotFound {
+		return u, err
+	}
+
+	// This should not be possible with a proper DB setup, this is only here for cleanup reasons
+	// Normally, a user row will be deleted when an account row is deleted.
+	if _, err := db.Exec(context.Background(), `delete from users where account_id=$1;`, u.ID); err != nil {
+		u.Logger.Warnw("Failed to delete user from DB", zap.Error(err))
+		_ = db.Rollback(context.Background())
+		return u, err
+	}
+
+	return nil, nil
 }
 
 func (a *User) CopyIdentifiers() error {
