@@ -47,7 +47,7 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 	} else if len(a1) == 0 {
 		return a, ErrorAccountNotFound
 	} else if len(a1) > 1 { // This shouldn't happen
-		a.Logger.Errorw("Multiple accounts found for parameters", "account", a)
+		a.Logger.Errorw("Multiple accounts found for parameters", "accounts", a1)
 		return a, ErrorAccountNotSpecified
 	} else {
 		a.ID = a1[0].ID
@@ -126,11 +126,10 @@ func (a *Account) Patch() (*Account, error) {
 
 	query = strings.TrimSuffix(query, ",")
 	qNum++
-	query += " where id=$" + strconv.Itoa(qNum)
+	query += " where id=$;" + strconv.Itoa(qNum)
 	fields = append(fields, a.ID)
 
 	_, err := db.Exec(context.Background(), query, fields...)
-	a.Logger.Infow("patch account", "query", query, "fields", fields)
 
 	if err != nil {
 		a.Logger.Warnw("Failed to update account in DB", zap.Error(err))
@@ -143,31 +142,24 @@ func (a *Account) Patch() (*Account, error) {
 	return a.Get()
 }
 
-func (a *Account) Delete() error {
+func (a *Account) Delete() (*Account, error) {
 	db := a.DB()
 	defer db.Commit(context.Background())
 
 	a1 := a.CopyIdentifiers()
 	if _, err := a1.Get(); err != nil {
-		return err
+		return a, err
 	} else if a.Password != a1.Password {
-		return ErrorAccountPasswordMatch
+		return a, ErrorAccountPasswordMatch
 	}
 
-	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1 and password_hash=$2`, a.ID, a.Password); err != nil {
+	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1 and password_hash=$2;`, a.ID, a.Password); err != nil {
 		a.Logger.Warnw("Failed to delete account from DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
-		return err
+		return a, err
 	}
 
-	// TODO: User.Delete() should be called here, once implemented
-	//if _, err := db.Exec(context.Background(), `delete from users where id=$1`, a.ID.String()); err != nil {
-	//	logger.Warnw("Failed to delete account from DB", zap.Error(err))
-	//	db.Rollback(context.Background())
-	//	return errDelete
-	//}
-
-	return nil
+	return nil, nil
 }
 
 func (a *Account) CopyIdentifiers() *Account {
