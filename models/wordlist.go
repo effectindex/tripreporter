@@ -47,7 +47,7 @@ func (w *WordlistModel) Random(amount int) string {
 		return ""
 	}
 
-	words := make([]string, 3)
+	words := make([]string, amount)
 
 	for i := 0; i < amount; i++ {
 		if n, err := rand.Int(rand.Reader, WordlistLen); err != nil {
