@@ -15,6 +15,7 @@ type Time struct {
 	pgtype.Timestamptz
 }
 
+// SetupTime is required to create TimeZero
 func SetupTime(ctx Context) {
 	ctx.Validate()
 
@@ -30,8 +31,8 @@ func (t *Time) Set() bool {
 	return t.Time.Unix() != TimeZero.Unix() && !t.Time.IsZero()
 }
 
-// New creates a blank "unset" time
-func (t *Time) New() {
+// Zero creates a blank "unset" time
+func (t *Time) Zero() {
 	t.Time = TimeZero
 }
 
