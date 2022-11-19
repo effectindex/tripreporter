@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
@@ -58,10 +58,10 @@ func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 	dbName := os.Getenv("DB_NAME")
 
 	// First try connecting to the database we're going to use
-	dbPool, err := pgxpool.Connect(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUser, dbPass, dbHost, dbPort, dbName))
+	dbPool, err := pgxpool.New(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUser, dbPass, dbHost, dbPort, dbName))
 	if err != nil {
 		// Now, try connecting to the default and making a db there
-		dbPool, err = pgxpool.Connect(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/postgres", dbUser, dbPass, dbHost, dbPort))
+		dbPool, err = pgxpool.New(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/postgres", dbUser, dbPass, dbHost, dbPort))
 		if err != nil {
 			logger.Fatalw("Cannot connect to DB", zap.Error, err)
 		}
@@ -70,7 +70,7 @@ func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 			logger.Fatalw("Cannot create database", zap.Error, err)
 		}
 		dbPool.Close()
-		dbPool, err = pgxpool.Connect(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUser, dbPass, dbHost, dbPort, dbName))
+		dbPool, err = pgxpool.New(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUser, dbPass, dbHost, dbPort, dbName))
 		if err != nil {
 			logger.Fatalw("Cannot use database", zap.Error, err)
 		}

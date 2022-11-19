@@ -2,7 +2,7 @@ package models
 
 import (
 	"context"
-	"github.com/georgysavva/scany/pgxscan"
+	"github.com/georgysavva/scany/v2/pgxscan"
 	"go.uber.org/zap"
 	"strconv"
 	"strings"
