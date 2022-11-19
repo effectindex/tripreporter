@@ -51,7 +51,7 @@ func (w *WordlistModel) Random(amount int) string {
 
 	for i := 0; i < amount; i++ {
 		if n, err := rand.Int(rand.Reader, WordlistLen); err != nil {
-			w.Logger.Panicw("failed to make rand.Int", zap.Error(err))
+			w.Logger.Panicw("Failed to make rand.Int", zap.Error(err))
 			return ""
 		} else {
 			words[i] = Wordlist.Words[n.Int64()]

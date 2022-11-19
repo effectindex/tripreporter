@@ -61,7 +61,7 @@ func main() {
 	}
 	randomID[5] |= 0x01 // Set least significant bit of first true
 	uuid.SetNodeID(randomID)
-	ctx.Logger.Infof("initialized random NodeID: %s", hex.EncodeToString(randomID))
+	ctx.Logger.Infof("Initialized random NodeID: %s", hex.EncodeToString(randomID))
 
 	// Setup required connections for postgresql and redis
 	sDB := db.SetupDB(ctx.Logger)
@@ -98,7 +98,7 @@ func main() {
 	}
 
 	if err := s.ListenAndServe(); err != nil {
-		ctx.Logger.DPanicf("error in ListenAndServe: %v", err)
+		ctx.Logger.DPanicf("Error in ListenAndServe: %v", err)
 	}
 }
 
