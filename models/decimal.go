@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/shopspring/decimal"
 	"strconv"
+
+	"github.com/shopspring/decimal"
 )
 
 type Decimal struct {

@@ -2,8 +2,9 @@ package models
 
 import (
 	"fmt"
-	"github.com/jackc/pgtype"
 	"time"
+
+	"github.com/jackc/pgtype"
 )
 
 type Timestamp struct {

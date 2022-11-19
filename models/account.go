@@ -2,10 +2,11 @@ package models
 
 import (
 	"context"
-	"github.com/georgysavva/scany/v2/pgxscan"
-	"go.uber.org/zap"
 	"strconv"
 	"strings"
+
+	"github.com/georgysavva/scany/v2/pgxscan"
+	"go.uber.org/zap"
 )
 
 type Account struct { // todo: this should be oauth / credentials. allow changing email or logging in with google

@@ -2,10 +2,11 @@ package models
 
 import (
 	"context"
-	"github.com/georgysavva/scany/v2/pgxscan"
-	"go.uber.org/zap"
 	"strconv"
 	"strings"
+
+	"github.com/georgysavva/scany/v2/pgxscan"
+	"go.uber.org/zap"
 )
 
 type User struct { // todo: old name was Profile // todo: visible on public profile:
