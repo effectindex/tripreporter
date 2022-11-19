@@ -78,9 +78,8 @@ func main() {
 	// Set context database now that we have one
 	ctx.Database = sDB
 
-	// Setup wordlist and time models
+	// Setup wordlist
 	models.SetupWordlist(ctx)
-	models.SetupTime(ctx)
 
 	// Setup proxy to webpack hot-reload server (for dev-ui) and regular http server (serves everything)
 	api.Setup(*dev, ctx.Logger)
