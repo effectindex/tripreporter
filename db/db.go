@@ -24,9 +24,8 @@ var (
 		`create table if not exists users (
 			account_id uuid primary key references accounts(id) on delete cascade,
 			created timestamptz not null default to_timestamp('0'),
-			display_name varchar(255),
-			date_of_birth timestamptz not null default to_timestamp('0'),
-			age smallint default 0,
+			display_name varchar(255) not null,
+			date_of_birth timestamptz not null,
 			height decimal default 0,
 			weight decimal default 0
 		);`,
