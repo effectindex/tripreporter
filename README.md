@@ -4,7 +4,7 @@
 
 ### Required
 
-Copy `.env.example` to `.env` and (optionally) modify it. This file is required for building and running the tripreporter.
+Copy `.env.example` to `.env`, and `config/redis.conf.example` to `config/redis.conf`, and (optionally) modify them. These files are required for building and running the tripreporter.
 
 ### Non-Docker
 
