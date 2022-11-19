@@ -69,6 +69,7 @@ const (
 	ErrorUserNotFound
 	ErrorUserNotDeleted
 	ErrorUserAccountStillExists
+	ErrorUserBirthNotSpecified
 )
 
 // TODO: i18n here
@@ -82,6 +83,8 @@ func (e ErrorUser) Error() string {
 		return "Failed to delete user."
 	case ErrorUserAccountStillExists:
 		return "The associated account with this user still exists."
+	case ErrorUserBirthNotSpecified:
+		return "User's age was specified without specifying date of birth."
 	default:
 		return ErrorGenericUnknown.Error()
 	}
