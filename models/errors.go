@@ -35,6 +35,8 @@ const (
 	ErrorAccountNotFound
 	ErrorAccountNotDeleted
 	ErrorAccountPasswordMatch
+	ErrorAccountPasswordRequirements
+	ErrorAccountPasswordEmpty
 )
 
 // TODO: i18n here
@@ -52,6 +54,10 @@ func (e ErrorAccount) Error() string {
 		return "Failed to delete account."
 	case ErrorAccountPasswordMatch:
 		return "Incorrect password or account."
+	case ErrorAccountPasswordRequirements:
+		return "Password does not match requirements."
+	case ErrorAccountPasswordEmpty:
+		return "Password is required."
 	default:
 		return ErrorGenericUnknown.Error()
 	}

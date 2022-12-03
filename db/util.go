@@ -25,7 +25,7 @@ func TestDelete(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
 	a := &models.Account{
 		Context:  ctx,
 		Unique:   models.Unique{ID: uuid},
-		Password: "examplePword",
+		Password: []byte("examplePword"),
 	}
 
 	if _, err := a.Delete(); err != nil {
@@ -43,7 +43,7 @@ func TestCreate(ctx models.Context) (*models.Account, error) {
 		Type:     "Account",
 		Email:    "user@email.com",
 		Username: models.Wordlist.Random(3),
-		Password: "examplePword",
+		Password: []byte("examplePword"),
 	}
 
 	if a, err := a.Post(); err != nil {

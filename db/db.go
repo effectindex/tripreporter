@@ -16,9 +16,11 @@ var (
 			id uuid primary key,
 			email varchar(255) not null unique,
 			username varchar(255) not null unique,
-			password_hash varchar(255) not null,
+			password_salt bytea not null unique,
+			password_hash bytea not null,
 			CHECK (accounts.email <> ''),
 			CHECK (accounts.username <> ''),
+			CHECK (accounts.password_salt <> ''),
 			CHECK (accounts.password_hash <> '')
 		);`,
 		`create table if not exists users (
