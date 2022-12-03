@@ -10,6 +10,7 @@ deps-server:
 	go get -u "github.com/joho/godotenv"
 	go get -u "github.com/shopspring/decimal"
 	go get -u "go.uber.org/zap"
+	go get -u "golang.org/x/crypto"
 	go mod tidy
 
 deps-ui:
