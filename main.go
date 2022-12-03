@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/rand"
 	"encoding/hex"
 	"errors"
 	"flag"
@@ -13,6 +12,7 @@ import (
 	"github.com/effectindex/tripreporter/api"
 	"github.com/effectindex/tripreporter/db"
 	"github.com/effectindex/tripreporter/models"
+	"github.com/effectindex/tripreporter/util"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
@@ -55,13 +55,13 @@ func main() {
 	}
 
 	// Setup NodeID for uuid generation
-	randomID := make([]byte, 6)
-	if _, err = rand.Read(randomID); err != nil {
+	if randomID, err := util.GenerateRandomBytes(6); err != nil {
 		logger.Fatal("failed to initialize NodeID", zap.Error(err))
+	} else {
+		randomID[5] |= 0x01 // Set least significant bit of first true
+		uuid.SetNodeID(randomID)
+		ctx.Logger.Infof("Initialized random NodeID: %s", hex.EncodeToString(randomID))
 	}
-	randomID[5] |= 0x01 // Set least significant bit of first true
-	uuid.SetNodeID(randomID)
-	ctx.Logger.Infof("Initialized random NodeID: %s", hex.EncodeToString(randomID))
 
 	// Setup required connections for postgresql and redis
 	sDB := db.SetupDB(ctx.Logger)
