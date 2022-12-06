@@ -18,6 +18,8 @@ var (
 			username varchar(255) not null unique,
 			password_salt bytea not null unique,
 			password_hash bytea not null,
+			finished_signup bool default false,
+			email_verified bool default false,
 			CHECK (accounts.email <> ''),
 			CHECK (accounts.username <> ''),
 			CHECK (accounts.password_salt <> ''),

@@ -13,7 +13,6 @@ import (
 type User struct { // todo: old name was Profile // todo: visible on public profile:
 	types.Context
 	Unique
-	Type        string          `json:"type"`
 	Created     Timestamp       `json:"created" db:"created"`             // Required, set by default.
 	DisplayName string          `json:"display_name" db:"display_name"`   // Optional
 	Birth       Timestamp       `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset
@@ -25,6 +24,7 @@ type User struct { // todo: old name was Profile // todo: visible on public prof
 }
 
 func (u *User) Get() (*User, error) {
+	u.InitType(u)
 	db := u.DB()
 	defer db.Commit(context.Background())
 
@@ -59,6 +59,7 @@ func (u *User) Get() (*User, error) {
 }
 
 func (u *User) Post() (*User, error) {
+	u.InitType(u)
 	db := u.DB()
 	defer db.Commit(context.Background())
 
@@ -88,6 +89,7 @@ func (u *User) Post() (*User, error) {
 }
 
 func (u *User) Patch() (*User, error) {
+	u.InitType(u)
 	db := u.DB()
 
 	if u.NilUUID() {
@@ -152,6 +154,7 @@ func (u *User) Patch() (*User, error) {
 }
 
 func (u *User) Delete() (*User, error) {
+	u.InitType(u)
 	db := u.DB()
 	defer db.Commit(context.Background())
 

@@ -14,15 +14,16 @@ import (
 type Account struct { // todo: this should be oauth / credentials. allow changing email or logging in with google
 	types.Context
 	Unique
-	Type     string `json:"type"`
-	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
-	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
-	Salt     []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
-	Password []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
-	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
+	Email    string `json:"email" db:"email"`                     // Optional. Make clear that password reset isn't possible if not set.
+	Username string `json:"username" db:"username"`               // Required. Generate from wordlist + 3 numbers if left blank.
+	Salt     []byte `json:"password_salt" db:"password_salt"`     // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
+	Password []byte `json:"password_hash" db:"password_hash"`     // Required. Generated from Salt using Argon2ID and is 32 bits long.
+	Created  bool   `json:"finished_signup" db:"finished_signup"` // Optional. Whether email has finished signup or not.
+	Verified bool   `json:"email_verified" db:"email_verified"`   // Optional. Whether email has been verified or not.
 }
 
 func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / other params
+	a.InitType(a)
 	db := a.DB()
 	defer db.Commit(context.Background())
 
@@ -44,7 +45,7 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 
 	var a1 []*Account
 	if err := pgxscan.Select(context.Background(), db, &a1,
-		`select id, email, username, password_salt, password_hash from accounts `+query, queryArg,
+		`select id, email, username, password_salt, password_hash, finished_signup, email_verified from accounts `+query, queryArg,
 	); err != nil {
 		a.Logger.Warnw("Failed to get account from DB", zap.Error(err))
 		return a, err
@@ -59,12 +60,15 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 		a.Username = a1[0].Username
 		a.Salt = a1[0].Salt
 		a.Password = a1[0].Password
+		a.Created = a1[0].Created
+		a.Verified = a1[0].Verified
 	}
 
 	return a, nil
 }
 
 func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post signup hook?
+	a.InitType(a)
 	db := a.DB()
 	defer db.Commit(context.Background())
 
@@ -91,21 +95,27 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 			id,
 			email,
 			username,
-		    password_salt,
-			password_hash
+			password_salt,
+			password_hash,
+			finished_signup,
+			email_verified
 		)
 		values(
 			$1,
 			$2,
 			$3,
 			$4,
-		    $5
+		    $5,
+		    $6,
+		    $7
 		);`,
 		a.ID,
 		a.Email,    // TODO: Validate emails
 		a.Username, // TODO: Validate usernames
 		a.Salt,
 		a.Password,
+		a.Created,
+		a.Verified,
 	); err != nil {
 		a.Logger.Warnw("Failed to write account to DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
@@ -116,6 +126,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 }
 
 func (a *Account) Patch() (*Account, error) {
+	a.InitType(a)
 	db := a.DB()
 
 	if a.NilUUID() {
@@ -149,7 +160,8 @@ func (a *Account) Patch() (*Account, error) {
 		addQuery("password_hash", a.Password)
 	}
 
-	// TODO: Implement a.Verified
+	addQuery("finished_signup", a.Created)
+	addQuery("email_verified", a.Verified)
 
 	query = strings.TrimSuffix(query, ",")
 	qNum++
@@ -170,6 +182,7 @@ func (a *Account) Patch() (*Account, error) {
 }
 
 func (a *Account) Delete() (*Account, error) {
+	a.InitType(a)
 	db := a.DB()
 	defer db.Commit(context.Background())
 
@@ -190,10 +203,13 @@ func (a *Account) Delete() (*Account, error) {
 }
 
 func (a *Account) CopyIdentifiers() *Account {
-	return &Account{Context: a.Context, Unique: Unique{ID: a.ID}, Email: a.Email, Username: a.Username}
+	a.InitType(a)
+	return &Account{Context: a.Context, Unique: Unique{ID: a.ID, Type: a.Type}, Email: a.Email, Username: a.Username}
 }
 
 func (a *Account) ValidatePassword(password string) (*Account, error) {
+	a.InitType(a)
+
 	if len(a.Salt) == 0 { // should not really be possible in a real scenario
 		return a, types.ErrorAccountPasswordSaltEmpty
 	}
