@@ -65,11 +65,11 @@ func CreateLogger(w http.ResponseWriter) *zap.SugaredLogger {
 		}
 
 		if enc, ok := enc.(appendTimeEncoder); ok {
-			enc.AppendTimeLayout(t, time.RFC3339Nano)
+			enc.AppendTimeLayout(t, time.RFC3339)
 			return
 		}
 
-		enc.AppendString(t.Format(time.RFC3339Nano))
+		enc.AppendString(t.Format(time.RFC3339))
 	}
 
 	encoder := zapcore.NewJSONEncoder(config)
