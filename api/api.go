@@ -27,33 +27,36 @@ func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 
 // Handler manages all paths, with Router handling anything not defined here.
 func Handler() http.Handler {
-	mux := mux.NewRouter()
+	router := mux.NewRouter()
 
 	// let api.Router do everything else
-	mux.HandleFunc("/", Router)
+	router.HandleFunc("/", Router)
 
 	// serve /static/ by cache in production (no hot-reload support)
 	if !dev { // if running in development mode, let api.Router reverse proxy it
 		staticFS, _ := fs.Sub(ui.StaticFiles, "dist")
 		httpFS := http.FileServer(http.FS(staticFS))
-		mux.Handle("/static/", httpFS)
+		router.Handle("/static/", httpFS)
 	}
 
 	// Redirect /api with no trailing slash to the documentation url
-	mux.Handle("/api", http.RedirectHandler(os.Getenv("DOCS_URL"), http.StatusMovedPermanently))
+	router.Handle("/api", http.RedirectHandler(os.Getenv("DOCS_URL"), http.StatusMovedPermanently))
 
 	// API functions
-	vX := mux.PathPrefix("/api/").Subrouter()
+	vX := router.PathPrefix("/api/").Subrouter()
 	vX.MethodNotAllowedHandler = ctx.HandleFunc(MsgMethodNotAllowed)
 	vX.NotFoundHandler = ctx.HandleFunc(MsgInvalidApiVersion)
 
+	// API v1 methods
 	v1 := vX.PathPrefix("/v1").Subrouter()
-	v1.HandleFunc("/session", SessionPost).Methods(http.MethodPost)
-	v1.HandleFunc("/session/{id}", SessionGet).Methods(http.MethodGet)
 	v1.MethodNotAllowedHandler = ctx.HandleFunc(MsgMethodNotAllowed)
 	v1.NotFoundHandler = ctx.HandleFunc(MsgInvalidEndpoint)
 
-	return mux
+	// API v1 endpoints
+	SetupAccountEndpoints(v1)
+	SetupSessionEndpoints(v1)
+
+	return router
 }
 
 // Router will route everything except /static/ and valid /api/ endpoints.

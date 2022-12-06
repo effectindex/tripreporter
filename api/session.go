@@ -6,6 +6,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func SetupSessionEndpoints(v1 *mux.Router) {
+	v1.HandleFunc("/session", SessionPost).Methods(http.MethodPost)
+	v1.HandleFunc("/session/{id}", SessionGet).Methods(http.MethodGet)
+}
+
 // SessionPost path is /api/v1/session
 func SessionPost(w http.ResponseWriter, r *http.Request) {
 	_ = mux.Vars(r)
