@@ -30,9 +30,9 @@ func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, m Message)
 
 	msg, status := m.Message()
 
-	// Set status code and content type properly
-	w.WriteHeader(status)
+	// Set content type and status code properly
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status) // Set after writing header, as this closes the stream
 
 	// Here we log messages and errors, depending on the severity of the status
 	if status >= 500 {
