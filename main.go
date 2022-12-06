@@ -82,8 +82,9 @@ func main() {
 	// Setup wordlist
 	models.SetupWordlist(ctx)
 
-	// Setup proxy to webpack hot-reload server (for dev-ui) and regular http server (serves everything)
+	// Setup proxy to webpack hot-reload server (for dev-ui) and regular http server (serves everything), and context
 	api.Setup(*dev, ctx.Logger)
+	api.SetupContext(ctx)
 
 	// Setup http server
 	s := &http.Server{

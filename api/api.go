@@ -10,6 +10,7 @@ import (
 
 	"github.com/effectindex/tripreporter/ui"
 	"github.com/effectindex/tripreporter/util"
+	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
 
@@ -26,7 +27,7 @@ func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 
 // Handler manages all paths, with Router handling anything not defined here.
 func Handler() http.Handler {
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
 
 	// let api.Router do everything else
 	mux.HandleFunc("/", Router)
@@ -39,7 +40,9 @@ func Handler() http.Handler {
 	}
 
 	// API functions
-	mux.HandleFunc("/api/v1/greeting", greetingAPI)
+	mux.HandleFunc("/api/v1/session", SessionPost).Methods(http.MethodPost)
+	mux.HandleFunc("/api/v1/session/{id}", SessionGet).Methods(http.MethodGet)
+
 	return mux
 }
 

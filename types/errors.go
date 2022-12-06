@@ -1,4 +1,8 @@
-package models
+package types
+
+import (
+	"net/http"
+)
 
 //
 // Generic errors
@@ -117,5 +121,39 @@ func (e ErrorContext) Error() string {
 		return "ctx.Database is nil"
 	default:
 		return ErrorGenericUnknown.Error()
+	}
+}
+
+//
+// API Related errors
+//
+
+type ErrorApi int64
+
+const (
+	ErrorApiUnknown ErrorApi = iota
+	ErrorApiNotImplemented
+	ErrorApiSessionNilId
+)
+
+func (e ErrorApi) Error() string {
+	switch e {
+	case ErrorApiNotImplemented:
+		return ErrorNotImplemented.Error()
+	case ErrorApiSessionNilId:
+		return "`id` is nil or unset!"
+	default:
+		return ErrorGenericUnknown.Error()
+	}
+}
+
+func (e ErrorApi) ErrorHttp() (string, int) {
+	switch e {
+	case ErrorApiNotImplemented:
+		return e.Error(), http.StatusNotImplemented
+	case ErrorApiSessionNilId:
+		return e.Error(), http.StatusBadRequest
+	default:
+		return e.Error(), http.StatusInternalServerError
 	}
 }
