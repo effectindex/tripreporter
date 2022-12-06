@@ -52,6 +52,13 @@ func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, m Message)
 	}
 }
 
+// HandleFunc is a wrapper to create a simple http handler that responds with the given message
+func (h *ErrorHandler) HandleFunc(m Message) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx.Handle(w, r, m)
+	}
+}
+
 // CreateLogger will create a new Zap logger from an http.ResponseWriter, to log to an http request directly
 func CreateLogger(w http.ResponseWriter) *zap.SugaredLogger {
 	config := zap.NewProductionEncoderConfig()

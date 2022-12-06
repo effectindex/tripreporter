@@ -50,7 +50,7 @@ func main() {
 
 	// "SRV_ADDR" and "REDIS_PASS" can be empty, they're the only optional ones
 	if err := validateEnvKeys(
-		"SRV_PORT", "DEV_PORT", "SITE_NAME", "WORDLIST", "DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", "DB_NAME", "REDIS_HOST",
+		"SRV_PORT", "DEV_PORT", "SITE_NAME", "WORDLIST", "DOCS_URL", "DB_NAME", "DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", "REDIS_HOST",
 	); err != nil {
 		logger.Fatal("missing .env variables (copy the .env.example)", zap.Error(err))
 	}

@@ -39,29 +39,19 @@ func Handler() http.Handler {
 		mux.Handle("/static/", httpFS)
 	}
 
-	// TODO: redirect "/api" (no slash) to documentation
-
-	// Basic API handler functions for invalid paths
-	invalidApiVersionHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx.Handle(w, r, MsgInvalidApiVersion)
-	})
-	notAllowedHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx.Handle(w, r, MsgMethodNotAllowed)
-	})
-	invalidEndpointHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx.Handle(w, r, MsgInvalidEndpoint)
-	})
+	// Redirect /api with no trailing slash to the documentation url
+	mux.Handle("/api", http.RedirectHandler(os.Getenv("DOCS_URL"), http.StatusMovedPermanently))
 
 	// API functions
 	vX := mux.PathPrefix("/api/").Subrouter()
-	vX.MethodNotAllowedHandler = notAllowedHandler
-	vX.NotFoundHandler = invalidApiVersionHandler
+	vX.MethodNotAllowedHandler = ctx.HandleFunc(MsgMethodNotAllowed)
+	vX.NotFoundHandler = ctx.HandleFunc(MsgInvalidApiVersion)
 
 	v1 := vX.PathPrefix("/v1").Subrouter()
 	v1.HandleFunc("/session", SessionPost).Methods(http.MethodPost)
 	v1.HandleFunc("/session/{id}", SessionGet).Methods(http.MethodGet)
-	v1.MethodNotAllowedHandler = notAllowedHandler
-	v1.NotFoundHandler = invalidEndpointHandler
+	v1.MethodNotAllowedHandler = ctx.HandleFunc(MsgMethodNotAllowed)
+	v1.NotFoundHandler = ctx.HandleFunc(MsgInvalidEndpoint)
 
 	return mux
 }
