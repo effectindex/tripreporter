@@ -17,17 +17,18 @@ type ErrorHandler struct {
 	types.Context
 }
 
+// SetupContext creates a new context for this package, derived from the given context
 func SetupContext(c types.Context) {
+	c.Validate()
 	ctx = &ErrorHandler{Context: c}
 }
 
-func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, e types.ErrorApi) {
-	h.Validate()
-
+// Handle will write a JSON response to the request, and to our regular ctx.Logger, from the info returned by types.ApiMessage
+func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, m Message) {
 	logger := CreateLogger(w)
 	defer logger.Sync()
 
-	msg, status := e.ErrorHttp()
+	msg, status := m.Message()
 
 	// Set status code and content type properly
 	w.WriteHeader(status)
@@ -51,6 +52,7 @@ func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, e types.Er
 	}
 }
 
+// CreateLogger will create a new Zap logger from an http.ResponseWriter, to log to an http request directly
 func CreateLogger(w http.ResponseWriter) *zap.SugaredLogger {
 	config := zap.NewProductionEncoderConfig()
 	config.TimeKey = "time"

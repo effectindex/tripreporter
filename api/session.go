@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/effectindex/tripreporter/types"
 	"github.com/gorilla/mux"
 )
 
@@ -11,7 +10,7 @@ import (
 func SessionPost(w http.ResponseWriter, r *http.Request) {
 	_ = mux.Vars(r)
 
-	ctx.Handle(w, r, types.ErrorApiNotImplemented)
+	ctx.Handle(w, r, MsgNotImplemented)
 }
 
 // SessionGet path is /api/v1/session/{id}
@@ -20,7 +19,7 @@ func SessionGet(w http.ResponseWriter, r *http.Request) {
 	id, ok := vars["id"]
 
 	if !ok {
-		ctx.Handle(w, r, types.ErrorApiSessionNilId)
+		ctx.Handle(w, r, MsgSessionNilId)
 		return
 	}
 
