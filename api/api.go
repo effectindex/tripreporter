@@ -39,9 +39,29 @@ func Handler() http.Handler {
 		mux.Handle("/static/", httpFS)
 	}
 
+	// TODO: redirect "/api" (no slash) to documentation
+
+	// Basic API handler functions for invalid paths
+	invalidApiVersionHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx.Handle(w, r, MsgInvalidApiVersion)
+	})
+	notAllowedHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx.Handle(w, r, MsgMethodNotAllowed)
+	})
+	invalidEndpointHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx.Handle(w, r, MsgInvalidEndpoint)
+	})
+
 	// API functions
-	mux.HandleFunc("/api/v1/session", SessionPost).Methods(http.MethodPost)
-	mux.HandleFunc("/api/v1/session/{id}", SessionGet).Methods(http.MethodGet)
+	vX := mux.PathPrefix("/api/").Subrouter()
+	vX.MethodNotAllowedHandler = notAllowedHandler
+	vX.NotFoundHandler = invalidApiVersionHandler
+
+	v1 := vX.PathPrefix("/v1").Subrouter()
+	v1.HandleFunc("/session", SessionPost).Methods(http.MethodPost)
+	v1.HandleFunc("/session/{id}", SessionGet).Methods(http.MethodGet)
+	v1.MethodNotAllowedHandler = notAllowedHandler
+	v1.NotFoundHandler = invalidEndpointHandler
 
 	return mux
 }
