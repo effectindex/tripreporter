@@ -5,13 +5,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"go.uber.org/zap"
 )
 
 type Account struct { // todo: this should be oauth / credentials. allow changing email or logging in with google
-	Context
+	types.Context
 	Unique
 	Type     string `json:"type"`
 	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
@@ -38,7 +39,7 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 		query = `where username = $1;`
 		queryArg = a.Username
 	} else {
-		return a, ErrorAccountNotSpecified
+		return a, types.ErrorAccountNotSpecified
 	}
 
 	var a1 []*Account
@@ -48,10 +49,10 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 		a.Logger.Warnw("Failed to get account from DB", zap.Error(err))
 		return a, err
 	} else if len(a1) == 0 {
-		return a, ErrorAccountNotFound
+		return a, types.ErrorAccountNotFound
 	} else if len(a1) > 1 { // This shouldn't happen
 		a.Logger.Errorw("Multiple accounts found for parameters", "accounts", a1)
-		return a, ErrorAccountNotSpecified
+		return a, types.ErrorAccountNotSpecified
 	} else {
 		a.ID = a1[0].ID
 		a.Email = a1[0].Email
@@ -72,7 +73,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	}
 
 	if len(a.Password) == 0 { // TODO: Enforce other password requirements
-		return a, ErrorAccountPasswordEmpty
+		return a, types.ErrorAccountPasswordEmpty
 	}
 
 	salt, err := util.GenerateSalt(12, 16, Wordlist.Random(1))
@@ -118,7 +119,7 @@ func (a *Account) Patch() (*Account, error) {
 	db := a.DB()
 
 	if a.NilUUID() {
-		return a, ErrorAccountNotSpecified
+		return a, types.ErrorAccountNotSpecified
 	}
 
 	fields := make([]interface{}, 0)
@@ -176,7 +177,7 @@ func (a *Account) Delete() (*Account, error) {
 	if _, err := a1.Get(); err != nil {
 		return a, err
 	} else if !util.SliceEqual(a.Password, a1.Password) {
-		return a, ErrorAccountPasswordMatch
+		return a, types.ErrorAccountPasswordMatch
 	}
 
 	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1 and password_hash=$2;`, a.ID, a.Password); err != nil {

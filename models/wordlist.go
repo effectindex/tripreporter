@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/effectindex/tripreporter/types"
 	"go.uber.org/zap"
 )
 
@@ -16,12 +17,12 @@ var (
 )
 
 type WordlistModel struct { // This name sucks but I don't see a better option
-	Context
+	types.Context
 	Words []string `json:"words,omitempty"`
 }
 
 // SetupWordlist creates a new db.Wordlist from the $WORDLIST file
-func SetupWordlist(ctx Context) {
+func SetupWordlist(ctx types.Context) {
 	ctx.Validate()
 
 	if bytes, err := os.ReadFile(os.Getenv("WORDLIST")); err != nil {

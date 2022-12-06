@@ -5,12 +5,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"go.uber.org/zap"
 )
 
 type User struct { // todo: old name was Profile // todo: visible on public profile:
-	Context
+	types.Context
 	Unique
 	Type        string          `json:"type"`
 	Created     Timestamp       `json:"created" db:"created"`             // Required, set by default.
@@ -28,7 +29,7 @@ func (u *User) Get() (*User, error) {
 	defer db.Commit(context.Background())
 
 	if u.NilUUID() {
-		return u, ErrorUserNotSpecified
+		return u, types.ErrorUserNotSpecified
 	}
 
 	var u1 []*User
@@ -38,10 +39,10 @@ func (u *User) Get() (*User, error) {
 		u.Logger.Warnw("Failed to get user from DB", zap.Error(err))
 		return u, err
 	} else if len(u1) == 0 {
-		return u, ErrorUserNotFound
+		return u, types.ErrorUserNotFound
 	} else if len(u1) > 1 { // This shouldn't happen
 		u.Logger.Errorw("Multiple users found for parameters", "users", u1)
-		return u, ErrorUserNotSpecified
+		return u, types.ErrorUserNotSpecified
 	} else {
 		u.Created = u1[0].Created
 		u.DisplayName = u1[0].DisplayName
@@ -62,7 +63,7 @@ func (u *User) Post() (*User, error) {
 	defer db.Commit(context.Background())
 
 	if u.NilUUID() {
-		return u, ErrorUserNotSpecified
+		return u, types.ErrorUserNotSpecified
 	}
 
 	if !u.Created.Valid() {
@@ -90,7 +91,7 @@ func (u *User) Patch() (*User, error) {
 	db := u.DB()
 
 	if u.NilUUID() {
-		return u, ErrorUserNotSpecified
+		return u, types.ErrorUserNotSpecified
 	}
 
 	fields := make([]interface{}, 0)
@@ -118,7 +119,7 @@ func (u *User) Patch() (*User, error) {
 	}
 
 	if u.Age.Valid() && !u.Birth.Valid() {
-		return u, ErrorUserBirthNotSpecified
+		return u, types.ErrorUserBirthNotSpecified
 	}
 
 	if u.Height.Valid() {
@@ -155,8 +156,8 @@ func (u *User) Delete() (*User, error) {
 	defer db.Commit(context.Background())
 
 	if _, err := (&Account{Context: u.Context, Unique: u.Unique}).Get(); err == nil {
-		return u, ErrorUserAccountStillExists
-	} else if err != ErrorAccountNotFound {
+		return u, types.ErrorUserAccountStillExists
+	} else if err != types.ErrorAccountNotFound {
 		return u, err
 	}
 

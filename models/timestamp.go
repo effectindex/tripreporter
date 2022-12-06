@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/effectindex/tripreporter/types"
 	"github.com/jackc/pgtype"
 )
 
@@ -92,7 +93,7 @@ func (t *Timestamp) MarshalJSON() ([]byte, error) {
 	}
 
 	if t.Status != pgtype.Present {
-		return nil, ErrorGenericUnknown
+		return nil, types.ErrorGenericUnknown
 	}
 
 	var s string

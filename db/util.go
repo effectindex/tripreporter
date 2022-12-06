@@ -2,11 +2,12 @@ package db
 
 import (
 	"github.com/effectindex/tripreporter/models"
+	"github.com/effectindex/tripreporter/types"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
-func TestGet(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
+func TestGet(uuid uuid.UUID, ctx types.Context) (*models.Account, error) {
 	a := &models.Account{
 		Context: ctx,
 		Unique:  models.Unique{ID: uuid},
@@ -21,7 +22,7 @@ func TestGet(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
 	}
 }
 
-func TestDelete(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
+func TestDelete(uuid uuid.UUID, ctx types.Context) (*models.Account, error) {
 	a := &models.Account{
 		Context:  ctx,
 		Unique:   models.Unique{ID: uuid},
@@ -37,7 +38,7 @@ func TestDelete(uuid uuid.UUID, ctx models.Context) (*models.Account, error) {
 	}
 }
 
-func TestCreate(ctx models.Context) (*models.Account, error) {
+func TestCreate(ctx types.Context) (*models.Account, error) {
 	a := &models.Account{
 		Context:  ctx,
 		Type:     "Account",

@@ -12,6 +12,7 @@ import (
 	"github.com/effectindex/tripreporter/api"
 	"github.com/effectindex/tripreporter/db"
 	"github.com/effectindex/tripreporter/models"
+	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
@@ -40,7 +41,7 @@ func main() {
 	}
 	defer logger.Sync()
 	sLogger := logger.Sugar()
-	ctx := models.Context{Logger: sLogger}
+	ctx := types.Context{Logger: sLogger}
 
 	// Load and validate .env
 	if err := godotenv.Load(); err != nil {
