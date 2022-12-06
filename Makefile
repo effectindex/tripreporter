@@ -6,6 +6,7 @@ deps-server:
 	go get -u "github.com/georgysavva/scany/v2"
 	go get -u "github.com/go-redis/redis"
 	go get -u "github.com/google/uuid"
+	go get -u "github.com/gorilla/mux"
 	go get -u "github.com/jackc/pgx/v5"
 	go get -u "github.com/joho/godotenv"
 	go get -u "github.com/shopspring/decimal"
