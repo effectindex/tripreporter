@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -23,16 +25,18 @@ func SetupContext(c types.Context) {
 	ctx = &ErrorHandler{Context: c}
 }
 
-// Handle will write a JSON response to the request, and to our regular ctx.Logger, from the info returned by types.ApiMessage
+// Handle is a wrapper around HandleStatus for pre-written messages
 func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, m Message) {
+	msg, status := m.Message()
+	h.HandleStatus(w, r, msg, status)
+}
+
+// HandleStatus will write a JSON response to the request, and to our regular ctx.Logger, from the message and status given
+func (h *ErrorHandler) HandleStatus(w http.ResponseWriter, r *http.Request, msg string, status int) {
 	logger := CreateLogger(w)
 	defer logger.Sync()
 
-	msg, status := m.Message()
-
-	// Set content type and status code properly
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(status) // Set after writing header, as this closes the stream
+	setJsonStatus(w, status)
 
 	// Here we log messages and errors, depending on the severity of the status
 	if status >= 500 {
@@ -49,6 +53,23 @@ func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, m Message)
 		} else {
 			logger.Infow(msg, "status", status)
 		}
+	}
+}
+
+func (h *ErrorHandler) HandleJson(w http.ResponseWriter, r *http.Request, i interface{}, status int) {
+	logger := CreateLogger(w)
+	defer logger.Sync()
+
+	setJsonStatus(w, status)
+
+	if j, err := json.Marshal(i); err != nil {
+		status = http.StatusInternalServerError
+
+		h.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "i", i, zap.Error(err))
+		logger.Errorw(err.Error(), "status", status)
+	} else {
+		h.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "json", j)
+		_, _ = fmt.Fprintf(w, "%s\n", j)
 	}
 }
 
@@ -84,4 +105,10 @@ func CreateLogger(w http.ResponseWriter) *zap.SugaredLogger {
 	core := zapcore.NewCore(encoder, writer, zap.DebugLevel)
 	logger := zap.New(core)
 	return logger.Sugar()
+}
+
+func setJsonStatus(w http.ResponseWriter, status int) {
+	// Set content type and status code properly
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status) // Set after writing header, as this closes the stream
 }
