@@ -29,6 +29,10 @@ func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, e types.Er
 
 	msg, status := e.ErrorHttp()
 
+	// Set status code and content type properly
+	w.WriteHeader(status)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
 	// Here we log messages and errors, depending on the severity of the status
 	if status >= 500 {
 		// Log errors that our fault as warnings, and tell the client we had an error.
