@@ -192,3 +192,20 @@ func (a *Account) Delete() (*Account, error) {
 func (a *Account) CopyIdentifiers() *Account {
 	return &Account{Context: a.Context, Unique: Unique{ID: a.ID}, Email: a.Email, Username: a.Username}
 }
+
+func (a *Account) ValidatePassword(password string) (*Account, error) {
+	if len(a.Salt) == 0 { // should not really be possible in a real scenario
+		return a, types.ErrorAccountPasswordSaltEmpty
+	}
+
+	if len(a.Password) == 0 {
+		return a, types.ErrorAccountPasswordEmpty
+	}
+
+	hash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
+	if !util.SliceEqual(hash, a.Password) {
+		return a, types.ErrorAccountPasswordMatch
+	}
+
+	return a, nil
+}

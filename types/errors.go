@@ -37,6 +37,7 @@ const (
 	ErrorAccountPasswordMatch
 	ErrorAccountPasswordRequirements
 	ErrorAccountPasswordEmpty
+	ErrorAccountPasswordSaltEmpty
 )
 
 // TODO: i18n here
@@ -58,6 +59,8 @@ func (e ErrorAccount) Error() string {
 		return "Password does not match requirements."
 	case ErrorAccountPasswordEmpty:
 		return "Password is required."
+	case ErrorAccountPasswordSaltEmpty:
+		return "Password salt is required."
 	default:
 		return ErrorGenericUnknown.Error()
 	}
