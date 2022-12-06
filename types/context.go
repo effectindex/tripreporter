@@ -9,8 +9,8 @@ import (
 )
 
 type Context struct {
-	Database *pgxpool.Pool
-	Logger   *zap.SugaredLogger
+	Database *pgxpool.Pool      `json:"-" database:"-"`
+	Logger   *zap.SugaredLogger `json:"-" database:"-"`
 }
 
 func (ctx *Context) DB() pgx.Tx {
