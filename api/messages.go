@@ -23,7 +23,7 @@ func (e Message) String() string {
 	case MsgMethodNotAllowed:
 		return "Method not allowed!"
 	case MsgInvalidEndpoint:
-		return "Invalid endpoint!"
+		return "Invalid API endpoint!"
 	case MsgInvalidApiVersion:
 		return "Invalid API version!"
 	case MsgSessionNilId:
@@ -42,7 +42,7 @@ func (e Message) Status() int {
 	case MsgInvalidEndpoint:
 		return http.StatusBadRequest
 	case MsgInvalidApiVersion:
-		return http.StatusBadGateway
+		return http.StatusBadRequest
 	case MsgSessionNilId:
 		return http.StatusBadRequest
 	default:
