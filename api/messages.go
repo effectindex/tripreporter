@@ -13,7 +13,8 @@ const (
 	MsgMethodNotAllowed
 	MsgInvalidEndpoint
 	MsgInvalidApiVersion
-	MsgSessionNilId
+	MsgNilVariable
+	MsgOk
 )
 
 func (e Message) String() string {
@@ -26,8 +27,10 @@ func (e Message) String() string {
 		return "Invalid API endpoint!"
 	case MsgInvalidApiVersion:
 		return "Invalid API version!"
-	case MsgSessionNilId:
-		return "`id` is nil or unset!"
+	case MsgNilVariable:
+		return " is nil or unset!"
+	case MsgOk:
+		return "Ok"
 	default:
 		return types.ErrorGenericUnknown.Error()
 	}
@@ -43,8 +46,10 @@ func (e Message) Status() int {
 		return http.StatusBadRequest
 	case MsgInvalidApiVersion:
 		return http.StatusBadRequest
-	case MsgSessionNilId:
+	case MsgNilVariable:
 		return http.StatusBadRequest
+	case MsgOk:
+		return http.StatusOK
 	default:
 		return http.StatusInternalServerError
 	}
