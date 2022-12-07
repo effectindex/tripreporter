@@ -31,6 +31,8 @@ const (
 	ErrorAccountUnknown ErrorAccount = iota
 	ErrorAccountEmailExists
 	ErrorAccountEmailEmpty
+	ErrorAccountEmailDomainEmpty
+	ErrorAccountEmailTLDEmpty
 	ErrorAccountUsernameExists
 	ErrorAccountUsernameEmpty
 	ErrorAccountNotSpecified
@@ -49,6 +51,10 @@ func (e ErrorAccount) Error() string {
 		return "An account with that email already exists."
 	case ErrorAccountEmailEmpty:
 		return "Email is required."
+	case ErrorAccountEmailDomainEmpty:
+		return "mail: domain length is 0"
+	case ErrorAccountEmailTLDEmpty:
+		return "mail: domain does not contain a TLD"
 	case ErrorAccountUsernameExists:
 		return "An account with that username already exists."
 	case ErrorAccountUsernameEmpty:
