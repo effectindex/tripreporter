@@ -75,7 +75,7 @@ func (c *Context) HandleJson(w http.ResponseWriter, r *http.Request, i interface
 		c.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "i", i, zap.Error(err))
 		logger.Errorw(err.Error(), "status", status)
 	} else {
-		c.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "json", j)
+		c.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "json", string(j))
 		_, _ = fmt.Fprintf(w, "%s\n", j)
 	}
 }
