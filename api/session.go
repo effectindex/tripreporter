@@ -24,7 +24,7 @@ func SessionGet(w http.ResponseWriter, r *http.Request) {
 	id, ok := vars["id"]
 
 	if !ok {
-		ctx.Handle(w, r, MsgSessionNilId)
+		ctx.Handle(w, r, MsgNilVariable)
 		return
 	}
 
