@@ -31,6 +31,12 @@ func (c *Context) Handle(w http.ResponseWriter, r *http.Request, m Message) {
 	c.HandleStatus(w, r, msg, status)
 }
 
+// HandlePrefixed is a wrapper around HandleStatus for pre-written messages with a prefix attached
+func (c *Context) HandlePrefixed(w http.ResponseWriter, r *http.Request, prefix string, m Message) {
+	msg, status := m.Message()
+	c.HandleStatus(w, r, prefix+msg, status)
+}
+
 // HandleStatus will write a JSON response to the request, and to our regular ctx.Logger, from the message and status given
 func (c *Context) HandleStatus(w http.ResponseWriter, r *http.Request, msg string, status int) {
 	logger := CreateLogger(w)
