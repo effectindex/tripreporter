@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"errors"
 	"net/mail"
 	"strconv"
 	"strings"
@@ -272,11 +271,11 @@ func (a *Account) ValidateEmail() (*Account, error) {
 
 	domain := strings.Split(addr.Address, "@")
 	if len(domain) == 0 {
-		return a, errors.New("mail: domain length is 0")
+		return a, types.ErrorAccountEmailDomainEmpty
 	}
 
 	if !strings.Contains(domain[len(domain)-1], ".") {
-		return a, errors.New("mail: domain does not contain a TLD")
+		return a, types.ErrorAccountEmailTLDEmpty
 	}
 
 	return a, nil
