@@ -34,7 +34,7 @@ func (u *User) Get() (*User, error) {
 
 	var u1 []*User
 	if err := pgxscan.Select(context.Background(), db, &u1,
-		`select created, display_name, date_of_birth, height, weight from users where account_id = $1;`, u.ID,
+		`select * from users where account_id = $1;`, u.ID,
 	); err != nil {
 		u.Logger.Warnw("Failed to get user from DB", zap.Error(err))
 		return u, err
