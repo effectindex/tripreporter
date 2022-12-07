@@ -2,6 +2,8 @@ package models
 
 import (
 	"context"
+	"errors"
+	"net/mail"
 	"strconv"
 	"strings"
 
@@ -72,14 +74,43 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	db := a.DB()
 	defer db.Commit(context.Background())
 
+	// Init account UUID
 	if err := a.InitUUID(a.Logger); err != nil {
 		return a, err
 	}
 
+	// Ensure required fields are set
+	if len(a.Email) == 0 {
+		return a, types.ErrorAccountEmailEmpty
+	}
+	if len(a.Username) == 0 {
+		return a, types.ErrorAccountUsernameEmpty
+	}
 	if len(a.Password) == 0 { // TODO: Enforce other password requirements
 		return a, types.ErrorAccountPasswordEmpty
 	}
 
+	// Check if email or username are already taken
+	var a1 []*Account
+	_ = pgxscan.Select(context.Background(), db, &a1,
+		`select * from accounts where email=$1`, a.Email,
+	)
+
+	var a2 []*Account
+	_ = pgxscan.Select(context.Background(), db, &a2,
+		`select * from accounts where username=$1`, a.Username,
+	)
+
+	if len(a1) > 0 {
+		return a, types.ErrorAccountEmailExists
+	}
+	if len(a2) > 0 {
+		return a, types.ErrorAccountUsernameExists
+	}
+
+	// TODO: Validate email / username / password
+
+	// Now we can generate the salt to use for the password
 	salt, err := util.GenerateSalt(12, 16, Wordlist.Random(1))
 
 	if err != nil {
@@ -87,6 +118,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 		return a, err
 	}
 
+	// Set the account's salt and new hashed password properly
 	a.Salt = salt
 	a.Password = util.GenerateSaltedPasswordHash(a.Password, a.Salt)
 
@@ -110,8 +142,8 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 		    $7
 		);`,
 		a.ID,
-		a.Email,    // TODO: Validate emails
-		a.Username, // TODO: Validate usernames
+		a.Email,
+		a.Username,
 		a.Salt,
 		a.Password,
 		a.Created,
@@ -207,7 +239,7 @@ func (a *Account) CopyIdentifiers() *Account {
 	return &Account{Context: a.Context, Unique: Unique{ID: a.ID, Type: a.Type}, Email: a.Email, Username: a.Username}
 }
 
-func (a *Account) ValidatePassword(password string) (*Account, error) {
+func (a *Account) VerifyPassword(password string) (*Account, error) {
 	a.InitType(a)
 
 	if len(a.Salt) == 0 { // should not really be possible in a real scenario
@@ -221,6 +253,30 @@ func (a *Account) ValidatePassword(password string) (*Account, error) {
 	hash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
 	if !util.SliceEqual(hash, a.Password) {
 		return a, types.ErrorAccountPasswordMatch
+	}
+
+	return a, nil
+}
+
+func (a *Account) ValidateEmail() (*Account, error) {
+	a.InitType(a)
+
+	if len(a.Email) == 0 {
+		return a, types.ErrorAccountEmailEmpty
+	}
+
+	addr, err := mail.ParseAddress(a.Email)
+	if err != nil {
+		return a, err
+	}
+
+	domain := strings.Split(addr.Address, "@")
+	if len(domain) == 0 {
+		return a, errors.New("mail: domain length is 0")
+	}
+
+	if !strings.Contains(domain[len(domain)-1], ".") {
+		return a, errors.New("mail: domain does not contain a TLD")
 	}
 
 	return a, nil
