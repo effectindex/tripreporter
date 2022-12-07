@@ -12,27 +12,27 @@ import (
 )
 
 var (
-	ctx *ErrorHandler
+	ctx *Context
 )
 
-type ErrorHandler struct {
+type Context struct {
 	types.Context
 }
 
 // SetupContext creates a new context for this package, derived from the given context
 func SetupContext(c types.Context) {
 	c.Validate()
-	ctx = &ErrorHandler{Context: c}
+	ctx = &Context{Context: c}
 }
 
 // Handle is a wrapper around HandleStatus for pre-written messages
-func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, m Message) {
+func (c *Context) Handle(w http.ResponseWriter, r *http.Request, m Message) {
 	msg, status := m.Message()
-	h.HandleStatus(w, r, msg, status)
+	c.HandleStatus(w, r, msg, status)
 }
 
 // HandleStatus will write a JSON response to the request, and to our regular ctx.Logger, from the message and status given
-func (h *ErrorHandler) HandleStatus(w http.ResponseWriter, r *http.Request, msg string, status int) {
+func (c *Context) HandleStatus(w http.ResponseWriter, r *http.Request, msg string, status int) {
 	logger := CreateLogger(w)
 	defer logger.Sync()
 
@@ -41,11 +41,11 @@ func (h *ErrorHandler) HandleStatus(w http.ResponseWriter, r *http.Request, msg 
 	// Here we log messages and errors, depending on the severity of the status
 	if status >= 500 {
 		// Log errors that our fault as warnings, and tell the client we had an error.
-		h.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "message", msg)
+		c.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "message", msg)
 		logger.Errorw(msg, "status", status)
 	} else {
 		// If the message isn't an error on our end, only log in debug
-		h.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "message", msg)
+		c.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "message", msg)
 
 		// If the message is a client error, warn them, otherwise it's an info
 		if status >= 400 {
@@ -56,7 +56,8 @@ func (h *ErrorHandler) HandleStatus(w http.ResponseWriter, r *http.Request, msg 
 	}
 }
 
-func (h *ErrorHandler) HandleJson(w http.ResponseWriter, r *http.Request, i interface{}, status int) {
+// HandleJson will write a JSON response to the request, with the contents of i, or an error if the marshal failed
+func (c *Context) HandleJson(w http.ResponseWriter, r *http.Request, i interface{}, status int) {
 	logger := CreateLogger(w)
 	defer logger.Sync()
 
@@ -65,16 +66,16 @@ func (h *ErrorHandler) HandleJson(w http.ResponseWriter, r *http.Request, i inte
 	if j, err := json.Marshal(i); err != nil {
 		status = http.StatusInternalServerError
 
-		h.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "i", i, zap.Error(err))
+		c.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "i", i, zap.Error(err))
 		logger.Errorw(err.Error(), "status", status)
 	} else {
-		h.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "json", j)
+		c.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "json", j)
 		_, _ = fmt.Fprintf(w, "%s\n", j)
 	}
 }
 
 // HandleFunc is a wrapper to create a simple http handler that responds with the given message
-func (h *ErrorHandler) HandleFunc(m Message) http.HandlerFunc {
+func (c *Context) HandleFunc(m Message) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx.Handle(w, r, m)
 	}
