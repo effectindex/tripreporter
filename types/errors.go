@@ -30,7 +30,9 @@ type ErrorAccount int64
 const (
 	ErrorAccountUnknown ErrorAccount = iota
 	ErrorAccountEmailExists
+	ErrorAccountEmailEmpty
 	ErrorAccountUsernameExists
+	ErrorAccountUsernameEmpty
 	ErrorAccountNotSpecified
 	ErrorAccountNotFound
 	ErrorAccountNotDeleted
@@ -45,8 +47,12 @@ func (e ErrorAccount) Error() string {
 	switch e {
 	case ErrorAccountEmailExists:
 		return "An account with that email already exists."
+	case ErrorAccountEmailEmpty:
+		return "Email is required."
 	case ErrorAccountUsernameExists:
 		return "An account with that username already exists."
+	case ErrorAccountUsernameEmpty:
+		return "Username is required."
 	case ErrorAccountNotSpecified:
 		return "No account was specified."
 	case ErrorAccountNotFound:
