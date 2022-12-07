@@ -45,7 +45,7 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 
 	var a1 []*Account
 	if err := pgxscan.Select(context.Background(), db, &a1,
-		`select id, email, username, password_salt, password_hash, finished_signup, email_verified from accounts `+query, queryArg,
+		`select * from accounts `+query, queryArg,
 	); err != nil {
 		a.Logger.Warnw("Failed to get account from DB", zap.Error(err))
 		return a, err
