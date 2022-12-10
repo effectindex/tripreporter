@@ -18,6 +18,7 @@ make all
 
 # Build and run development UI, and server.
 # Run both in two different terminals.
+# NOTE: You must run `make all` or `make build-ui`, at least once, before running `dev-server`, otherwise there will be no build cache to use for static files.
 make dev-ui
 make dev-server
 ```
