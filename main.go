@@ -50,7 +50,7 @@ func main() {
 
 	// "SRV_ADDR" and "REDIS_PASS" can be empty, they're the only optional ones
 	if err := validateEnvKeys(
-		"SRV_PORT", "DEV_PORT", "SITE_NAME", "WORDLIST", "DOCS_URL", "DB_NAME", "DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", "REDIS_HOST",
+		"SRV_PORT", "DEV_PORT", "SITE_NAME", "WORDLIST", "ACCOUNT_CONFIG", "DOCS_URL", "DB_NAME", "DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", "REDIS_HOST",
 	); err != nil {
 		logger.Fatal("missing .env variables (copy the .env.example)", zap.Error(err))
 	}
@@ -79,8 +79,9 @@ func main() {
 	// Set context database now that we have one
 	ctx.Database = sDB
 
-	// Setup wordlist
+	// Setup wordlist and account configs
 	models.SetupWordlist(ctx)
+	models.SetupAccountConfig(ctx)
 
 	// Setup proxy to webpack hot-reload server (for dev-ui) and regular http server (serves everything), and context
 	api.Setup(*dev, ctx.Logger)

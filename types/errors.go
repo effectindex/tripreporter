@@ -35,6 +35,7 @@ const (
 	ErrorAccountEmailTLDEmpty
 	ErrorAccountUsernameExists
 	ErrorAccountUsernameEmpty
+	ErrorAccountUsernameInvalid
 	ErrorAccountNotSpecified
 	ErrorAccountNotFound
 	ErrorAccountNotDeleted
@@ -59,6 +60,8 @@ func (e ErrorAccount) Error() string {
 		return "An account with that username already exists."
 	case ErrorAccountUsernameEmpty:
 		return "Username is required."
+	case ErrorAccountUsernameInvalid:
+		return "username contains invalid character(s)."
 	case ErrorAccountNotSpecified:
 		return "No account was specified."
 	case ErrorAccountNotFound:
