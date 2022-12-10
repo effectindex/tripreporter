@@ -1,9 +1,9 @@
 {
   "username": {
-    "min_unique_total": 2,
-    "min_unique_non_symbol": 1,
     "min_length": 3,
     "max_length": 32,
+    "min_unique_total": 1,
+    "min_unique_non_symbol": 2,
     "message": "a-z 0-9 _ -",
     "allowed_chars": {
       "non_symbol": {

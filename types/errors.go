@@ -36,6 +36,10 @@ const (
 	ErrorAccountUsernameExists
 	ErrorAccountUsernameEmpty
 	ErrorAccountUsernameInvalid
+	ErrorAccountUsernameShort
+	ErrorAccountUsernameLong
+	ErrorAccountUsernameUniqueTotal
+	ErrorAccountUsernameUniqueNonSymbol
 	ErrorAccountNotSpecified
 	ErrorAccountNotFound
 	ErrorAccountNotDeleted
@@ -61,7 +65,15 @@ func (e ErrorAccount) Error() string {
 	case ErrorAccountUsernameEmpty:
 		return "Username is required."
 	case ErrorAccountUsernameInvalid:
-		return "username contains invalid character(s)."
+		return "Username contains invalid character(s)."
+	case ErrorAccountUsernameShort:
+		return "Username is too short."
+	case ErrorAccountUsernameLong:
+		return "Username is too long."
+	case ErrorAccountUsernameUniqueTotal:
+		return "Username does not contain enough unique characters."
+	case ErrorAccountUsernameUniqueNonSymbol:
+		return "Username does not contain enough non-symbol characters."
 	case ErrorAccountNotSpecified:
 		return "No account was specified."
 	case ErrorAccountNotFound:

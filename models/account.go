@@ -34,10 +34,10 @@ type AccountConfig struct {
 }
 
 type UsernameConfig struct {
-	MinUniqueTotal     int          `json:"min_unique_total"`
-	MinUniqueNonSymbol int          `json:"min_unique_non_symbol"`
 	MinLength          int          `json:"min_length"`
 	MaxLength          int          `json:"max_length"`
+	MinUniqueTotal     int          `json:"min_unique_total"`
+	MinUniqueNonSymbol int          `json:"min_unique_non_symbol"`
 	Message            string       `json:"message"`
 	Allowed            allowedChars `json:"allowed_chars"`
 }
@@ -52,10 +52,11 @@ func SetupAccountConfig(ctx types.Context) {
 	ctx.Validate()
 
 	defaultConfig := AccountConfig{
-		Username: UsernameConfig{MinUniqueTotal: 2,
-			MinUniqueNonSymbol: 1,
+		Username: UsernameConfig{
 			MinLength:          3,
 			MaxLength:          32,
+			MinUniqueTotal:     1,
+			MinUniqueNonSymbol: 2,
 			Message:            "a-z 0-9 _ -",
 			Allowed: allowedChars{
 				Symbol: map[string]bool{
@@ -84,13 +85,21 @@ func SetupAccountConfig(ctx types.Context) {
 		}
 
 		// Combine both NonSymbol and Symbol into All, skipping existing keys
-		AccountCfg.Username.Allowed.All = AccountCfg.Username.Allowed.NonSymbol
-		for k, v := range AccountCfg.Username.Allowed.NonSymbol {
-			if _, ok := AccountCfg.Username.Allowed.All[k]; !ok {
-				AccountCfg.Username.Allowed.All[k] = v
+		combine := func(s map[string]bool) {
+			for k, v := range s {
+				if _, ok := AccountCfg.Username.Allowed.All[k]; !ok {
+					AccountCfg.Username.Allowed.All[k] = v
+				}
 			}
 		}
 
+		// Create a blank map, and append both non-symbol and symbol to it. The reason we do this instead of assigning
+		// is to avoid Go using a pointer assignment and "modifying" the original non-symbol implicitly.
+		AccountCfg.Username.Allowed.All = make(map[string]bool, 0)
+		combine(AccountCfg.Username.Allowed.NonSymbol)
+		combine(AccountCfg.Username.Allowed.Symbol)
+
+		ctx.Logger.Infow("cfg", "non symbol", AccountCfg.Username.Allowed.NonSymbol, "symbol", AccountCfg.Username.Allowed.Symbol, "all", AccountCfg.Username.Allowed.All)
 		ctx.Logger.Infof("Loaded %saccount config with %v allowed chars", usingDefault, len(AccountCfg.Username.Allowed.NonSymbol)+len(AccountCfg.Username.Allowed.Symbol))
 	}
 }
@@ -366,11 +375,42 @@ func (a *Account) ValidateUsername() (*Account, error) {
 		return a, types.ErrorAccountUsernameEmpty
 	}
 
-	// TODO: Implement other validation checks
+	if len(a.Username) < AccountCfg.Username.MinLength {
+		return a, types.ErrorAccountUsernameShort
+	}
+
+	if len(a.Username) > AccountCfg.Username.MaxLength {
+		return a, types.ErrorAccountUsernameLong
+	}
+
+	uniqueTotal := make(map[string]bool, 0)
+	uniqueNonSymbol := make(map[string]bool, 0)
+
 	for _, c := range a.Username {
-		if allowed, ok := AccountCfg.Username.Allowed.All[string(c)]; !ok || !allowed {
+		s := string(c)
+
+		// Check for non-allowed chars
+		if allowed, ok := AccountCfg.Username.Allowed.All[s]; !ok || !allowed {
+			a.Logger.Infow("invalid check", "s", s, "AccountCfg.Username.Allowed.All", AccountCfg.Username.Allowed.All)
 			return a, types.ErrorAccountUsernameInvalid
+		} else {
+			uniqueTotal[s] = true
 		}
+
+		if allowed, ok := AccountCfg.Username.Allowed.NonSymbol[s]; ok && allowed {
+			uniqueNonSymbol[s] = true
+		}
+	}
+
+	// Check for minimum unique chars
+	if len(uniqueTotal) < AccountCfg.Username.MinUniqueTotal {
+		return a, types.ErrorAccountUsernameUniqueTotal
+	}
+
+	// Check for minimum unique non-symbols, for example, a config value of 2 means a username must contain at
+	// least two non-symbol chars in it.
+	if len(uniqueNonSymbol) < AccountCfg.Username.MinUniqueNonSymbol {
+		return a, types.ErrorAccountUsernameUniqueNonSymbol
 	}
 
 	return a, nil
