@@ -93,7 +93,7 @@ func (t *Timestamp) MarshalJSON() ([]byte, error) {
 	}
 
 	if t.Status != pgtype.Present {
-		return nil, types.ErrorGenericUnknown
+		return nil, types.ErrorUnknown
 	}
 
 	var s string

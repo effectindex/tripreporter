@@ -1,5 +1,10 @@
 package types
 
+import (
+	"errors"
+	"strings"
+)
+
 //
 // Generic errors
 //
@@ -7,7 +12,7 @@ package types
 type ErrorGeneric int64
 
 const (
-	ErrorGenericUnknown ErrorGeneric = iota
+	ErrorUnknown ErrorGeneric = iota
 	ErrorNotImplemented
 )
 
@@ -19,6 +24,49 @@ func (e ErrorGeneric) Error() string {
 	default:
 		return "An unknown error occurred."
 	}
+}
+
+//
+// String related errors
+//
+
+type ErrorString int64
+
+const (
+	ErrorStringUnknown ErrorString = iota
+	ErrorStringEmpty
+	ErrorStringShort
+	ErrorStringLong
+	ErrorStringInvalidChar
+	ErrorStringUniqueChar
+	ErrorStringSymbolChar
+	ErrorStringNonSymbolChar
+)
+
+// TODO: i18n here
+func (e ErrorString) Error() string {
+	switch e {
+	case ErrorStringEmpty:
+		return "String cannot be empty."
+	case ErrorStringShort:
+		return "String is too short."
+	case ErrorStringLong:
+		return "String is too long."
+	case ErrorStringInvalidChar:
+		return "String contains invalid character(s)."
+	case ErrorStringUniqueChar:
+		return "String does not contain enough unique characters."
+	case ErrorStringSymbolChar:
+		return "String does not contain enough symbol characters."
+	case ErrorStringNonSymbolChar:
+		return "String does not contain enough non-symbol characters."
+	default:
+		return ErrorUnknown.Error()
+	}
+}
+
+func (e ErrorString) PrefixedError(s string) error {
+	return errors.New(s + strings.TrimPrefix(e.Error(), "String"))
 }
 
 //
@@ -89,7 +137,7 @@ func (e ErrorAccount) Error() string {
 	case ErrorAccountPasswordSaltEmpty:
 		return "Password salt is required."
 	default:
-		return ErrorGenericUnknown.Error()
+		return ErrorUnknown.Error()
 	}
 }
 
@@ -122,7 +170,7 @@ func (e ErrorUser) Error() string {
 	case ErrorUserBirthNotSpecified:
 		return "User's age was specified without specifying date of birth."
 	default:
-		return ErrorGenericUnknown.Error()
+		return ErrorUnknown.Error()
 	}
 }
 
@@ -146,6 +194,6 @@ func (e ErrorContext) Error() string {
 	case ErrorContextNilDatabase:
 		return "ctx.Database is nil"
 	default:
-		return ErrorGenericUnknown.Error()
+		return ErrorUnknown.Error()
 	}
 }

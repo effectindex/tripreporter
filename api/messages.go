@@ -32,7 +32,7 @@ func (e Message) String() string {
 	case MsgOk:
 		return "Ok"
 	default:
-		return types.ErrorGenericUnknown.Error()
+		return types.ErrorUnknown.Error()
 	}
 }
 
