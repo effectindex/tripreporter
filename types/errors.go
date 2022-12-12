@@ -83,11 +83,12 @@ const (
 	ErrorAccountEmailTLDEmpty
 	ErrorAccountUsernameExists
 	ErrorAccountUsernameEmpty
-	ErrorAccountUsernameInvalid
 	ErrorAccountUsernameShort
 	ErrorAccountUsernameLong
-	ErrorAccountUsernameUniqueTotal
-	ErrorAccountUsernameUniqueNonSymbol
+	ErrorAccountUsernameInvalid
+	ErrorAccountUsernameUniqueChar
+	ErrorAccountUsernameSymbolChar
+	ErrorAccountUsernameNonSymbolChar
 	ErrorAccountNotSpecified
 	ErrorAccountNotFound
 	ErrorAccountNotDeleted
@@ -112,15 +113,17 @@ func (e ErrorAccount) Error() string {
 		return "An account with that username already exists."
 	case ErrorAccountUsernameEmpty:
 		return "Username is required."
-	case ErrorAccountUsernameInvalid:
-		return "Username contains invalid character(s)."
 	case ErrorAccountUsernameShort:
 		return "Username is too short."
 	case ErrorAccountUsernameLong:
 		return "Username is too long."
-	case ErrorAccountUsernameUniqueTotal:
+	case ErrorAccountUsernameInvalid:
+		return "Username contains invalid character(s)."
+	case ErrorAccountUsernameUniqueChar:
 		return "Username does not contain enough unique characters."
-	case ErrorAccountUsernameUniqueNonSymbol:
+	case ErrorAccountUsernameSymbolChar:
+		return "Username does not contain enough symbol characters."
+	case ErrorAccountUsernameNonSymbolChar:
 		return "Username does not contain enough non-symbol characters."
 	case ErrorAccountNotSpecified:
 		return "No account was specified."

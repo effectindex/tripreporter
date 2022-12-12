@@ -3,6 +3,7 @@
     "min_length": 3,
     "max_length": 32,
     "min_unique_total": 1,
+    "min_unique_symbol": 0,
     "min_unique_non_symbol": 2,
     "message": "a-z 0-9 _ -",
     "allowed_chars": {
@@ -12,6 +13,24 @@
       },
       "symbol": {
         "_": true, "-": true
+      }
+    }
+  },
+  "password": {
+    "min_length": 8,
+    "max_length": 1024,
+    "min_unique_total": 5,
+    "min_unique_symbol": 2,
+    "min_unique_non_symbol": 3,
+    "message": "A-Z a-z 0-9 _ - ! @ # $ % ^ & * ( ) + = space",
+    "allowed_chars": {
+      "non_symbol": {
+        "A": true, "B": true, "C": true, "D": true, "E": true, "F": true, "G": true, "H": true, "I": true, "J": true, "K": true, "L": true, "M": true, "N": true, "O": true, "P": true, "Q": true, "R": true, "S": true, "T": true, "U": true, "V": true, "W": true, "X": true, "Y": true, "Z": true,
+        "a": true, "b": true, "c": true, "d": true, "e": true, "f": true, "g": true, "h": true, "i": true, "j": true, "k": true, "l": true, "m": true, "n": true, "o": true, "p": true, "q": true, "r": true, "s": true, "t": true, "u": true, "v": true, "w": true, "x": true, "y": true, "z": true,
+        "0": true, "1": true, "2": true, "3": true, "4": true, "5": true, "6": true, "7": true, "8": true, "9": true
+      },
+      "symbol": {
+        "_": true, "-": true, "!": true, "@": true, "#": true, "$": true, "%": true, "^": true, "&": true, "*": true, "(": true, ")": true, "+": true, "=": true, " ": true
       }
     }
   }
