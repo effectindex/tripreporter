@@ -316,7 +316,12 @@ func (a *Account) Delete() (*Account, error) {
 
 func (a *Account) CopyIdentifiers() *Account {
 	a.InitType(a)
-	return &Account{Context: a.Context, Unique: Unique{ID: a.ID, Type: a.Type}, Email: a.Email, Username: a.Username}
+	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username}
+}
+
+func (a *Account) ClearSensitive() *Account {
+	a.InitType(a)
+	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Created: a.Created, Verified: a.Verified}
 }
 
 func (a *Account) VerifyPassword(password string) (*Account, error) {
