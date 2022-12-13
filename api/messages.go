@@ -1,8 +1,9 @@
 package api
 
 import (
-	"github.com/effectindex/tripreporter/types"
 	"net/http"
+
+	"github.com/effectindex/tripreporter/types"
 )
 
 type Message int64
