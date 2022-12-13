@@ -25,8 +25,9 @@ type Account struct { // todo: this should be oauth / credentials. allow changin
 	Unique
 	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
 	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
+	Password string `json:"password"`                           // Optional. Only used in API requests, is here to so API users aren't confused by `password_hash` when making a new account.
 	Salt     []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
-	Password []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
+	Hash     []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
 	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
 }
 
@@ -182,7 +183,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 
 	// Set the account's salt and new hashed password properly
 	a.Salt = salt
-	a.Password = util.GenerateSaltedPasswordHash(a.Password, a.Salt)
+	a.Hash = util.GenerateSaltedPasswordHash([]byte(a.Password), a.Salt)
 
 	if _, err := db.Exec(context.Background(),
 		`insert into accounts(
@@ -205,7 +206,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 		a.Email,
 		a.Username,
 		a.Salt,
-		a.Password,
+		a.Hash,
 		a.Verified,
 	); err != nil {
 		a.Logger.Warnw("Failed to write account to DB", zap.Error(err))
@@ -234,21 +235,33 @@ func (a *Account) Patch() (*Account, error) {
 		fields = append(fields, i)
 	}
 
-	if a.Email != "" { // TODO: Validate emails
+	if a.Email != "" {
 		addQuery("email", a.Email)
 	}
 
-	if a.Username != "" { // TODO: Validate usernames
+	if a.Username != "" {
 		addQuery("username", a.Username)
+	}
+
+	if len(a.Password) > 0 {
+		if len(a.Salt) == 0 {
+			salt, err := util.GenerateSalt(12, 16, Wordlist.Random(1))
+			if err != nil {
+				a.Logger.Warnw("Failed to generate salt", "ID", a.ID, zap.Error(err))
+				return a, err
+			}
+
+			a.Salt = salt
+		}
+		a.Hash = util.GenerateSaltedPasswordHash([]byte(a.Password), a.Salt)
 	}
 
 	if len(a.Salt) > 0 {
 		addQuery("password_salt", a.Salt)
-
 	}
 
-	if len(a.Password) > 0 {
-		addQuery("password_hash", a.Password)
+	if len(a.Hash) > 0 {
+		addQuery("password_hash", a.Hash)
 	}
 
 	addQuery("email_verified", a.Verified)
@@ -279,11 +292,11 @@ func (a *Account) Delete() (*Account, error) {
 	a1 := a.ClearSensitive()
 	if _, err := a1.Get(); err != nil {
 		return a, err
-	} else if !util.SliceEqual(a.Password, a1.Password) {
+	} else if !util.SliceEqual(a.Hash, a1.Hash) {
 		return a, types.ErrorAccountPasswordMatch
 	}
 
-	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1 and password_hash=$2;`, a.ID, a.Password); err != nil {
+	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1 and password_hash=$2;`, a.ID, a.Hash); err != nil {
 		a.Logger.Warnw("Failed to delete account from DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
 		return a, err
@@ -307,11 +320,10 @@ func (a *Account) FromBody(r *http.Request) (*Account, error) {
 	a.InitType(a)
 
 	if r.Body == nil {
-		defer r.Body.Close()
-	} else {
 		return a, types.ErrorStringEmpty.PrefixedError("Request body")
 	}
 
+	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return a, err
@@ -332,9 +344,15 @@ func (a *Account) FromData(a1 *Account) {
 	a.ID = a1.ID
 	a.Email = a1.Email
 	a.Username = a1.Username
-	a.Salt = a1.Salt
 	a.Password = a1.Password
+	a.Salt = a1.Salt
+	a.Hash = a1.Hash
 	a.Verified = a1.Verified
+}
+
+func (a *Account) ClearImmutable() *Account {
+	a.InitType(a)
+	return &Account{Context: a.Context, Unique: Unique{Type: a.Type}, Email: a.Email, Username: a.Username, Password: a.Password}
 }
 
 func (a *Account) ClearSensitive() *Account {
@@ -354,7 +372,7 @@ func (a *Account) VerifyPassword(password string) (*Account, error) {
 	}
 
 	hash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
-	if !util.SliceEqual(hash, a.Password) {
+	if !util.SliceEqual(hash, a.Hash) {
 		return a, types.ErrorAccountPasswordMatch
 	}
 
@@ -399,7 +417,7 @@ func (a *Account) ValidateUsername() (*Account, error) {
 func (a *Account) ValidatePassword() (*Account, error) {
 	a.InitType(a)
 
-	err := AccountCfg.Password.Validate(string(a.Password))
+	err := AccountCfg.Password.Validate(a.Password)
 	if err, ok := err.(types.ErrorString); ok {
 		return a, err.PrefixedError("Password")
 	}
