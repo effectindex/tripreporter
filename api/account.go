@@ -20,18 +20,18 @@ func SetupAccountEndpoints(v1 *mux.Router) {
 
 // AccountPost path is /api/v1/account
 func AccountPost(w http.ResponseWriter, r *http.Request) {
-	email := r.FormValue("email")
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-
-	account, err := (&models.Account{Context: ctx.Context, Email: email, Username: username, Password: []byte(password)}).Post()
+	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	u, err := account.User()
-	ctx.Logger.Infow("user", "u", u, "err", err)
+	account, err = account.Post()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	ctx.HandleJson(w, r, account, http.StatusCreated)
 }
 
@@ -117,7 +117,7 @@ func AccountValidatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := (&models.Account{Context: ctx.Context, Password: []byte(password)}).ValidatePassword()
+	_, err := (&models.Account{Context: ctx.Context, Password: password}).ValidatePassword()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
