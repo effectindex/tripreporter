@@ -12,6 +12,7 @@ import (
 func SetupAccountEndpoints(v1 *mux.Router) {
 	v1.HandleFunc("/account", AccountPost).Methods(http.MethodPost)
 	v1.HandleFunc("/account/{id}", AccountGet).Methods(http.MethodGet)
+	v1.HandleFunc("/account/{id}", AccountPatch).Methods(http.MethodPatch)
 	v1.HandleFunc("/account/validate/email/{email}", AccountValidateEmail).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/username/{username}", AccountValidateUsername).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/password/{password}", AccountValidatePassword).Methods(http.MethodPost)
@@ -61,6 +62,11 @@ func AccountGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx.HandleJson(w, r, account, http.StatusOK)
+}
+
+// AccountPatch path is /api/v1/account/{id}
+func AccountPatch(w http.ResponseWriter, r *http.Request) {
+	ctx.Handle(w, r, MsgNotImplemented)
 }
 
 // AccountValidateEmail path is /api/v1/account/validate/email/{email}
