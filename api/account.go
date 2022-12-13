@@ -1,22 +1,37 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func SetupAccountEndpoints(v1 *mux.Router) {
 	v1.HandleFunc("/account", AccountPost).Methods(http.MethodPost)
 	v1.HandleFunc("/account/{id}", AccountGet).Methods(http.MethodGet)
+	v1.HandleFunc("/account/validate/email/{email}", AccountValidateEmail).Methods(http.MethodPost)
+	v1.HandleFunc("/account/validate/username/{username}", AccountValidateUsername).Methods(http.MethodPost)
+	v1.HandleFunc("/account/validate/password/{password}", AccountValidatePassword).Methods(http.MethodPost)
 }
 
 // AccountPost path is /api/v1/account
 func AccountPost(w http.ResponseWriter, r *http.Request) {
-	//account, err := (&models.Account{}).Post()
-	ctx.Handle(w, r, MsgNotImplemented)
+	email := r.FormValue("email")
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	account, err := (&models.Account{Context: ctx.Context, Email: email, Username: username, Password: []byte(password)}).Post()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	u, err := account.User()
+	ctx.Logger.Infow("user", "u", u, "err", err)
+	ctx.HandleJson(w, r, account, http.StatusCreated)
 }
 
 // AccountGet path is /api/v1/account/{id}
@@ -25,7 +40,7 @@ func AccountGet(w http.ResponseWriter, r *http.Request) {
 	idStr, ok := vars["id"]
 
 	if !ok {
-		ctx.Handle(w, r, MsgSessionNilId)
+		ctx.HandlePrefixed(w, r, "`id`", MsgNilVariable)
 		return
 	}
 
@@ -46,4 +61,61 @@ func AccountGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx.HandleJson(w, r, account, http.StatusOK)
+}
+
+// AccountValidateEmail path is /api/v1/account/validate/email/{email}
+func AccountValidateEmail(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	email, ok := vars["email"]
+
+	if !ok {
+		ctx.HandlePrefixed(w, r, "`email`", MsgNilVariable)
+		return
+	}
+
+	_, err := (&models.Account{Context: ctx.Context, Email: email}).ValidateEmail()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx.Handle(w, r, MsgOk)
+}
+
+// AccountValidateUsername path is /api/v1/account/validate/username/{username}
+func AccountValidateUsername(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	username, ok := vars["username"]
+
+	if !ok {
+		ctx.HandlePrefixed(w, r, "`username`", MsgNilVariable)
+		return
+	}
+
+	_, err := (&models.Account{Context: ctx.Context, Username: username}).ValidateUsername()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx.Handle(w, r, MsgOk)
+}
+
+// AccountValidatePassword path is /api/v1/account/validate/password/{password}
+func AccountValidatePassword(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	password, ok := vars["password"]
+
+	if !ok {
+		ctx.HandlePrefixed(w, r, "`password`", MsgNilVariable)
+		return
+	}
+
+	_, err := (&models.Account{Context: ctx.Context, Password: []byte(password)}).ValidatePassword()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx.Handle(w, r, MsgOk)
 }
