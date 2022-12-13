@@ -21,12 +21,11 @@ var (
 type Account struct { // todo: this should be oauth / credentials. allow changing email or logging in with google
 	types.Context
 	Unique
-	Email    string `json:"email" db:"email"`                     // Optional. Make clear that password reset isn't possible if not set.
-	Username string `json:"username" db:"username"`               // Required. Generate from wordlist + 3 numbers if left blank.
-	Salt     []byte `json:"password_salt" db:"password_salt"`     // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
-	Password []byte `json:"password_hash" db:"password_hash"`     // Required. Generated from Salt using Argon2ID and is 32 bits long.
-	Created  bool   `json:"finished_signup" db:"finished_signup"` // Optional. Whether email has created a profile (User) yet
-	Verified bool   `json:"email_verified" db:"email_verified"`   // Optional. Whether email has been verified or not.
+	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
+	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
+	Salt     []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
+	Password []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
+	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
 }
 
 type AccountConfig struct {
@@ -131,7 +130,6 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 		a.Username = a1[0].Username
 		a.Salt = a1[0].Salt
 		a.Password = a1[0].Password
-		a.Created = a1[0].Created
 		a.Verified = a1[0].Verified
 	}
 
@@ -148,17 +146,6 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 		return a, err
 	}
 
-	// Ensure required fields are set
-	if len(a.Email) == 0 {
-		return a, types.ErrorAccountEmailEmpty
-	}
-	if len(a.Username) == 0 {
-		return a, types.ErrorAccountUsernameEmpty
-	}
-	if len(a.Password) == 0 { // TODO: Enforce other password requirements
-		return a, types.ErrorAccountPasswordEmpty
-	}
-
 	// Validate email, username and password
 	if a, err := a.ValidateEmail(); err != nil {
 		return a, err
@@ -169,8 +156,6 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	if a, err := a.ValidatePassword(); err != nil {
 		return a, err
 	}
-
-	// TODO: Validate email / username / password
 
 	// Check if email or username are already taken
 	var a1 []*Account
@@ -209,7 +194,6 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 			username,
 			password_salt,
 			password_hash,
-			finished_signup,
 			email_verified
 		)
 		values(
@@ -218,15 +202,13 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 			$3,
 			$4,
 		    $5,
-		    $6,
-		    $7
+		    $6
 		);`,
 		a.ID,
 		a.Email,
 		a.Username,
 		a.Salt,
 		a.Password,
-		a.Created,
 		a.Verified,
 	); err != nil {
 		a.Logger.Warnw("Failed to write account to DB", zap.Error(err))
@@ -272,7 +254,6 @@ func (a *Account) Patch() (*Account, error) {
 		addQuery("password_hash", a.Password)
 	}
 
-	addQuery("finished_signup", a.Created)
 	addQuery("email_verified", a.Verified)
 
 	query = strings.TrimSuffix(query, ",")
@@ -321,18 +302,18 @@ func (a *Account) CopyIdentifiers() *Account {
 
 func (a *Account) ClearSensitive() *Account {
 	a.InitType(a)
-	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Created: a.Created, Verified: a.Verified}
+	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Verified: a.Verified}
 }
 
 func (a *Account) VerifyPassword(password string) (*Account, error) {
 	a.InitType(a)
 
 	if len(a.Salt) == 0 { // should not really be possible in a real scenario
-		return a, types.ErrorAccountPasswordSaltEmpty
+		return a, types.ErrorStringEmpty.PrefixedError("Salt")
 	}
 
 	if len(a.Password) == 0 {
-		return a, types.ErrorAccountPasswordEmpty
+		return a, types.ErrorStringEmpty.PrefixedError("Password")
 	}
 
 	hash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
@@ -347,7 +328,7 @@ func (a *Account) ValidateEmail() (*Account, error) {
 	a.InitType(a)
 
 	if len(a.Email) == 0 {
-		return a, types.ErrorAccountEmailEmpty
+		return a, types.ErrorStringEmpty.PrefixedError("Email")
 	}
 
 	addr, err := mail.ParseAddress(a.Email)
