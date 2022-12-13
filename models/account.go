@@ -279,7 +279,7 @@ func (a *Account) Delete() (*Account, error) {
 	db := a.DB()
 	defer db.Commit(context.Background())
 
-	a1 := a.CopyIdentifiers()
+	a1 := a.ClearSensitive()
 	if _, err := a1.Get(); err != nil {
 		return a, err
 	} else if !util.SliceEqual(a.Password, a1.Password) {
@@ -304,11 +304,6 @@ func (a *Account) User() (*User, error) {
 	}
 
 	return u, nil
-}
-
-func (a *Account) CopyIdentifiers() *Account {
-	a.InitType(a)
-	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username}
 }
 
 func (a *Account) ClearSensitive() *Account {
