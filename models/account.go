@@ -295,6 +295,17 @@ func (a *Account) Delete() (*Account, error) {
 	return nil, nil
 }
 
+func (a *Account) User() (*User, error) {
+	a.Type = "" // We want Get() here to set the new type
+
+	u, err := (&User{Context: a.Context, Unique: a.Unique}).Get()
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
 func (a *Account) CopyIdentifiers() *Account {
 	a.InitType(a)
 	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username}
