@@ -47,7 +47,7 @@ const (
 func (e ErrorString) Error() string {
 	switch e {
 	case ErrorStringEmpty:
-		return "String cannot be empty."
+		return "String is required."
 	case ErrorStringShort:
 		return "String is too short."
 	case ErrorStringLong:
@@ -78,24 +78,13 @@ type ErrorAccount int64
 const (
 	ErrorAccountUnknown ErrorAccount = iota
 	ErrorAccountEmailExists
-	ErrorAccountEmailEmpty
 	ErrorAccountEmailDomainEmpty
 	ErrorAccountEmailTLDEmpty
 	ErrorAccountUsernameExists
-	ErrorAccountUsernameEmpty
-	ErrorAccountUsernameShort
-	ErrorAccountUsernameLong
-	ErrorAccountUsernameInvalid
-	ErrorAccountUsernameUniqueChar
-	ErrorAccountUsernameSymbolChar
-	ErrorAccountUsernameNonSymbolChar
 	ErrorAccountNotSpecified
 	ErrorAccountNotFound
 	ErrorAccountNotDeleted
 	ErrorAccountPasswordMatch
-	ErrorAccountPasswordRequirements
-	ErrorAccountPasswordEmpty
-	ErrorAccountPasswordSaltEmpty
 )
 
 // TODO: i18n here
@@ -103,28 +92,12 @@ func (e ErrorAccount) Error() string {
 	switch e {
 	case ErrorAccountEmailExists:
 		return "An account with that email already exists."
-	case ErrorAccountEmailEmpty:
-		return "Email is required."
 	case ErrorAccountEmailDomainEmpty:
 		return "mail: domain length is 0"
 	case ErrorAccountEmailTLDEmpty:
 		return "mail: domain does not contain a TLD"
 	case ErrorAccountUsernameExists:
 		return "An account with that username already exists."
-	case ErrorAccountUsernameEmpty:
-		return "Username is required."
-	case ErrorAccountUsernameShort:
-		return "Username is too short."
-	case ErrorAccountUsernameLong:
-		return "Username is too long."
-	case ErrorAccountUsernameInvalid:
-		return "Username contains invalid character(s)."
-	case ErrorAccountUsernameUniqueChar:
-		return "Username does not contain enough unique characters."
-	case ErrorAccountUsernameSymbolChar:
-		return "Username does not contain enough symbol characters."
-	case ErrorAccountUsernameNonSymbolChar:
-		return "Username does not contain enough non-symbol characters."
 	case ErrorAccountNotSpecified:
 		return "No account was specified."
 	case ErrorAccountNotFound:
@@ -133,12 +106,6 @@ func (e ErrorAccount) Error() string {
 		return "Failed to delete account."
 	case ErrorAccountPasswordMatch:
 		return "Incorrect password or account."
-	case ErrorAccountPasswordRequirements:
-		return "Password does not match requirements."
-	case ErrorAccountPasswordEmpty:
-		return "Password is required."
-	case ErrorAccountPasswordSaltEmpty:
-		return "Password salt is required."
 	default:
 		return ErrorUnknown.Error()
 	}
