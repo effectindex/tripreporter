@@ -3,6 +3,8 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"io"
+	"net/http"
 	"net/mail"
 	"os"
 	"strconv"
@@ -125,12 +127,7 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 		a.Logger.Errorw("Multiple accounts found for parameters", "accounts", a1)
 		return a, types.ErrorAccountNotSpecified
 	} else {
-		a.ID = a1[0].ID
-		a.Email = a1[0].Email
-		a.Username = a1[0].Username
-		a.Salt = a1[0].Salt
-		a.Password = a1[0].Password
-		a.Verified = a1[0].Verified
+		a.FromData(a1[0])
 	}
 
 	return a, nil
@@ -304,6 +301,40 @@ func (a *Account) User() (*User, error) {
 	}
 
 	return u, nil
+}
+
+func (a *Account) FromBody(r *http.Request) (*Account, error) {
+	a.InitType(a)
+
+	if r.Body == nil {
+		defer r.Body.Close()
+	} else {
+		return a, types.ErrorStringEmpty.PrefixedError("Request body")
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return a, err
+	}
+
+	var a1 *Account
+	err = json.Unmarshal(body, &a1)
+	if err != nil {
+		return a, err
+	}
+
+	a.FromData(a1)
+	return a, nil
+}
+
+func (a *Account) FromData(a1 *Account) {
+	a.InitType(a)
+	a.ID = a1.ID
+	a.Email = a1.Email
+	a.Username = a1.Username
+	a.Salt = a1.Salt
+	a.Password = a1.Password
+	a.Verified = a1.Verified
 }
 
 func (a *Account) ClearSensitive() *Account {
