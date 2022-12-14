@@ -26,13 +26,14 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	account = account.ClearImmutable() // We don't want to let users set the ID and so on when creating an account
 	account, err = account.Post()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	ctx.HandleJson(w, r, account, http.StatusCreated)
+	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusCreated)
 }
 
 // AccountGet path is /api/v1/account/{id}
@@ -61,7 +62,7 @@ func AccountGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.HandleJson(w, r, account, http.StatusOK)
+	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
 }
 
 // AccountPatch path is /api/v1/account/{id}
