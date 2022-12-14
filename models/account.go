@@ -104,13 +104,13 @@ func (a *Account) Get() (*Account, error) { // TODO: Implement a.verified / othe
 	var queryArg string
 
 	if !a.NilUUID() {
-		query = `where id = $1;`
+		query = `where id=$1;`
 		queryArg = a.ID.String()
 	} else if a.Email != "" {
-		query = `where email = $1;`
+		query = `where email=$1;`
 		queryArg = a.Email
 	} else if a.Username != "" {
-		query = `where username = $1;`
+		query = `where username=$1;`
 		queryArg = a.Username
 	} else {
 		return a, types.ErrorAccountNotSpecified
@@ -268,7 +268,7 @@ func (a *Account) Patch() (*Account, error) {
 
 	query = strings.TrimSuffix(query, ",")
 	qNum++
-	query += " where id=$;" + strconv.Itoa(qNum)
+	query += " where id=$" + strconv.Itoa(qNum)
 	fields = append(fields, a.ID)
 
 	_, err := db.Exec(context.Background(), query, fields...)
@@ -352,7 +352,7 @@ func (a *Account) FromData(a1 *Account) {
 
 func (a *Account) ClearImmutable() *Account {
 	a.InitType(a)
-	return &Account{Context: a.Context, Unique: Unique{Type: a.Type}, Email: a.Email, Username: a.Username, Password: a.Password}
+	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Password: a.Password}
 }
 
 func (a *Account) ClearSensitive() *Account {
