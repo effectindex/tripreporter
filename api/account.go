@@ -11,8 +11,8 @@ import (
 
 func SetupAccountEndpoints(v1 *mux.Router) {
 	v1.HandleFunc("/account", AccountPost).Methods(http.MethodPost)
-	v1.HandleFunc("/account/{id}", AccountGet).Methods(http.MethodGet)
-	v1.HandleFunc("/account/{id}", AccountPatch).Methods(http.MethodPatch)
+	v1.HandleFunc("/account", AccountGet).Methods(http.MethodGet)
+	v1.HandleFunc("/account", AccountPatch).Methods(http.MethodPatch)
 	v1.HandleFunc("/account/validate/email/{email}", AccountValidateEmail).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/username/{username}", AccountValidateUsername).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/password/{password}", AccountValidatePassword).Methods(http.MethodPost)
@@ -26,7 +26,8 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account = account.ClearImmutable() // We don't want to let users set the ID and so on when creating an account
+	account = account.ClearImmutable()
+	account.ID = uuid.Nil // We don't want to let users set the ID and so on when creating an account
 	account, err = account.Post()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
@@ -36,23 +37,15 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusCreated)
 }
 
-// AccountGet path is /api/v1/account/{id}
+// AccountGet path is /api/v1/account
 func AccountGet(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr, ok := vars["id"]
-
-	if !ok {
-		ctx.HandlePrefixed(w, r, "`id`", MsgNilVariable)
-		return
-	}
-
-	id, err := uuid.Parse(idStr)
+	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	account, err := (&models.Account{Context: ctx.Context, Unique: models.Unique{ID: id}}).Get()
+	account, err = account.Get()
 	if err != nil {
 		if err == types.ErrorAccountNotSpecified || err == types.ErrorAccountNotFound {
 			ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
@@ -65,9 +58,22 @@ func AccountGet(w http.ResponseWriter, r *http.Request) {
 	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
 }
 
-// AccountPatch path is /api/v1/account/{id}
+// AccountPatch path is /api/v1/account
 func AccountPatch(w http.ResponseWriter, r *http.Request) {
-	ctx.Handle(w, r, MsgNotImplemented)
+	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	account = account.ClearImmutable()
+	account, err = account.Patch()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
 }
 
 // AccountValidateEmail path is /api/v1/account/validate/email/{email}
