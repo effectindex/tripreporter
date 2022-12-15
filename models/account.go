@@ -289,11 +289,14 @@ func (a *Account) Delete() (*Account, error) {
 	db := a.DB()
 	defer db.Commit(context.Background())
 
-	a1 := a.ClearSensitive()
-	if _, err := a1.Get(); err != nil {
+	password := a.Password
+
+	if _, err := a.Get(); err != nil {
 		return a, err
-	} else if !util.SliceEqual(a.Hash, a1.Hash) {
-		return a, types.ErrorAccountPasswordMatch
+	}
+
+	if _, err := a.VerifyPassword(password); err != nil {
+		return a, err
 	}
 
 	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1 and password_hash=$2;`, a.ID, a.Hash); err != nil {
@@ -302,7 +305,8 @@ func (a *Account) Delete() (*Account, error) {
 		return a, err
 	}
 
-	return nil, nil
+	// TODO: Part of refactoring to pointer-based model
+	return a.ClearAll(), nil
 }
 
 func (a *Account) User() (*User, error) {
@@ -350,6 +354,11 @@ func (a *Account) FromData(a1 *Account) {
 	a.Verified = a1.Verified
 }
 
+func (a *Account) ClearAll() *Account {
+	a.InitType(a)
+	return &Account{Context: a.Context, Unique: a.Unique}
+}
+
 func (a *Account) ClearImmutable() *Account {
 	a.InitType(a)
 	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Password: a.Password}
@@ -367,7 +376,7 @@ func (a *Account) VerifyPassword(password string) (*Account, error) {
 		return a, types.ErrorStringEmpty.PrefixedError("Salt")
 	}
 
-	if len(a.Password) == 0 {
+	if len(password) == 0 {
 		return a, types.ErrorStringEmpty.PrefixedError("Password")
 	}
 
