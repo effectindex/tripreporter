@@ -29,9 +29,6 @@ func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 func Handler() http.Handler {
 	router := mux.NewRouter()
 
-	// let api.Router do everything else
-	router.HandleFunc("/", Router)
-
 	// serve /static/ by cache in production (no hot-reload support)
 	if !dev { // if running in development mode, let api.Router reverse proxy it
 		staticFS, _ := fs.Sub(ui.StaticFiles, "dist")
@@ -56,6 +53,9 @@ func Handler() http.Handler {
 	SetupAccountEndpoints(v1)
 	SetupSessionEndpoints(v1)
 	SetupUserEndpoints(v1)
+
+	// let api.Router do everything else
+	router.PathPrefix("/").HandlerFunc(Router)
 
 	return router
 }
