@@ -13,6 +13,7 @@ func SetupAccountEndpoints(v1 *mux.Router) {
 	v1.HandleFunc("/account", AccountPost).Methods(http.MethodPost)
 	v1.HandleFunc("/account", AccountGet).Methods(http.MethodGet)
 	v1.HandleFunc("/account", AccountPatch).Methods(http.MethodPatch)
+	v1.HandleFunc("/account", AccountDelete).Methods(http.MethodDelete)
 	v1.HandleFunc("/account/validate/email/{email}", AccountValidateEmail).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/username/{username}", AccountValidateUsername).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/password/{password}", AccountValidatePassword).Methods(http.MethodPost)
@@ -68,6 +69,23 @@ func AccountPatch(w http.ResponseWriter, r *http.Request) {
 
 	account = account.ClearImmutable()
 	account, err = account.Patch()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
+}
+
+// AccountDelete path is /api/v1/account
+func AccountDelete(w http.ResponseWriter, r *http.Request) {
+	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	account, err = account.Delete()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
