@@ -299,7 +299,7 @@ func (a *Account) Delete() (*Account, error) {
 		return a, err
 	}
 
-	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1 and password_hash=$2;`, a.ID, a.Hash); err != nil {
+	if _, err := db.Exec(context.Background(), `delete from accounts where id=$1;`, a.ID); err != nil {
 		a.Logger.Warnw("Failed to delete account from DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
 		return a, err
