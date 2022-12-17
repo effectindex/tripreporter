@@ -13,6 +13,7 @@ import (
 	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 )
 
@@ -156,21 +157,11 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	}
 
 	// Check if email or username are already taken
-	var a1 []*Account
-	_ = pgxscan.Select(context.Background(), db, &a1,
-		`select * from accounts where email=$1`, a.Email,
-	)
-
-	var a2 []*Account
-	_ = pgxscan.Select(context.Background(), db, &a2,
-		`select * from accounts where username=$1`, a.Username,
-	)
-
-	if len(a1) > 0 {
-		return a, types.ErrorAccountEmailExists
+	if a, err := a.ExistsWithEmail(db); err != nil {
+		return a, err
 	}
-	if len(a2) > 0 {
-		return a, types.ErrorAccountUsernameExists
+	if a, err := a.ExistsWithUsername(db); err != nil {
+		return a, err
 	}
 
 	// Now we can generate the salt to use for the password
@@ -236,14 +227,29 @@ func (a *Account) Patch() (*Account, error) {
 	}
 
 	if a.Email != "" {
+		if a, err := a.ValidateEmail(); err != nil {
+			return a, err
+		}
+		if a, err := a.ExistsWithEmail(db); err != nil {
+			return a, err
+		}
 		addQuery("email", a.Email)
 	}
 
 	if a.Username != "" {
+		if a, err := a.ValidateUsername(); err != nil {
+			return a, err
+		}
+		if a, err := a.ExistsWithUsername(db); err != nil {
+			return a, err
+		}
 		addQuery("username", a.Username)
 	}
 
 	if len(a.Password) > 0 {
+		if a, err := a.ValidatePassword(); err != nil {
+			return a, err
+		}
 		if len(a.Salt) == 0 {
 			salt, err := util.GenerateSalt(12, 16, Wordlist.Random(1))
 			if err != nil {
@@ -435,4 +441,30 @@ func (a *Account) ValidatePassword() (*Account, error) {
 		return a, err.PrefixedError("Password")
 	}
 	return a, err
+}
+
+func (a *Account) ExistsWithEmail(db pgx.Tx) (*Account, error) {
+	var a1 []*Account
+	_ = pgxscan.Select(context.Background(), db, &a1,
+		`select * from accounts where email=$1`, a.Email,
+	)
+
+	if len(a1) > 0 {
+		return a, types.ErrorAccountEmailExists
+	}
+
+	return a, nil
+}
+
+func (a *Account) ExistsWithUsername(db pgx.Tx) (*Account, error) {
+	var a1 []*Account
+	_ = pgxscan.Select(context.Background(), db, &a1,
+		`select * from accounts where username=$1`, a.Username,
+	)
+
+	if len(a1) > 0 {
+		return a, types.ErrorAccountUsernameExists
+	}
+
+	return a, nil
 }
