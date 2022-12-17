@@ -29,7 +29,7 @@ func CreateZapWriterLogger(w io.Writer, c zapcore.EncoderConfig, e func(c zapcor
 		enc.AppendString(t.Format(time.RFC3339))
 	}
 
-	encoder := e(c)
+	encoder := e(config)
 	writer := zapcore.AddSync(w)
 	core := zapcore.NewCore(encoder, writer, zap.DebugLevel)
 	logger := zap.New(core)
