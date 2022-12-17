@@ -333,6 +333,10 @@ func (a *Account) FromBody(r *http.Request) (*Account, error) {
 		return a, err
 	}
 
+	if len(body) == 0 {
+		return a, types.ErrorStringEmpty.PrefixedError("Request body")
+	}
+
 	var a1 *Account
 	err = json.Unmarshal(body, &a1)
 	if err != nil {
