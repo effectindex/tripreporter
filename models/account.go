@@ -450,7 +450,7 @@ func (a *Account) ExistsWithEmail(db pgx.Tx) (*Account, error) {
 	)
 
 	if len(a1) > 0 {
-		return a, types.ErrorAccountEmailExists
+		return a1[0], types.ErrorAccountEmailExists
 	}
 
 	return a, nil
@@ -463,7 +463,7 @@ func (a *Account) ExistsWithUsername(db pgx.Tx) (*Account, error) {
 	)
 
 	if len(a1) > 0 {
-		return a, types.ErrorAccountUsernameExists
+		return a1[0], types.ErrorAccountUsernameExists
 	}
 
 	return a, nil
