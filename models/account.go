@@ -230,7 +230,7 @@ func (a *Account) Patch() (*Account, error) {
 		if a, err := a.ValidateEmail(); err != nil {
 			return a, err
 		}
-		if a, err := a.ExistsWithEmail(db); err != nil {
+		if a1, err := a.ExistsWithEmail(db); err != nil && a.ID != a1.ID {
 			return a, err
 		}
 		addQuery("email", a.Email)
@@ -240,7 +240,7 @@ func (a *Account) Patch() (*Account, error) {
 		if a, err := a.ValidateUsername(); err != nil {
 			return a, err
 		}
-		if a, err := a.ExistsWithUsername(db); err != nil {
+		if a1, err := a.ExistsWithUsername(db); err != nil && a.ID != a1.ID {
 			return a, err
 		}
 		addQuery("username", a.Username)
