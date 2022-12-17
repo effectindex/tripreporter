@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/effectindex/tripreporter/types"
+	"github.com/effectindex/tripreporter/util"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -87,30 +87,16 @@ func (c *Context) HandleFunc(m Message) http.HandlerFunc {
 	}
 }
 
-// CreateLogger will create a new Zap logger from an http.ResponseWriter, to log to an http request directly
+// CreateLogger will create a new Zap logger from an http.ResponseWriter, to log to an http request directly.
+// You must defer logger.Sync() yourself.
 func CreateLogger(w http.ResponseWriter) *zap.SugaredLogger {
-	config := zap.NewProductionEncoderConfig()
-	config.TimeKey = "time"
-	config.EncodeTime = func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-		// Display time in UTC
-		t = t.In(time.UTC)
+	logger := util.CreateZapWriterLogger(
+		w, zap.NewProductionEncoderConfig(),
+		func(c zapcore.EncoderConfig) zapcore.Encoder {
+			return zapcore.NewJSONEncoder(c)
+		},
+	)
 
-		type appendTimeEncoder interface {
-			AppendTimeLayout(time.Time, string)
-		}
-
-		if enc, ok := enc.(appendTimeEncoder); ok {
-			enc.AppendTimeLayout(t, time.RFC3339)
-			return
-		}
-
-		enc.AppendString(t.Format(time.RFC3339))
-	}
-
-	encoder := zapcore.NewJSONEncoder(config)
-	writer := zapcore.AddSync(w)
-	core := zapcore.NewCore(encoder, writer, zap.DebugLevel)
-	logger := zap.New(core)
 	return logger.Sugar()
 }
 
