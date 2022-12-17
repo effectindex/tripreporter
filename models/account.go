@@ -157,10 +157,10 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	}
 
 	// Check if email or username are already taken
-	if a, err := a.ExistsWithEmail(db); err != nil {
+	if _, err := a.ExistsWithEmail(db); err != nil {
 		return a, err
 	}
-	if a, err := a.ExistsWithUsername(db); err != nil {
+	if _, err := a.ExistsWithUsername(db); err != nil {
 		return a, err
 	}
 
