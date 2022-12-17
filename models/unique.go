@@ -16,7 +16,7 @@ type Unique struct {
 func (u *Unique) InitUUID(logger *zap.SugaredLogger) error {
 	if u.NilUUID() {
 		var err error
-		u.ID, err = uuid.NewUUID()
+		u.ID, err = uuid.NewRandom()
 		if err != nil {
 			logger.Warnw("Failed to make UUID", zap.Error(err))
 			return err
