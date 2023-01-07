@@ -3,6 +3,7 @@
     <nav class="LayoutDefault__nav">
       <router-link class="LayoutDefault__item" to="/">Home</router-link>
       <router-link class="LayoutDefault__item" to="/about">About</router-link>
+      <router-link class="LayoutDefault__item" to="/signup">Signup</router-link>
       <router-link class="LayoutDefault__item" to="/login">Login</router-link>
     </nav>
     <main class="LayoutDefault__main">
@@ -39,6 +40,17 @@ export default {
   name: "LayoutDefault"
 }
 </script>
+
+<!-- Formkit styles -->
+<style>
+.formkit-label, .formkit-help {
+  text-align: left;
+}
+
+.formkit-input#password::placeholder {
+  -webkit-text-security: disc !important;
+}
+</style>
 
 <style scoped>
 *, ::after, ::before {
