@@ -3,6 +3,7 @@
     <h1>Create your TripReporter Account</h1>
 
     <div class="SignupView__form">
+      <FormKit type="form">
       <!-- TODO: Make optional.
       -->
       <FormKit
@@ -49,6 +50,7 @@
           validation="required"
           placeholder="“Mark Gillis”"
       />
+      </FormKit>
     </div>
   </div>
 </template>

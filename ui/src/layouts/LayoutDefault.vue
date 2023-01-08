@@ -50,6 +50,11 @@ export default {
 .formkit-input#password::placeholder {
   -webkit-text-security: disc !important;
 }
+
+[data-type="submit"] .formkit-input {
+  /* left align */
+  display: block;
+}
 </style>
 
 <style scoped>
