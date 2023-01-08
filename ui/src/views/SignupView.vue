@@ -4,6 +4,18 @@
 
     <div class="SignupView__form">
       <FormKit type="form" @submit="submitForm" submit-label="Signup">
+        <!-- TODO: Make optional.
+        -->
+        <FormKit
+            type="email"
+            name="email"
+            id="email"
+            label="Email address"
+            help="Used for password recovery. (Optional)"
+            validation="required|email"
+            placeholder="example@effectindex.com"
+        />
+
         <!-- TODO: How do we handle errors here?
              TODO: The validation obviously isn't perfect, as it's quite annoying to replicate the ruleset with regex.
              TODO: We can use API calls as validation with FormKit, so we should use our backend in the future instead.
@@ -27,28 +39,6 @@
             help="Used to login. Must contain at least 2 symbols and 3 letters / numbers."
             validation="required|length:3,32|matches:/^[a-z0-9_-]+$/"
             placeholder="trmark76&!"
-        />
-
-        <!-- TODO: Make optional.
-        -->
-        <FormKit
-            type="email"
-            name="email"
-            id="email"
-            label="Email address"
-            help="Used for password recovery. (Optional)"
-            validation="required|email"
-            placeholder="example@effectindex.com"
-        />
-
-        <FormKit
-            type="text"
-            name="name"
-            id="name"
-            label="Display name"
-            help="Shown to other users when viewing your profile. (Optional)"
-            validation="required"
-            placeholder="“Mark Gillis”"
         />
       </FormKit>
     </div>
