@@ -1,9 +1,12 @@
 import { createApp } from 'vue'
+import { defaultConfig, plugin } from '@formkit/vue'
 import App from './App.vue'
 import router from './router'
-import { defaultConfig, plugin } from '@formkit/vue'
+import apiClient from '@/api'
 
-createApp(App)
+const app = createApp(App)
     .use(router)
     .use(plugin, defaultConfig({theme: 'genesis'}))
-    .mount('#app')
+    .provide('axios', apiClient)
+
+app.mount('#app')
