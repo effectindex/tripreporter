@@ -62,9 +62,20 @@ export default {
 </script>
 
 <script setup>
+import { inject } from 'vue'
+const axios = inject('axios')
+
 const submitForm = async (fields) => {
-  await new Promise((r) => setTimeout(r, 1000))
+  await new Promise((r) => setTimeout(r, 100))
   alert(JSON.stringify(fields))
+
+  axios.get('/account').then(function (response) {
+    console.log(response.data);
+    console.log(response.status);
+    console.log(response.statusText);
+    console.log(response.headers);
+    console.log(response.config);
+  })
 }
 </script>
 
