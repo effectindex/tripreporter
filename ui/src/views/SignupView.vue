@@ -92,7 +92,6 @@ function setMessage(message, status) {
     elem.style.background = '#a83232'
   }
 }
-
 </script>
 
 <style>
