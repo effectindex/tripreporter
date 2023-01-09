@@ -87,7 +87,3 @@ func Router(w http.ResponseWriter, r *http.Request) {
 		w.Write(rawFile)
 	}
 }
-
-func greetingAPI(w http.ResponseWriter, r *http.Request) { // TODO: Remove / use individual files for routes
-	w.Write([]byte("Hello, there!"))
-}
