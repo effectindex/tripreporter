@@ -41,7 +41,7 @@
             label="Password"
             help="Used to login. Must contain at least 2 symbols and 3 letters / numbers."
             validation="required|length:8,32"
-            placeholder="trmark76&!"
+            placeholder="----------"
         />
       </FormKit>
     </div>
