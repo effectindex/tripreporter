@@ -5,7 +5,7 @@
     <div class="DefaultView__message" id="DefaultView__message">
       <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
     </div>
-    <div class="SignupView__form">
+    <div class="DefaultView__form">
       <FormKit type="form" @submit="submitForm" submit-label="Signup">
         <!-- TODO: Make optional.
         -->
@@ -87,22 +87,9 @@ const submitForm = async (fields) => {
 </script>
 
 <style>
-[data-type="submit"] .formkit-input {
-  background: #3d9991;
-}
-
-[data-type="submit"] .formkit-input:hover {
-  background: #3d9991;
-  filter: brightness(75%);
-}
+@import url(@/assets/css/forms.css);
 </style>
 
 <style scoped>
 @import url(@/assets/css/message_util.css);
-
-.SignupView__form {
-  max-width: 25em;
-  margin: auto;
-  text-align: left;
-}
 </style>

@@ -41,15 +41,8 @@ export default {
 }
 </script>
 
-<!-- Formkit styles -->
 <style>
-.formkit-label, .formkit-help {
-  text-align: left;
-}
-
-.formkit-input#password::placeholder {
-  -webkit-text-security: disc !important;
-}
+@import url(@/assets/css/default.css);
 </style>
 
 <style scoped>

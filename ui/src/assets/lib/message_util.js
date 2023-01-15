@@ -6,7 +6,7 @@ export function setMessage(message, messageSuccess, status, location) {
     elem.style.display = 'block';
 
     if (status === true) {
-        elem.style.background = '#3d9991'
+        elem.style.background = 'var(--tr-default-primary)'
         elemText.innerHTML = messageSuccess;
 
         if (location) {
@@ -15,7 +15,7 @@ export function setMessage(message, messageSuccess, status, location) {
             }, 3000);
         }
     } else {
-        elem.style.background = '#a83232'
+        elem.style.background = 'var(--tr-default-message-error)'
     }
 }
 
