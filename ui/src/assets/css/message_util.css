@@ -1,0 +1,18 @@
+.DefaultView__message {
+    max-width: 25em;
+    margin: auto;
+    color: #ffffff;
+    background: #a83232;
+    border-radius: 2em;
+    display: none;
+}
+
+.DefaultView__message_text {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    height: 4em;
+    line-height: 1.3em;
+    margin-bottom: 15px;
+}
