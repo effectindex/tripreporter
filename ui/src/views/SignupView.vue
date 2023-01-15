@@ -49,8 +49,13 @@
 </template>
 
 <script>
+import LayoutDefault from "@/layouts/LayoutDefault.vue";
+
 export default {
-  name: "SignupView"
+  name: "SignupView",
+  created() {
+    this.$emit('update:layout', LayoutDefault);
+  }
 }
 </script>
 

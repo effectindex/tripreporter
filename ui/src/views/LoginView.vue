@@ -30,8 +30,13 @@
 </template>
 
 <script>
+import LayoutDefault from "@/layouts/LayoutDefault.vue";
+
 export default {
-  name: "LoginView"
+  name: "LoginView",
+  created() {
+    this.$emit('update:layout', LayoutDefault);
+  }
 }
 </script>
 

@@ -1,8 +1,9 @@
 <template>
-  <layout-default>
-    <router-view/>
-  </layout-default>
+  <component :is="layout">
+    <router-view v-model:layout="layout"/>
+  </component>
 </template>
+
 
 <style>
 html,
@@ -18,6 +19,13 @@ body {
 }
 </style>
 
-<script setup>
-import LayoutDefault from "@/layouts/LayoutDefault.vue";
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      layout: 'div',
+    };
+  },
+};
 </script>

@@ -8,9 +8,12 @@
 </template>
 
 <script>
+import LayoutDefault from "@/layouts/LayoutDefault.vue";
+
 export default {
   name: 'HomeView',
-  components: {
+  created() {
+    this.$emit('update:layout', LayoutDefault);
   }
 }
 </script>
