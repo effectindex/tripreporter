@@ -1,6 +1,11 @@
 tripreporter: deps-server build-server deps-ui build-ui
 
+##########################################################
 # deps
+
+deps-ui:
+	cd ui/; \
+	npm i
 
 deps-server:
 	go get -u "github.com/georgysavva/scany/v2"
@@ -14,30 +19,24 @@ deps-server:
 	go get -u "golang.org/x/crypto"
 	go mod tidy
 
-deps-ui:
-	cd ui/; \
-	npm i
-
+##########################################################
 # build
-
-build-server:
-	go build -o tripreporter .
-	chmod +x tripreporter
 
 build-ui: deps-ui
 	cd ui/; \
 	npm run build
 
-# run production
+build-server:
+	go build -o tripreporter .
+	chmod +x tripreporter
 
-run:
-	./tripreporter
+##########################################################
+# Run development frontend + backend.
+# For normal development, you will want to run both at
+# at the same time. dev-server provides the API and
+# dev-ui provides the frontend, both on localhost:3000.
 
-all: tripreporter run
-
-# run development (needs both dev and dev-ui separately)
-
-dev-ui: deps-ui
+dev-ui:
 	cd ui/; \
 	npm run serve
 
