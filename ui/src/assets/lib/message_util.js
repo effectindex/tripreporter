@@ -1,4 +1,4 @@
-export function setMessage(message, messageSuccess, status) {
+export function setMessage(message, messageSuccess, status, location) {
     const elemText = document.getElementById("DefaultView__message_text");
     elemText.textContent = message;
 
@@ -8,9 +8,12 @@ export function setMessage(message, messageSuccess, status) {
     if (status === true) {
         elem.style.background = '#3d9991'
         elemText.innerHTML = messageSuccess;
-        window.setTimeout(function () {
-            window.location.href = "/login"; // faster than window.location.replace()
-        }, 3000);
+
+        if (location) {
+            window.setTimeout(function () {
+                window.location.href = location; // faster than window.location.replace()
+            }, 3000);
+        }
     } else {
         elem.style.background = '#a83232'
     }

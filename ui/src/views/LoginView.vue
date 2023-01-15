@@ -14,6 +14,7 @@
             label="Username"
             validation="required"
             placeholder="mark76"
+            :value="queryUsername()"
         />
 
         <FormKit
@@ -36,6 +37,11 @@ export default {
   name: "LoginView",
   created() {
     this.$emit('update:layout', LayoutDefault);
+  },
+  methods: {
+    queryUsername() {
+      return this.$route.query.username ? this.$route.query.username : "";
+    }
   }
 }
 </script>

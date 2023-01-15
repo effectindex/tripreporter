@@ -67,10 +67,12 @@ const axios = inject('axios')
 const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
 
 const submitForm = async (fields) => {
+  const location = "/login?username="+fields.username;
+
   axios.post('/account', fields).then(function (response) {
-    setMessage(response.data.msg, messageSuccess, response.status === 201);
+    setMessage(response.data.msg, messageSuccess, response.status === 201, location);
   }).catch(function (error) {
-    setMessage(error.response.data.msg, messageSuccess,error.response.status === 201);
+    setMessage(error.response.data.msg, messageSuccess,error.response.status === 201, location);
     handleMessageError(error)
   })
 }
