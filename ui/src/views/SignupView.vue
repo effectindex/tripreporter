@@ -65,14 +65,22 @@ import {handleMessageError, setMessage} from '@/assets/lib/message_util';
 
 const axios = inject('axios')
 const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
+let success = false;
 
 const submitForm = async (fields) => {
+  // don't do anything if the user presses the button again, for example, while waiting for a redirect
+  if (success) {
+    return
+  }
+
   const location = "/login?username="+fields.username;
 
   axios.post('/account', fields).then(function (response) {
-    setMessage(response.data.msg, messageSuccess, response.status === 201, location);
+    success = response.status === 201;
+    setMessage(response.data.msg, messageSuccess, success, location);
   }).catch(function (error) {
-    setMessage(error.response.data.msg, messageSuccess,error.response.status === 201, location);
+    success = error.response.status === 201;
+    setMessage(error.response.data.msg, messageSuccess, success, location);
     handleMessageError(error)
   })
 }

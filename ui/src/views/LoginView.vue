@@ -52,14 +52,22 @@ import {handleMessageError, setMessage} from '@/assets/lib/message_util';
 
 const axios = inject('axios')
 const messageSuccess = "Successfully logged in!";
+let success = false;
 
 const submitForm = async (fields) => {
+  // don't do anything if the user presses the button again, for example, while waiting for a redirect
+  if (success) {
+    return
+  }
+
   // TODO: This is only DELETE for testing purposes (it's the only endpoint that verifies password hash).
   // TODO: Change ASAP.
   axios.delete('/account', {data: fields}).then(function (response) {
-    setMessage(response.data.msg, messageSuccess, response.status === 200);
+    success = response.status === 200;
+    setMessage(response.data.msg, messageSuccess, success);
   }).catch(function (error) {
-    setMessage(error.response.data.msg, messageSuccess, error.response.status === 200);
+    success = error.response.status === 200;
+    setMessage(error.response.data.msg, messageSuccess, success);
     handleMessageError(error)
   })
 }
