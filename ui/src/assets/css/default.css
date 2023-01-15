@@ -1,5 +1,9 @@
 :root {
     --tr-default-primary: #3d9991;
-    --tr-default-message-text: #ffffff;
+    --tr-default-primary-text: #ffffff;
+    --tr-default-primary-shadow: 0 0 2px #96dbfc;
+    --tr-default-primary-background: #1f1f1f;
+    --tr-default-alt-text: #ccc;
+    --tr-default-alt-darker-text: #666;
     --tr-default-message-error: #a83232;
 }

@@ -1,7 +1,7 @@
 .DefaultView__message {
     max-width: 25em;
     margin: auto;
-    color: var(--tr-default-message-text);
+    color: var(--tr-default-primary-text);
     background: var(--tr-default-message-error);
     border-radius: 0.5em;
     display: none;

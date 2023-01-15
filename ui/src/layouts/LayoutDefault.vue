@@ -60,7 +60,7 @@ export default {
 
 .LayoutDefault__nav {
   font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #1f1f1f;
+  background-color: var(--tr-default-primary-background);
   height: 87px;
   padding: 20px;
   display: flex;
@@ -69,7 +69,7 @@ export default {
 }
 
 .LayoutDefault__nav a {
-  color: #ccc;
+  color: var(--tr-default-alt-text);
   text-decoration: none;
   text-transform: uppercase;
   font-weight: 300;
@@ -82,12 +82,12 @@ export default {
 }
 
 .LayoutDefault__nav a.router-link-exact-active {
-  color: #3d9991;
+  color: var(--tr-default-primary);
 }
 
 .LayoutDefault__nav > a:hover {
-  color: #fff;
-  text-shadow: 0 0 2px #96dbfc;
+  color: var(--tr-default-primary-text);
+  text-shadow: var(--tr-default-primary-shadow);
 }
 
 /* fix positioning and alignment of nav items */
@@ -101,8 +101,8 @@ export default {
 
 /* pin footer to bottom */
 .LayoutDefault__footer {
-  color: #666;
-  background-color: #1f1f1f;
+  color: var(--tr-default-alt-darker-text);
+  background-color: var(--tr-default-primary-background);
   position: fixed;
   bottom: 0;
   width: 100%;
