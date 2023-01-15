@@ -2,8 +2,8 @@
   <div class="signup">
     <h1>Create your TripReporter Account</h1>
 
-    <div class="SignupView__message" id="SignupView__message">
-      <div class="SignupView__message_text" id="SignupView__message_text"></div>
+    <div class="DefaultView__message" id="DefaultView__message">
+      <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
     </div>
     <div class="SignupView__form">
       <FormKit type="form" @submit="submitForm" submit-label="Signup">
@@ -56,16 +56,18 @@ export default {
 
 <script setup>
 import {inject} from 'vue'
+import {setMessage} from '@/assets/lib/message_util';
 
 const axios = inject('axios')
+const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
 
 const submitForm = async (fields) => {
   axios.post('/account', fields).then(function (response) {
     console.log(response)
     console.log(response.data)
-    setMessage(response.data.msg, response.status);
+    setMessage(response.data.msg, messageSuccess, response.status === 201);
   }).catch(function (error) {
-    setMessage(error.response.data.msg, error.response.status);
+    setMessage(error.response.data.msg, messageSuccess,error.response.status === 201);
 
     if (!error.response && error.request) {
       console.log(error.request);
@@ -74,51 +76,21 @@ const submitForm = async (fields) => {
     }
   })
 }
-
-function setMessage(message, status) {
-  const elemText = document.getElementById("SignupView__message_text");
-  elemText.textContent = message;
-
-  const elem = document.getElementById("SignupView__message")
-  elem.style.display = 'block';
-
-  if (status === 201) {
-    elem.style.background = '#3d9991'
-    elemText.innerHTML = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
-    window.setTimeout(function () {
-      window.location.href = "/login";
-    }, 3000);
-  } else {
-    elem.style.background = '#a83232'
-  }
-}
 </script>
 
 <style>
 [data-type="submit"] .formkit-input {
   background: #3d9991;
 }
+
+[data-type="submit"] .formkit-input:hover {
+  background: #3d9991;
+  filter: brightness(75%);
+}
 </style>
 
 <style scoped>
-.SignupView__message {
-  max-width: 25em;
-  margin: auto;
-  color: #ffffff;
-  background: #a83232;
-  border-radius: 2em;
-  display: none;
-}
-
-.SignupView__message_text {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
-  height: 4em;
-  line-height: 1.3em;
-  margin-bottom: 15px;
-}
+@import url(@/assets/css/message_util.css);
 
 .SignupView__form {
   max-width: 25em;
