@@ -12,7 +12,7 @@
     justify-content: center;
     align-content: center;
     flex-direction: column;
-    height: 4em;
+    padding: 0.6em;
     line-height: 1.3em;
     margin-bottom: 15px;
 }
