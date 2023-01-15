@@ -15,3 +15,13 @@ export function setMessage(message, messageSuccess, status) {
         elem.style.background = '#a83232'
     }
 }
+
+export function handleMessageError(error) {
+    if (error.response) {
+        console.log(error.response)
+    } else if (error.request) {
+        console.log(error.request);
+    } else {
+        console.log(`Error: ${error.message} - ${error}`);
+    }
+}

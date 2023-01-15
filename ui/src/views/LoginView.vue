@@ -37,7 +37,7 @@ export default {
 
 <script setup>
 import {inject} from 'vue'
-import {setMessage} from '@/assets/lib/message_util';
+import {handleMessageError, setMessage} from '@/assets/lib/message_util';
 
 const axios = inject('axios')
 const messageSuccess = "Successfully logged in!";
@@ -46,18 +46,10 @@ const submitForm = async (fields) => {
   // TODO: This is only DELETE for testing purposes (it's the only endpoint that verifies password hash).
   // TODO: Change ASAP.
   axios.delete('/account', {data: fields}).then(function (response) {
-    console.log(fields)
-    console.log(response)
-    console.log(response.data)
     setMessage(response.data.msg, messageSuccess, response.status === 200);
   }).catch(function (error) {
     setMessage(error.response.data.msg, messageSuccess, error.response.status === 200);
-
-    if (!error.response && error.request) {
-      console.log(error.request);
-    } else {
-      console.log(`Error: ${error.message} - ${error}`);
-    }
+    handleMessageError(error)
   })
 }
 </script>

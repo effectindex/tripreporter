@@ -56,24 +56,17 @@ export default {
 
 <script setup>
 import {inject} from 'vue'
-import {setMessage} from '@/assets/lib/message_util';
+import {handleMessageError, setMessage} from '@/assets/lib/message_util';
 
 const axios = inject('axios')
 const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
 
 const submitForm = async (fields) => {
   axios.post('/account', fields).then(function (response) {
-    console.log(response)
-    console.log(response.data)
     setMessage(response.data.msg, messageSuccess, response.status === 201);
   }).catch(function (error) {
     setMessage(error.response.data.msg, messageSuccess,error.response.status === 201);
-
-    if (!error.response && error.request) {
-      console.log(error.request);
-    } else {
-      console.log(`Error: ${error.message} - ${error}`);
-    }
+    handleMessageError(error)
   })
 }
 </script>
