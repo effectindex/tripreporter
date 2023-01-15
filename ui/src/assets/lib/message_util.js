@@ -9,7 +9,7 @@ export function setMessage(message, messageSuccess, status) {
         elem.style.background = '#3d9991'
         elemText.innerHTML = messageSuccess;
         window.setTimeout(function () {
-            window.location.href = "/login";
+            window.location.href = "/login"; // faster than window.location.replace()
         }, 3000);
     } else {
         elem.style.background = '#a83232'
