@@ -13,8 +13,11 @@ Once the project has reached a stable 1.0.0 release and is out of active develop
 
 ## Reporting a Vulnerability
 
-To report a vulnerability, join our Discord at [effectindex.com/discord](https://effectindex.com/discord) or email <git@frogg.ie>.
+### To report a vulnerability, [click here](https://github.com/effectindex/tripreporter/security/advisories/new).
 
+*Do **NOT** report an active vulnerability in the form of an issue or in our Discord.*
+
+Join our Discord at [effectindex.com/discord](https://effectindex.com/discord) or email <git@frogg.ie> to let us know about your report or to ask questions.
 You can expect a response about your report being received within 24 hours, along with an ETA on a fix and relevant advisories.
 
 Please make sure to include steps to reproduce it, or describe the vulnerability, to the best of your abilities.
