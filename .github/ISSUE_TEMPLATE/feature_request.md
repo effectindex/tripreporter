@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: 'impr: ENTER DESCRIPTION OF IDEA HERE'
-labels: 'pending:triage'
+labels: triage:pending
 assignees: ''
 projects: effectindex/1
 ---
