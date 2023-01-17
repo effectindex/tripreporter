@@ -83,10 +83,9 @@ labels:
     color: '#d73a4a'
     description: 'Something isn''t working'
 
-  - name: feature
+  - name: improvement
     color: '#d73a4a'
     description: 'New feature or request'
-    new_name: improvement
 
   - name: meta:docs
     color: '#0075ca'
