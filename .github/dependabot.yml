@@ -15,6 +15,7 @@ updates:
       timezone: "America/Vancouver"
     commit-message:
       prefix: "deps"
+      prefix-development: "deps"
       include: "scope"
     labels:
       - "triage:pending"
@@ -29,6 +30,7 @@ updates:
       timezone: "America/Vancouver"
     commit-message:
       prefix: "deps"
+      prefix-development: "deps"
       include: "scope"
     labels:
       - "triage:pending"
@@ -43,6 +45,7 @@ updates:
       timezone: "America/Vancouver"
     commit-message:
       prefix: "deps"
+      prefix-development: "deps"
       include: "scope"
     labels:
       - "triage:pending"
