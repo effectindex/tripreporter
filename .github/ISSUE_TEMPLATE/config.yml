@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📫 Email
-    url: mailto:git@frogg.ie
+    url: https://frogg.ie/mailto
     about: Email the developer(s)
   - name: 📃 Discord
     url: https://effectindex.com/discord
