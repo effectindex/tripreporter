@@ -67,6 +67,10 @@ labels:
     color: '#1CE8B9'
     description: 'Related to the build system'
 
+  - name: backend:deps
+    color: '#1CE8B9'
+    description: 'Related to backend dependencies'
+
   - name: backend:db
     color: '#1CE8B9'
     description: 'Related to database structure / design'
@@ -118,6 +122,10 @@ labels:
   - name: web:analytics
     color: '#AC01E6'
     description: 'Related to analytics and statistics of the TripReporter''s use and performance'
+
+  - name: web:deps
+    color: '#AC01E6'
+    description: 'Related to frontend dependencies'
 
   - name: web:frontend
     color: '#AC01E6'
