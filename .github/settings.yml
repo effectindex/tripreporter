@@ -59,69 +59,87 @@ repository:
 
 # Labels: define labels for Issues and Pull Requests
 labels:
-  - name: analytics
-    color: '#979A41'
-    description: Related to analytics and statistics of the tripreporter's use and performance
-
   - name: api
     color: '#1CE8B9'
-    description: Related to the API design
+    description: 'Related to the API design'
+    new_name: backend:api
 
   - name: backend
-    color: '#7DFC36'
+    color: '#1CE8B9'
     description: 'Related to the backend code'
+    new_name: backend:other
+
+  - name: building
+    color: '#1CE8B9'
+    description: 'Related to the build system'
+    new_name: backend:building
+
+  - name: db
+    color: '#1CE8B9'
+    description: 'Related to database structure / design'
+    new_name: backend:db
+
+  - name: models
+    color: '#1CE8B9'
+    description: 'Related to the model design'
+    new_name: backend:models
 
   - name: bug
     color: '#d73a4a'
     description: 'Something isn''t working'
 
-  - name: building
-    color: '#00E911'
-    description: 'Related to the build system'
-
-  - name: db
-    color: '#27030B'
-    description: 'Related to database structure / design'
+  - name: enhancement
+    color: '#d73a4a'
+    description: 'New feature or request'
+    new_name: feature
 
   - name: documentation
     color: '#0075ca'
     description: 'Improvements or additions to documentation'
+    new_name: meta:docs
 
-  - name: duplicate
-    color: '#cfd3d7'
-    description: 'This issue or pull request already exists'
-
-  - name: enhancement
-    color: '#a2eeef'
-    description: 'New feature or request'
+  - name: analytics
+    color: '#AC01E6'
+    description: 'Related to analytics and statistics of the TripReporter''s use and performance'
+    new_name: web:analytics
 
   - name: frontend
     color: '#AC01E6'
     description: 'Related to the frontend UI'
-
-  - name: invalid
-    color: '#e4e669'
-    description: 'This doesn''t seem right'
-
-  - name: models
-    color: '#D0E14B'
-    description: 'Related to the model design'
-
-  - name: question
-    color: '#d876e3'
-    description: 'Further information is requested'
+    new_name: web:frontend
 
   - name: seo
-    color: '#d93f0b'
+    color: '#AC01E6'
     description: 'Related to SEO'
+    new_name: web:seo
 
   - name: triage:pending
     color: '#c5def5'
     description: 'Pending triage'
 
+  - name: triage:blocked
+    color: '#c5def5'
+    description: 'Blocked by another issue'
+
+  - name: duplicate
+    color: '#c5def5'
+    description: 'This issue or pull request already exists'
+    new_name: triage:duplicate
+
+  - name: question
+    color: '#c5def5'
+    description: 'Further information is requested'
+    new_name: triage:question
+
   - name: wontfix
-    color: '#ffffff'
+    color: '#c5def5'
     description: 'This will not be worked on'
+    new_name: triage:wontfix
+
+  - name: invalid
+    color: '#c5def5'
+    description: 'This doesn''t seem right'
+    new_name: triage:invalid
 
 # Milestones: define milestones for Issues and Pull Requests. State is either 'open' or 'closed'.
 milestones:
