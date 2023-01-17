@@ -129,6 +129,9 @@ labels:
 
 # Milestones: define milestones for Issues and Pull Requests. State is either 'open' or 'closed'.
 milestones:
+  - title: 1.0.0
+    description: Required for stable 1.0.0 release
+    state: open
   - title: long-term
     description: For issues that are planned further into the future
     state: open
