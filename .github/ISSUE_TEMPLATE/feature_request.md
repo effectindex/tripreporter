@@ -2,9 +2,9 @@
 name: Feature request
 about: Suggest an idea for this project
 title: 'impr: ENTER DESCRIPTION OF BUG HERE'
-labels: ''
+labels: pending:triage
 assignees: ''
-
+projects: effectindex/1
 ---
 
 **Is your feature request related to a problem? Please describe.**
