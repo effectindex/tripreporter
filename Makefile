@@ -1,4 +1,4 @@
-tripreporter: deps-server build-server deps-ui build-ui
+tripreporter: deps-ui build-ui deps-server build-server
 
 ##########################################################
 # deps
