@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: 'bug: ENTER DESCRIPTION OF BUG HERE'
-labels: pending:triage, bug
+labels: 'pending:triage', bug
 assignees: ''
 projects: effectindex/1
 ---

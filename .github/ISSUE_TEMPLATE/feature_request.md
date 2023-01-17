@@ -1,8 +1,8 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: 'impr: ENTER DESCRIPTION OF BUG HERE'
-labels: pending:triage
+title: 'impr: ENTER DESCRIPTION OF IDEA HERE'
+labels: 'pending:triage'
 assignees: ''
 projects: effectindex/1
 ---
