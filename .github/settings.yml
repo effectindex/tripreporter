@@ -59,87 +59,73 @@ repository:
 
 # Labels: define labels for Issues and Pull Requests
 labels:
-  - name: api
+  - name: backend:api
     color: '#1CE8B9'
     description: 'Related to the API design'
-    new_name: backend:api
 
-  - name: backend
-    color: '#1CE8B9'
-    description: 'Related to the backend code'
-    new_name: backend:other
-
-  - name: building
+  - name: backend:building
     color: '#1CE8B9'
     description: 'Related to the build system'
-    new_name: backend:building
 
-  - name: db
+  - name: backend:db
     color: '#1CE8B9'
     description: 'Related to database structure / design'
-    new_name: backend:db
 
-  - name: models
+  - name: backend:models
     color: '#1CE8B9'
     description: 'Related to the model design'
-    new_name: backend:models
+
+  - name: backend:other
+    color: '#1CE8B9'
+    description: 'Related to the backend code'
 
   - name: bug
     color: '#d73a4a'
     description: 'Something isn''t working'
 
-  - name: enhancement
+  - name: feature
     color: '#d73a4a'
     description: 'New feature or request'
-    new_name: feature
 
-  - name: documentation
+  - name: meta:docs
     color: '#0075ca'
     description: 'Improvements or additions to documentation'
-    new_name: meta:docs
-
-  - name: analytics
-    color: '#AC01E6'
-    description: 'Related to analytics and statistics of the TripReporter''s use and performance'
-    new_name: web:analytics
-
-  - name: frontend
-    color: '#AC01E6'
-    description: 'Related to the frontend UI'
-    new_name: web:frontend
-
-  - name: seo
-    color: '#AC01E6'
-    description: 'Related to SEO'
-    new_name: web:seo
-
-  - name: triage:pending
-    color: '#c5def5'
-    description: 'Pending triage'
 
   - name: triage:blocked
     color: '#c5def5'
     description: 'Blocked by another issue'
 
-  - name: duplicate
+  - name: triage:duplicate
     color: '#c5def5'
     description: 'This issue or pull request already exists'
-    new_name: triage:duplicate
 
-  - name: question
-    color: '#c5def5'
-    description: 'Further information is requested'
-    new_name: triage:question
-
-  - name: wontfix
-    color: '#c5def5'
-    description: 'This will not be worked on'
-    new_name: triage:wontfix
-
-  - name: invalid
+  - name: triage:invalid
     color: '#c5def5'
     description: 'This doesn''t seem right'
-    new_name: triage:invalid
+
+  - name: triage:pending
+    color: '#c5def5'
+    description: 'Pending triage'
+
+  - name: triage:question
+    color: '#c5def5'
+    description: 'Further information is requested'
+
+  - name: triage:wontfix
+    color: '#c5def5'
+    description: 'This will not be worked on'
+
+  - name: web:analytics
+    color: '#AC01E6'
+    description: 'Related to analytics and statistics of the TripReporter''s use and performance'
+
+  - name: web:frontend
+    color: '#AC01E6'
+    description: 'Related to the frontend UI'
+
+  - name: web:seo
+    color: '#AC01E6'
+    description: 'Related to SEO'
 
 # Milestones: define milestones for Issues and Pull Requests. State is either 'open' or 'closed'.
 milestones:
