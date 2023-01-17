@@ -20,7 +20,7 @@
     "@formkit/vue": "^1.0.0-beta.12",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.8",
-    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.8",
     "@vue/cli-service": "~5.0.0",
     "axios": "^1.2.3",
     "eslint": "^8.32.0",
