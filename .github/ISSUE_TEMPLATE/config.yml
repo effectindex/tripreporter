@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📫 Email
+    url: mailto:git@frogg.ie
+    about: Email the developer(s)
+  - name: 📃 Discord
+    url: https://effectindex.com/discord
+    about: Join our Discord for help or to discuss the project
