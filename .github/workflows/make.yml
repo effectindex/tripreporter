@@ -1,0 +1,25 @@
+name: make
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository content
+        uses: actions/checkout@v2
+        with:
+        fetch-depth: 1
+
+      - name: Setup Go
+        uses: WillAbides/setup-go-faster@v1.8.0
+        with:
+        go-version: '1.19.x'
+
+      - name: Build project
+        run: make
