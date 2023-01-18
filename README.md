@@ -25,7 +25,7 @@ make dev-ui
 make dev-server
 ```
 
-### Docker
+### For production (with Docker)
 
 This is intended for production use.
 This will run on `http://localhost:3000` by default.
