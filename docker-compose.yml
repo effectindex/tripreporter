@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    restart: always
+    env_file: [".env"]
+    networks:
+      - tripreporter-net
+    ports:
+      - "${SRV_PORT}:${SRV_PORT}"
+
+  postgres:
+    image: postgres
+    build: db/.
+    restart: always
+    env_file: [".env"]
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASS}"
+    expose:
+      - "${DB_PORT}"
+    networks:
+      - tripreporter-net
+
+  redis:
+    image: "redis:alpine"
+    restart: always
+    env_file: [".env"]
+    volumes:
+      - "redis_data:/data"
+      - "./config/redis.conf:/data/config/redis.conf"
+    command: "/data/config/redis.conf"
+    expose:
+      - "${REDIS_PORT}"
+    networks:
+      - tripreporter-net
+
+volumes:
+  redis_data:
+
+networks:
+  tripreporter-net:
+    driver: bridge
