@@ -30,8 +30,17 @@ jobs:
         id: setup_go
 
       - name: Cache Go
-        run: echo "${{ steps.setup_go.outputs.GOMODCACHE }}"
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.setup_go.outputs.GOMODCACHE }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
         id: cache_go
+
+      - name: Cache Go
+        run: echo "${{ steps.setup_go.outputs.GOMODCACHE }}"
 
       - name: Build project
         run: make
