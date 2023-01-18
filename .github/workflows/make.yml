@@ -39,9 +39,6 @@ jobs:
             ${{ runner.os }}-go-
         id: cache_go
 
-      - name: Cache Go
-        run: echo "${{ steps.setup_go.outputs.GOMODCACHE }}"
-
       - name: Build project
         run: make
         id: run_make
