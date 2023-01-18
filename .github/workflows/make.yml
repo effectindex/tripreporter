@@ -30,7 +30,7 @@ jobs:
         id: setup_go
 
       - name: Cache Go
-        run: echo "${{ steps.checksecrets.outputs.GOMODCACHE }}"
+        run: echo "${{ steps.setup_go.outputs.GOMODCACHE }}"
         id: cache_go
 
       - name: Build project
