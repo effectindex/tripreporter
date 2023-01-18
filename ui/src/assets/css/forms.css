@@ -1,3 +1,8 @@
+@font-face {
+    font-family: text-security-disc;
+    src: url("@/assets/font/text-security-disc.woff");
+}
+
 [data-type="submit"] .formkit-input {
     background: var(--tr-default-primary);
 }
@@ -12,6 +17,7 @@
 }
 
 .formkit-input#password::placeholder {
+    font-family: text-security-disc, sans-serif !important;
     -webkit-text-security: disc !important;
 }
 
