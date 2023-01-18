@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
-	"strings"
 
 	"github.com/effectindex/tripreporter/ui"
 	"github.com/effectindex/tripreporter/util"
@@ -25,7 +24,8 @@ func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 	dev = isDevelopment
 }
 
-// Handler manages all paths, with Router handling anything not defined here.
+// Handler will serve /api, and pass the rest off to Router.
+// In production, Handler will also serve /static/.
 func Handler() http.Handler {
 	router := mux.NewRouter()
 
@@ -33,7 +33,9 @@ func Handler() http.Handler {
 	if !dev { // if running in development mode, let api.Router reverse proxy it
 		staticFS, _ := fs.Sub(ui.StaticFiles, "dist")
 		httpFS := http.FileServer(http.FS(staticFS))
-		router.Handle("/static/", httpFS)
+		router.PathPrefix("/static/").HandlerFunc(ctx.HandleFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx.Logger.Debugw("Serving static", "path", r.URL.Path)
+		}, httpFS))
 	}
 
 	// Redirect /api with no trailing slash to the documentation url
@@ -41,36 +43,31 @@ func Handler() http.Handler {
 
 	// API functions
 	vX := router.PathPrefix("/api/").Subrouter()
-	vX.MethodNotAllowedHandler = ctx.HandleFunc(MsgMethodNotAllowed)
-	vX.NotFoundHandler = ctx.HandleFunc(MsgInvalidApiVersion)
+	vX.MethodNotAllowedHandler = ctx.HandleMessage(MsgMethodNotAllowed)
+	vX.NotFoundHandler = ctx.HandleMessage(MsgInvalidApiVersion)
 
 	// API v1 methods
 	v1 := vX.PathPrefix("/v1").Subrouter()
-	v1.MethodNotAllowedHandler = ctx.HandleFunc(MsgMethodNotAllowed)
-	v1.NotFoundHandler = ctx.HandleFunc(MsgInvalidEndpoint)
+	v1.MethodNotAllowedHandler = ctx.HandleMessage(MsgMethodNotAllowed)
+	v1.NotFoundHandler = ctx.HandleMessage(MsgInvalidEndpoint)
 
 	// API v1 endpoints
 	SetupAccountEndpoints(v1)
 	SetupSessionEndpoints(v1)
 	SetupUserEndpoints(v1)
 
-	// let api.Router do everything else
+	// Let api.Router do everything else, including serving /static/ in development
 	router.PathPrefix("/").HandlerFunc(Router)
 
 	return router
 }
 
-// Router will route everything except /static/ and valid /api/ endpoints.
+// Router will route /, /favicon.ico and anything not handled by Handler.
+// In development, Router will also handle /static/.
 func Router(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprintln(w, http.StatusText(http.StatusMethodNotAllowed))
-		return
-	}
-
-	// For API endpoints not already handled in Handler()
-	if strings.HasPrefix(r.URL.Path, "/api") {
-		http.NotFound(w, r)
 		return
 	}
 
