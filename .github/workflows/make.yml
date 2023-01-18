@@ -25,10 +25,9 @@ jobs:
         uses: WillAbides/setup-go-faster@v1.8.0
         with:
           go-version: '1.19.x'
-        run: echo ${GOMODCACHE}
 
       - name: Cache Go
-        run: go env GOMODCACHE
+        run: echo ${GOMODCACHE}
 
       - name: Build project
         run: make
