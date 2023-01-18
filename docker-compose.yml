@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   app:
+    container_name: tripreporter
     build: .
     restart: always
     env_file: [".env"]
@@ -10,6 +11,7 @@ services:
       - "${SRV_PORT}:${SRV_PORT}"
 
   postgres:
+    container_name: tripreporter-postgres
     image: postgres
     build: db/.
     restart: always
@@ -24,6 +26,7 @@ services:
       - tripreporter-net
 
   redis:
+    container_name: tripreporter-redis
     image: "redis:alpine"
     restart: always
     env_file: [".env"]
