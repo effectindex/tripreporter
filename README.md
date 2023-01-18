@@ -2,9 +2,12 @@
 
 ## Building and running
 
-### Required
+## Required
 
-Copy `.env.example` to `.env`, and `config/redis.conf.example` to `config/redis.conf`, and (optionally) modify them. These files are required for building and running the tripreporter.
+Copy `.env.example` to `.env`, and `config/redis.conf.example` to `config/redis.conf`, and (optionally) modify them. 
+
+These files are required for building and running the tripreporter.
+This step is necessary for both development and production use.
 
 ### For development (no Docker)
 
@@ -25,7 +28,7 @@ make dev-server
 ### Docker
 
 This is intended for production use.
-This will run on `http://localhost:3000` by default, modify `.env` and re-run if you would like to change the port or address.
+This will run on `http://localhost:3000` by default.
 
 ```bash
 docker compose up -d
