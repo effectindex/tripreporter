@@ -28,6 +28,7 @@ jobs:
         id: setup_go
 
       - name: Cache Go
+        shell: bash
         with:
           tag_name: ${{ steps.setup_go.outputs.GOMODCACHE }}
         run: echo ${GOMODCACHE}
