@@ -80,10 +80,18 @@ func (c *Context) HandleJson(w http.ResponseWriter, r *http.Request, i interface
 	}
 }
 
-// HandleFunc is a wrapper to create a simple http handler that responds with the given message
-func (c *Context) HandleFunc(m Message) http.HandlerFunc {
+// HandleMessage is a wrapper to create a simple http handler that responds with the given message
+func (c *Context) HandleMessage(m Message) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx.Handle(w, r, m)
+	}
+}
+
+// HandleFunc is a wrapper to wrap around an arbitrary function
+func (c *Context) HandleFunc(fn func(http.ResponseWriter, *http.Request), handler http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fn(w, r)
+		handler.ServeHTTP(w, r)
 	}
 }
 
