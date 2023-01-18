@@ -13,12 +13,11 @@ Choose one of the following methods to run, `http://localhost:3000` should be ac
 If you have issues when first running development, try running a production build first.
 
 ```bash
-# Build and run production without Docker.
-make all
+# Build production without Docker. This is required to have caches of static files for `make dev-server`.
+make
 
 # Build and run development UI, and server.
 # Run both in two different terminals.
-# NOTE: You must run `make all` or `make build-ui`, at least once, before running `dev-server`, otherwise there will be no build cache to use for static files.
 make dev-ui
 make dev-server
 ```
