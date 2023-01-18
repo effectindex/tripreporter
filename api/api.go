@@ -16,6 +16,9 @@ import (
 var (
 	proxy *httputil.ReverseProxy // proxy is used for `make dev-ui`
 	dev   = false                // will disable serving /static/ from cache and proxy un-handled requests
+
+	staticFS, _ = fs.Sub(ui.StaticFiles, "dist")
+	httpFS      = http.FileServer(http.FS(staticFS))
 )
 
 // Setup manages functions that should be ready to use before
@@ -24,19 +27,11 @@ func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 	dev = isDevelopment
 }
 
-// Handler will serve /api, and pass the rest off to Router.
-// In production, Handler will also serve /static/.
+// Handler will handle /api, /static/, and pass the rest off to Router.
 func Handler() http.Handler {
 	router := mux.NewRouter()
 
-	// serve /static/ by cache in production (no hot-reload support)
-	if !dev { // if running in development mode, let api.Router reverse proxy it
-		staticFS, _ := fs.Sub(ui.StaticFiles, "dist")
-		httpFS := http.FileServer(http.FS(staticFS))
-		router.PathPrefix("/static/").HandlerFunc(ctx.HandleFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx.Logger.Debugw("Serving static", "path", r.URL.Path)
-		}, httpFS))
-	}
+	router.PathPrefix("/static/").HandlerFunc(Static)
 
 	// Redirect /api with no trailing slash to the documentation url
 	router.Handle("/api", http.RedirectHandler(os.Getenv("DOCS_URL"), http.StatusMovedPermanently))
@@ -56,14 +51,13 @@ func Handler() http.Handler {
 	SetupSessionEndpoints(v1)
 	SetupUserEndpoints(v1)
 
-	// Let api.Router do everything else, including serving /static/ in development
+	// Let api.Router do everything else
 	router.PathPrefix("/").HandlerFunc(Router)
 
 	return router
 }
 
-// Router will route /, /favicon.ico and anything not handled by Handler.
-// In development, Router will also handle /static/.
+// Router will route /, /favicon.ico, normal pages, and anything not handled by Handler.
 func Router(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -77,10 +71,29 @@ func Router(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if dev { // serve everything else in dev to the proxy, if in dev
+	// Proxy everything else in dev. The static file below isn't auto-injected and doesn't have hot reload capability.
+	if dev {
 		proxy.ServeHTTP(w, r)
-	} else { // else, serve just dist/index.html and let Vue's JS handle it
-		rawFile, _ := ui.StaticFiles.ReadFile("dist/index.html")
-		w.Write(rawFile)
+		return
 	}
+
+	// Serve the default index.html, where built files are auto-injected with webpack, otherwise.
+	// This should only really happen on page paths, while in production.
+	ctx.Logger.Debugw("Serving dist/index.html", "path", r.URL.Path)
+	rawFile, _ := ui.StaticFiles.ReadFile("dist/index.html")
+	w.Write(rawFile)
+}
+
+// Static is used to handle /static/.
+func Static(w http.ResponseWriter, r *http.Request) {
+	ctx.Logger.Debugw("Serving static", "path", r.URL.Path)
+
+	// Serve /static/ with `make dev-ui` in development mode
+	if dev {
+		proxy.ServeHTTP(w, r)
+		return
+	}
+
+	// Otherwise, we serve the embedded static files normally.
+	httpFS.ServeHTTP(w, r)
 }
