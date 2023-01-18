@@ -21,7 +21,8 @@ import (
 )
 
 var (
-	dev = flag.Bool("dev", false, "Run in development mode, alongside `make dev-ui`.")
+	dev    = flag.Bool("dev", false, "Run in development mode, alongside `make dev-ui`.")
+	docker = flag.Bool("docker", false, "Run in Docker mode.")
 )
 
 func main() {
@@ -65,8 +66,8 @@ func main() {
 	}
 
 	// Setup required connections for postgresql and redis
-	sDB := db.SetupDB(ctx.Logger)
-	rDB := db.SetupRedis(ctx.Logger)
+	sDB := db.SetupDB(*docker, ctx.Logger)
+	rDB := db.SetupRedis(*docker, ctx.Logger)
 
 	defer sDB.Close()
 	defer func(rDB *redis.Client) {

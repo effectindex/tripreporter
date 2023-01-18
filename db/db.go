@@ -52,12 +52,16 @@ var (
 )
 
 // SetupDB creates a new PostgreSQL connection
-func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
+func SetupDB(docker bool, logger *zap.SugaredLogger) *pgxpool.Pool {
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
+
+	if docker {
+		dbHost = os.Getenv("DOCKER_POSTGRES_HOST")
+	}
 
 	// First try connecting to the database we're going to use
 	dbPool, err := pgxpool.New(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUser, dbPass, dbHost, dbPort, dbName))
@@ -65,28 +69,28 @@ func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 		// Now, try connecting to the default and making a db there
 		dbPool, err = pgxpool.New(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/postgres", dbUser, dbPass, dbHost, dbPort))
 		if err != nil {
-			logger.Fatalw("Cannot connect to DB", zap.Error, err)
+			logger.Fatalw("Cannot connect to DB", zap.Error(err))
 		}
 		_, err = dbPool.Exec(context.Background(), fmt.Sprintf("create database \"%s\"", dbName))
 		if err != nil {
-			logger.Fatalw("Cannot create database", zap.Error, err)
+			logger.Fatalw("Cannot create database", zap.Error(err))
 		}
 		dbPool.Close()
 		dbPool, err = pgxpool.New(context.Background(), fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUser, dbPass, dbHost, dbPort, dbName))
 		if err != nil {
-			logger.Fatalw("Cannot use database", zap.Error, err)
+			logger.Fatalw("Cannot use database", zap.Error(err))
 		}
 	}
 	err = dbPool.Ping(context.Background())
 	if err != nil {
-		logger.Fatalw("Cannot connect to DB", zap.Error, err)
+		logger.Fatalw("Cannot connect to DB", zap.Error(err))
 	}
 
 	for _, def := range schemaDefs {
 		logger.Infof("Executing %s", def)
 		_, err = dbPool.Exec(context.Background(), def)
 		if err != nil {
-			logger.Fatalw("Cannot execute schema", zap.Error, err)
+			logger.Fatalw("Cannot execute schema", zap.Error(err))
 		}
 	}
 	for _, def := range indexDefs {
@@ -100,7 +104,7 @@ func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 		logger.Infof("Executing %s", def)
 		_, err := dbPool.Exec(context.Background(), def)
 		if err != nil {
-			logger.Infow("Failed to create DB trigger", zap.Error, err)
+			logger.Infow("Failed to create DB trigger", zap.Error(err))
 		}
 	}
 	logger.Infof("Connected to SQL DB at %s:%s", dbHost, dbPort)
@@ -109,10 +113,19 @@ func SetupDB(logger *zap.SugaredLogger) *pgxpool.Pool {
 }
 
 // SetupRedis creates a new redis.Client instance
-func SetupRedis(logger *zap.SugaredLogger) *redis.Client {
+func SetupRedis(docker bool, logger *zap.SugaredLogger) *redis.Client {
+	dbHost := os.Getenv("REDIS_HOST")
+	dbPort := os.Getenv("REDIS_PORT")
+	dbPass := os.Getenv("REDIS_PASS")
+
+	if docker {
+		dbHost = os.Getenv("DOCKER_REDIS_HOST")
+	}
+
+	dbAddr := dbHost + ":" + dbPort
 	rdc := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_HOST"),
-		Password: os.Getenv("REDIS_PASS"),
+		Addr:     dbAddr,
+		Password: dbPass,
 		DB:       0,
 	})
 
@@ -122,6 +135,6 @@ func SetupRedis(logger *zap.SugaredLogger) *redis.Client {
 	}
 
 	// We have a working connection
-	logger.Infof("Connected to Redis at  %s", os.Getenv("REDIS_HOST"))
+	logger.Infof("Connected to Redis at  %s", dbAddr)
 	return rdc
 }
