@@ -26,5 +26,8 @@ jobs:
         with:
           go-version: '1.19.x'
 
+      - name: Cache Go
+        run: go env GOMODCACHE
+
       - name: Build project
         run: make
