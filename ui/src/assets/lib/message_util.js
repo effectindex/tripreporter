@@ -1,3 +1,5 @@
+import log from "@/assets/lib/logger";
+
 export function setMessage(message, messageSuccess, status, location) {
     const elemText = document.getElementById("DefaultView__message_text");
     elemText.textContent = message;
@@ -21,10 +23,10 @@ export function setMessage(message, messageSuccess, status, location) {
 
 export function handleMessageError(error) {
     if (error.response) {
-        console.log(error.response)
+        log(error.response)
     } else if (error.request) {
-        console.log(error.request);
+        log(error.request);
     } else {
-        console.log(`Error: ${error.message} - ${error}`);
+        log(`Error: ${error.message} - ${error}`);
     }
 }
