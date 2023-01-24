@@ -1,0 +1,13 @@
+[Unit]
+Description=Redis Tripreporter
+
+# Make sure to modify WorkingDirectory and ExecStart to match where your project and redis-server binary are.
+# %h resolves to the same thing as $HOME
+[Service]
+WorkingDirectory=%h/${TRIPREPORTER_PATH}
+ExecStart=/usr/bin/redis-server config/redis.conf
+RestartSec=5s
+Restart=on-success
+
+[Install]
+WantedBy=default.target
