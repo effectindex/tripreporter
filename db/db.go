@@ -32,6 +32,12 @@ var (
 			height decimal default 0,
 			weight decimal default 0
 		);`,
+		`create table if not exists sessions (
+    		account_id uuid references accounts(id) on delete cascade,
+    		session_index int not null,
+    		session_key uuid not null unique,
+    		primary key(account_id, session_index)
+    	);`,
 	}
 	indexDefs = []string{
 		//`create unique index if not exists index_email on users(email);`,
