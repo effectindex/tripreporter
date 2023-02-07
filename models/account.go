@@ -339,7 +339,7 @@ func (a *Account) Delete() (*Account, error) {
 	}
 
 	// TODO: Part of refactoring to pointer-based model
-	return a.ClearAll(), nil
+	return a, nil
 }
 
 func (a *Account) User() (*User, error) {
@@ -417,9 +417,9 @@ func (a *Account) FromData(a1 *Account) {
 	a.Verified = a1.Verified
 }
 
-func (a *Account) ClearAll() *Account {
+func (a *Account) ClearAll() *AccountPublic {
 	a.InitType(a)
-	return &Account{Context: a.Context, Unique: a.Unique}
+	return &AccountPublic{Context: a.Context, Unique: a.Unique}
 }
 
 func (a *Account) ClearImmutable() *Account {
