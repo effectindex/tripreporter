@@ -104,7 +104,7 @@ func AccountDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: You should DeleteAuthCookies all cookies here
+	DeleteAuthCookies(w, util.CookieRefreshToken, util.CookieJwtToken)
 
 	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
 }
