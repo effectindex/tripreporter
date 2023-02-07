@@ -24,10 +24,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 			}
 
 			jwtToken, _ := r.Cookie(util.CookieJwtToken)
-			accountID, err := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
-			if err != nil {
-				ctx.Context.Logger.Debugw("Failed to get valid account ID", zap.Error(err))
-			}
+			accountID, _ := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
 
 			// If we need to generate a new access token
 			if accountID == nil {
@@ -71,7 +68,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 }
 
 func AccountIDFromToken(cookie *http.Cookie) (*uuid.UUID, error) {
-	if cookie == nil {
+	if cookie == nil || len(cookie.Value) == 0 {
 		ctx.Logger.Debugw("Failed to get JWT cookie because nil")
 		return nil, nil
 	}
@@ -121,7 +118,7 @@ func SetAuthCookie(w http.ResponseWriter, name string, token string, expiry time
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  expiry,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteStrictMode,
 		Secure:   true,
 	})
 }
