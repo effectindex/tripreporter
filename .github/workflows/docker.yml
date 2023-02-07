@@ -17,6 +17,7 @@ jobs:
 
       - name: Setup Docker image
         uses: docker/setup-buildx-action@v2
+        id: setup_buildx
 
       - name: Build Docker image
         shell: bash
@@ -24,7 +25,7 @@ jobs:
         run: |
           docker buildx bake \
           -f docker-compose.yml \
-          --builder ${{ steps.buildx.outputs.name }} \
+          --builder ${{ steps.setup_buildx.outputs.name }} \
           --set *.cache-from="type=gha,scope=${{ runner.os }}-${{ github.workflow }}" \
           --set *.cache-to="type=gha,scope=${{ runner.os }}-${{ github.workflow }},mode=max"
 
