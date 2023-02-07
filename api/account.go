@@ -2,18 +2,23 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
+	"github.com/effectindex/tripreporter/util"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
 func SetupAccountEndpoints(v1 *mux.Router) {
+	a1 := v1.Methods(http.MethodGet, http.MethodPatch, http.MethodDelete).Subrouter()
+	a1.Use(AuthMiddleware())
+
 	v1.HandleFunc("/account", AccountPost).Methods(http.MethodPost)
-	v1.HandleFunc("/account", AccountGet).Methods(http.MethodGet)
-	v1.HandleFunc("/account", AccountPatch).Methods(http.MethodPatch)
-	v1.HandleFunc("/account", AccountDelete).Methods(http.MethodDelete)
+	a1.HandleFunc("/account", AccountGet).Methods(http.MethodGet)
+	a1.HandleFunc("/account", AccountPatch).Methods(http.MethodPatch)
+	a1.HandleFunc("/account", AccountDelete).Methods(http.MethodDelete)
 	v1.HandleFunc("/account/validate/email/{email}", AccountValidateEmail).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/username/{username}", AccountValidateUsername).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/password/{password}", AccountValidatePassword).Methods(http.MethodPost)
@@ -34,6 +39,14 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	session, err := (&models.Session{Context: ctx.Context, Unique: account.Unique}).Post()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	SetAuthCookie(w, util.CookieRefreshToken, session.Refresh, time.Now().Add(time.Minute*15)) // TODO: Change this once we've implemented refreshing
 
 	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusCreated)
 }
@@ -90,6 +103,8 @@ func AccountDelete(w http.ResponseWriter, r *http.Request) {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// TODO: You should DeleteAuthCookies all cookies here
 
 	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
 }
