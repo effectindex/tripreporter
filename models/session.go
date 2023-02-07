@@ -3,13 +3,13 @@ package models
 import (
 	"context"
 	"encoding/base64"
-	"github.com/google/uuid"
 	"time"
 
 	"github.com/cristalhq/jwt/v4"
 	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
