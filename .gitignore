@@ -1,4 +1,5 @@
 .env
+.jwt.env
 .idea/
 .directory
 tripreporter
