@@ -23,6 +23,8 @@ jobs:
         shell: bash
         working-directory: ${{ env.SRC_DIR }}
         run: |
+          cp .env.example .env && \
+          cp config/redis.conf.example config/redis.conf && \
           docker buildx bake \
           -f docker-compose.yml \
           --builder ${{ steps.setup_buildx.outputs.name }} \
