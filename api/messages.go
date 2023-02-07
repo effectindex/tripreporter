@@ -12,6 +12,7 @@ const (
 	MsgUnknown Message = iota
 	MsgNotImplemented
 	MsgNotFound
+	MsgForbidden
 	MsgMethodNotAllowed
 	MsgInvalidEndpoint
 	MsgInvalidApiVersion
@@ -25,6 +26,8 @@ func (e Message) String() string {
 		return types.ErrorNotImplemented.Error()
 	case MsgNotFound:
 		return http.StatusText(http.StatusNotFound)
+	case MsgForbidden:
+		return http.StatusText(http.StatusForbidden)
 	case MsgMethodNotAllowed:
 		return "Method not allowed!"
 	case MsgInvalidEndpoint:
@@ -46,6 +49,8 @@ func (e Message) Status() int {
 		return http.StatusNotImplemented
 	case MsgNotFound:
 		return http.StatusNotFound
+	case MsgForbidden:
+		return http.StatusForbidden
 	case MsgMethodNotAllowed:
 		return http.StatusMethodNotAllowed
 	case MsgInvalidEndpoint:
