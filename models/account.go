@@ -27,8 +27,8 @@ type Account struct { // todo: this should be oauth / credentials. allow changin
 	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
 	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
 	Password string `json:"password"`                           // Optional. Only used in API requests, is here to so API users aren't confused by `password_hash` when making a new account.
-	Salt     []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
-	Hash     []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
+	Salt     []byte `db:"password_salt"`                        // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
+	Hash     []byte `db:"password_hash"`                        // Required. Generated from Salt using Argon2ID and is 32 bits long.
 	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
 }
 
