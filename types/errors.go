@@ -145,6 +145,39 @@ func (e ErrorUser) Error() string {
 }
 
 //
+// Session operation related errors
+//
+
+type ErrorSession int64
+
+const (
+	ErrorSessionUnknown ErrorSession = iota
+	ErrorSessionNotSpecified
+	ErrorSessionIndexNotFound
+	ErrorSessionKeyNotFound
+	ErrorSessionRefreshNotFound
+	ErrorSessionClaimNotValid
+)
+
+// TODO: i18n here
+func (e ErrorSession) Error() string {
+	switch e {
+	case ErrorSessionNotSpecified:
+		return "No account for the session was specified."
+	case ErrorSessionIndexNotFound:
+		return "No session with this index was found."
+	case ErrorSessionKeyNotFound:
+		return "No session with this key was found."
+	case ErrorSessionRefreshNotFound:
+		return "No session with this refresh token was found."
+	case ErrorSessionClaimNotValid:
+		return "No valid account is associated with this claim."
+	default:
+		return ErrorUnknown.Error()
+	}
+}
+
+//
 // Context related errors
 //
 
@@ -154,6 +187,7 @@ const (
 	ErrorContextUnknown ErrorContext = iota
 	ErrorContextNilLogger
 	ErrorContextNilDatabase
+	ErrorContextNilCache
 )
 
 // TODO: i18n here
@@ -163,6 +197,8 @@ func (e ErrorContext) Error() string {
 		return "ctx.Logger is nil"
 	case ErrorContextNilDatabase:
 		return "ctx.Database is nil"
+	case ErrorContextNilCache:
+		return "ctx.Cache is nil"
 	default:
 		return ErrorUnknown.Error()
 	}
