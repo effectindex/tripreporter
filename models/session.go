@@ -52,7 +52,7 @@ func (s *Session) Get() ([]*Session, error) {
 }
 
 // GetByKey will return the first matching session by the set session key, and will return an error if not found.
-// This includes the index, not the refresh token. Use GetByCachedKey() if you need the refresh token as well.
+// This includes the index, not the refresh token.
 func (s *Session) GetByKey() (*Session, error) {
 	s.InitType(s)
 
@@ -73,24 +73,6 @@ func (s *Session) GetByKey() (*Session, error) {
 	}
 
 	return s, types.ErrorSessionIndexNotFound
-}
-
-// GetByCachedKey will get a refresh token from a set session key, and return an error if not found.
-// This does not include the index. Use GetByKey() if you need the index.
-func (s *Session) GetByCachedKey() (*Session, error) {
-	s.InitType(s)
-
-	if s.Key.NilUUID() { // you need to specify key, it's faster to check here
-		return s, types.ErrorSessionKeyNotFound
-	}
-
-	refresh, err := s.Cache.Get(context.Background(), s.Key.ID.String()).Result()
-	if err != nil {
-		return s, types.ErrorSessionKeyNotFound
-	}
-
-	s.Refresh = refresh
-	return s, nil
 }
 
 // Post creates a new session for an account. Returns the session key and refresh token, but not the index.
