@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/effectindex/tripreporter/api"
 	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -333,7 +332,7 @@ func (a *Account) FromRefreshToken(token *http.Cookie) (*Account, error) {
 	a.InitType(a)
 
 	if len(token.Value) == 0 {
-		return a, types.ErrorStringEmpty.PrefixedError(api.RefreshToken)
+		return a, types.ErrorStringEmpty.PrefixedError(util.CookieRefreshToken)
 	}
 
 	val, err := a.Cache.Get(context.Background(), token.Value).Result()
