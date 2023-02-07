@@ -93,8 +93,8 @@ func (s *Session) Post() (*Session, error) {
 	}
 
 	if _, err := db.Exec(context.Background(),
-		`insert into sessions(account_id, session_index, session_key) (select $1, coalesce(max(session_index), 0) + 1, $2 where account_id = $1);`,
-		s.ID, s.Key,
+		`insert into sessions(account_id, session_index, session_key) (select $1, coalesce(max(sessions.session_index), 0) + 1, $2 from sessions where account_id = $1);`,
+		s.ID, s.Key.ID,
 	); err != nil {
 		s.Logger.Warnw("Failed to session to DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
