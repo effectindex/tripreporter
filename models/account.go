@@ -29,9 +29,18 @@ type Account struct { // todo: this should be oauth / credentials. allow changin
 	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
 	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
 	Password string `json:"password"`                           // Optional. Only used in API requests, is here to so API users aren't confused by `password_hash` when making a new account.
-	Salt     []byte `db:"password_salt"`                        // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
-	Hash     []byte `db:"password_hash"`                        // Required. Generated from Salt using Argon2ID and is 32 bits long.
+	NewPass  string `json:"new_password"`                       // Optional. Only used in PATCH API requests, when changing the password.
+	Salt     []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
+	Hash     []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
 	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
+}
+
+type AccountPublic struct {
+	types.Context
+	Unique
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Verified bool   `json:"email_verified"`
 }
 
 type AccountConfig struct {
@@ -154,7 +163,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	if a, err := a.ValidateUsername(); err != nil {
 		return a, err
 	}
-	if a, err := a.ValidatePassword(); err != nil {
+	if a, err := a.ValidatePassword(a.Password, "Password"); err != nil {
 		return a, err
 	}
 
@@ -218,6 +227,17 @@ func (a *Account) Patch() (*Account, error) {
 		return a, types.ErrorAccountNotSpecified
 	}
 
+	// Verify account exists, and that password is being provided to update account info
+	a1 := &Account{Context: a.Context}
+	a1.FromData(a)
+	if _, err := a1.Get(); err != nil {
+		return a, err
+	}
+
+	if _, err := a1.VerifyPassword(a.Password); err != nil {
+		return a, err
+	}
+
 	fields := make([]interface{}, 0)
 	query := "update accounts set"
 	qNum := 0
@@ -248,8 +268,8 @@ func (a *Account) Patch() (*Account, error) {
 		addQuery("username", a.Username)
 	}
 
-	if len(a.Password) > 0 {
-		if a, err := a.ValidatePassword(); err != nil {
+	if len(a.NewPass) > 0 {
+		if a, err := a.ValidatePassword(a.NewPass, "New password"); err != nil {
 			return a, err
 		}
 		if len(a.Salt) == 0 {
@@ -261,7 +281,7 @@ func (a *Account) Patch() (*Account, error) {
 
 			a.Salt = salt
 		}
-		a.Hash = util.GenerateSaltedPasswordHash([]byte(a.Password), a.Salt)
+		a.Hash = util.GenerateSaltedPasswordHash([]byte(a.NewPass), a.Salt)
 	}
 
 	if len(a.Salt) > 0 {
@@ -297,13 +317,18 @@ func (a *Account) Delete() (*Account, error) {
 	db := a.DB()
 	defer db.Commit(context.Background())
 
-	password := a.Password
+	if a.NilUUID() {
+		return a, types.ErrorAccountNotSpecified
+	}
 
-	if _, err := a.Get(); err != nil {
+	// Verify account exists, and that password is being provided to update account info
+	a1 := &Account{Context: a.Context}
+	a1.FromData(a)
+	if _, err := a1.Get(); err != nil {
 		return a, err
 	}
 
-	if _, err := a.VerifyPassword(password); err != nil {
+	if _, err := a1.VerifyPassword(a.Password); err != nil {
 		return a, err
 	}
 
@@ -331,7 +356,7 @@ func (a *Account) User() (*User, error) {
 func (a *Account) FromRefreshToken(token *http.Cookie) (*Account, error) {
 	a.InitType(a)
 
-	if len(token.Value) == 0 {
+	if token == nil || len(token.Value) == 0 {
 		return a, types.ErrorStringEmpty.PrefixedError(util.CookieRefreshToken)
 	}
 
@@ -386,6 +411,7 @@ func (a *Account) FromData(a1 *Account) {
 	a.Email = a1.Email
 	a.Username = a1.Username
 	a.Password = a1.Password
+	a.NewPass = a1.NewPass
 	a.Salt = a1.Salt
 	a.Hash = a1.Hash
 	a.Verified = a1.Verified
@@ -398,12 +424,13 @@ func (a *Account) ClearAll() *Account {
 
 func (a *Account) ClearImmutable() *Account {
 	a.InitType(a)
-	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Password: a.Password}
+	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Password: a.Password, NewPass: a.NewPass}
 }
 
-func (a *Account) ClearSensitive() *Account {
-	a.InitType(a)
-	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Verified: a.Verified}
+func (a *Account) CopyPublic() *AccountPublic {
+	p := &AccountPublic{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Verified: a.Verified}
+	p.InitType(p)
+	return p
 }
 
 func (a *Account) VerifyPassword(password string) (*Account, error) {
@@ -417,8 +444,8 @@ func (a *Account) VerifyPassword(password string) (*Account, error) {
 		return a, types.ErrorStringEmpty.PrefixedError("Password")
 	}
 
-	hash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
-	if !util.SliceEqual(hash, a.Hash) {
+	providedHash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
+	if !util.SliceEqual(providedHash, a.Hash) {
 		return a, types.ErrorAccountPasswordMatch
 	}
 
@@ -460,12 +487,12 @@ func (a *Account) ValidateUsername() (*Account, error) {
 	return a, err
 }
 
-func (a *Account) ValidatePassword() (*Account, error) {
+func (a *Account) ValidatePassword(password, prefix string) (*Account, error) {
 	a.InitType(a)
 
-	err := AccountCfg.Password.Validate(a.Password)
+	err := AccountCfg.Password.Validate(password)
 	if err, ok := err.(types.ErrorString); ok {
-		return a, err.PrefixedError("Password")
+		return a, err.PrefixedError(prefix)
 	}
 	return a, err
 }
