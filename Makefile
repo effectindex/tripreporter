@@ -8,6 +8,7 @@ deps-ui:
 	npm i
 
 deps-server:
+	go get -u "github.com/cristalhq/jwt/v4"
 	go get -u "github.com/georgysavva/scany/v2"
 	go get -u "github.com/go-redis/redis"
 	go get -u "github.com/google/uuid"
