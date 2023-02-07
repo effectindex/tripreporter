@@ -88,6 +88,7 @@ func main() {
 	// Setup proxy to webpack hot-reload server (for dev-ui) and regular http server (serves everything), and context
 	api.Setup(*dev, ctx.Logger)
 	api.SetupContext(ctx)
+	api.SetupJwt()
 
 	// Setup http server
 	s := &http.Server{
