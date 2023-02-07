@@ -10,9 +10,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/effectindex/tripreporter/api"
 	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 )
@@ -324,6 +327,31 @@ func (a *Account) User() (*User, error) {
 	}
 
 	return u, nil
+}
+
+func (a *Account) FromRefreshToken(token *http.Cookie) (*Account, error) {
+	a.InitType(a)
+
+	if len(token.Value) == 0 {
+		return a, types.ErrorStringEmpty.PrefixedError(api.RefreshToken)
+	}
+
+	val, err := a.Cache.Get(context.Background(), token.Value).Result()
+	if err == redis.Nil {
+		return a, types.ErrorSessionRefreshNotFound
+	} else if err != nil {
+		a.Logger.Debugw("Failed to get account from refresh token", zap.Error(err))
+		return a, err
+	}
+
+	id, err := uuid.Parse(val)
+	if err != nil { // this means an invalid UUID got put into Redis somehow
+		a.Logger.Warnw("Failed to parse valid account UUID from refresh token", zap.Error(err))
+		return a, types.ErrorAccountNotFound
+	}
+
+	a.ID = id
+	return a, nil
 }
 
 func (a *Account) FromBody(r *http.Request) (*Account, error) {
