@@ -3,14 +3,16 @@ package types
 import (
 	"context"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
 type Context struct {
-	Database *pgxpool.Pool      `json:"-" database:"-"`
 	Logger   *zap.SugaredLogger `json:"-" database:"-"`
+	Database *pgxpool.Pool      `json:"-" database:"-"`
+	Cache    *redis.Client      `json:"-" database:"-"`
 }
 
 func (ctx *Context) DB() pgx.Tx {
@@ -32,5 +34,9 @@ func (ctx *Context) Validate() {
 
 	if ctx.Database == nil {
 		panic(ErrorContextNilDatabase)
+	}
+
+	if ctx.Cache == nil {
+		panic(ErrorContextNilCache)
 	}
 }

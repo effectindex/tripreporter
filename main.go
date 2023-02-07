@@ -79,6 +79,7 @@ func main() {
 
 	// Set context database now that we have one
 	ctx.Database = sDB
+	ctx.Cache = rDB
 
 	// Setup wordlist and account configs
 	models.SetupWordlist(ctx)
