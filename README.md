@@ -1,4 +1,8 @@
 # tripreporter
+[![Docker Build](https://img.shields.io/github/actions/workflow/status/effectindex/tripreporter/make.yml?logo=go&logoColor=#00ADD8&branch=master)](https://github.com/effectindex/tripreporter/actions/workflows/make.yml)
+[![Docker Build](https://img.shields.io/github/actions/workflow/status/effectindex/tripreporter/docker.yml?logo=docker&logoColor=white&branch=master)](https://github.com/effectindex/tripreporter/actions/workflows/docker.yml)
+[![Github 1.0.0](https://img.shields.io/github/milestones/progress-percent/effectindex/tripreporter/4?color=success)](https://github.com/effectindex/tripreporter/issues)
+[![Github Stars](https://img.shields.io/github/stars/effectindex/tripreporter?style=social)](https://github.com/effectindex/tripreporter/stargazers)
 
 ## Setting up `.env`
 
