@@ -23,15 +23,8 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 				return
 			}
 
-			jwtToken, err := r.Cookie(util.CookieJwtToken)
-			if err != nil {
-				ctx.Context.Logger.Debugw("Failed to get JWT token", zap.Error(err))
-				ctx.Handle(w, r, MsgForbidden)
-				return
-			}
-
-			// This will actually verify that our jwtToken cookie is valid and not expired
-			accountID, err := AccountIDFromToken(jwtToken)
+			jwtToken, _ := r.Cookie(util.CookieJwtToken)
+			accountID, err := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
 			if err != nil {
 				ctx.Context.Logger.Debugw("Failed to get valid account ID", zap.Error(err))
 			}
@@ -78,6 +71,11 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 }
 
 func AccountIDFromToken(cookie *http.Cookie) (*uuid.UUID, error) {
+	if cookie == nil {
+		ctx.Logger.Debugw("Failed to get JWT cookie because nil")
+		return nil, nil
+	}
+
 	// Create a HMAC verifier
 	verifier, err := jwt.NewVerifierHS(jwt.HS512, ctx.JwtKey)
 	if err != nil {
@@ -101,7 +99,7 @@ func AccountIDFromToken(cookie *http.Cookie) (*uuid.UUID, error) {
 	}
 
 	// We need an account ID to reference
-	if claims.Account.Valid {
+	if !claims.Account.Valid {
 		ctx.Logger.Debugw("Failed to get token account ID because it is nil")
 		return nil, types.ErrorSessionClaimNotValid
 	}
@@ -123,7 +121,7 @@ func SetAuthCookie(w http.ResponseWriter, name string, token string, expiry time
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  expiry,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 		Secure:   true,
 	})
 }
