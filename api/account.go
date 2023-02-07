@@ -48,7 +48,7 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 
 	SetAuthCookie(w, util.CookieRefreshToken, session.Refresh, time.Now().Add(time.Minute*15)) // TODO: Change this once we've implemented refreshing
 
-	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusCreated)
+	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusCreated)
 }
 
 // AccountGet path is /api/v1/account
@@ -69,7 +69,7 @@ func AccountGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
+	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusOK)
 }
 
 // AccountPatch path is /api/v1/account
@@ -87,7 +87,7 @@ func AccountPatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
+	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusOK)
 }
 
 // AccountDelete path is /api/v1/account
@@ -106,7 +106,7 @@ func AccountDelete(w http.ResponseWriter, r *http.Request) {
 
 	DeleteAuthCookies(w, util.CookieRefreshToken, util.CookieJwtToken)
 
-	ctx.HandleJson(w, r, account.ClearSensitive(), http.StatusOK)
+	ctx.HandleJson(w, r, account.ClearAll(), http.StatusOK)
 }
 
 // AccountValidateEmail path is /api/v1/account/validate/email/{email}
@@ -157,7 +157,7 @@ func AccountValidatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := (&models.Account{Context: ctx.Context, Password: password}).ValidatePassword()
+	_, err := (&models.Account{Context: ctx.Context}).ValidatePassword(password, "Password")
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
