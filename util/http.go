@@ -7,6 +7,11 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	CookieRefreshToken = "refresh-token"
+	CookieJwtToken     = "access-token"
+)
+
 // NewProxy takes target host and creates a reverse proxy
 func NewProxy(target string, logger *zap.SugaredLogger) *httputil.ReverseProxy {
 	u, err := url.Parse(target)
