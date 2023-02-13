@@ -8,7 +8,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
-	github.com/jackc/pgtype v1.13.0
+	github.com/jackc/pgtype v1.14.0
 	github.com/jackc/pgx/v5 v5.2.0
 	github.com/joho/godotenv v1.5.1
 	github.com/shopspring/decimal v1.3.1
