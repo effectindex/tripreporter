@@ -17,7 +17,7 @@
     "@babel/core": "^7.20.12",
     "@babel/eslint-parser": "^7.19.1",
     "@formkit/i18n": "^1.0.0-beta.15",
-    "@formkit/vue": "^1.0.0-beta.14",
+    "@formkit/vue": "^1.0.0-beta.15",
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
     "@vue/cli-plugin-router": "~5.0.0",
