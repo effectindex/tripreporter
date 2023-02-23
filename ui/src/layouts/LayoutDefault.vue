@@ -27,8 +27,8 @@
         </div>
       </div>
       <div class="LayoutDefault__footer_box">
-        <div class="LayoutDefault__footer_text">
-          &copy; 2022, Subjective Effect Documentation, 5HT2 and contributors.
+        <div class="LayoutDefault__footer_text" :set="year = getYear()">
+          &copy; {{ year }}, Subjective Effect Documentation, 5HT2 and contributors.
         </div>
       </div>
     </footer>
@@ -37,7 +37,12 @@
 
 <script>
 export default {
-  name: "LayoutDefault"
+  name: "LayoutDefault",
+  methods: {
+    getYear() {
+      return new Date().getFullYear();
+    }
+  }
 }
 </script>
 
