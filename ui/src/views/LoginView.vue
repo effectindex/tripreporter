@@ -60,9 +60,7 @@ const submitForm = async (fields) => {
     return
   }
 
-  // TODO: This is only DELETE for testing purposes (it's the only endpoint that verifies password hash).
-  // TODO: Change ASAP.
-  axios.delete('/account', {data: fields}).then(function (response) {
+  axios.post('/account/login', fields).then(function (response) {
     success = response.status === 200;
     setMessage(response.data.msg, messageSuccess, success);
   }).catch(function (error) {
