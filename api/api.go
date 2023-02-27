@@ -10,6 +10,7 @@ import (
 	"github.com/effectindex/tripreporter/ui"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
 
@@ -25,6 +26,30 @@ var (
 func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 	proxy = util.NewProxy("http://localhost:"+os.Getenv("DEV_PORT"), logger)
 	dev = isDevelopment
+}
+
+// CorsWrapper will wrap h in a CORS handler
+func CorsWrapper(h http.Handler) http.Handler {
+	serveUrl := os.Getenv("PROD_URL")
+	if dev {
+		addr := os.Getenv("SRV_ADDR")
+		port := os.Getenv("SRV_PORT")
+		if len(addr) == 0 {
+			addr = "localhost"
+		}
+
+		//goland:noinspection HttpUrlsUsage
+		serveUrl = fmt.Sprintf("http://%s:%v", addr, port)
+	}
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{serveUrl},
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE"},
+		Debug:            dev,
+	})
+
+	return c.Handler(h)
 }
 
 // Handler will handle /api, /static/, and pass the rest off to Router.

@@ -93,7 +93,7 @@ func main() {
 	// Setup http server
 	s := &http.Server{
 		Addr:        os.Getenv("SRV_ADDR") + ":" + os.Getenv("SRV_PORT"),
-		Handler:     api.Handler(),
+		Handler:     api.CorsWrapper(api.Handler()),
 		IdleTimeout: time.Minute,
 	}
 
