@@ -46,6 +46,7 @@ func CorsWrapper(h http.Handler) http.Handler {
 		AllowedOrigins:   []string{serveUrl},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE"},
+		AllowedHeaders:   []string{"*"},
 		Debug:            dev,
 	})
 
