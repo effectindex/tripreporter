@@ -16,6 +16,7 @@ deps-server:
 	go get -u "github.com/jackc/pgtype"
 	go get -u "github.com/jackc/pgx/v5"
 	go get -u "github.com/joho/godotenv"
+	go get -u "github.com/rs/cors"
 	go get -u "github.com/shopspring/decimal"
 	go get -u "go.uber.org/zap"
 	go get -u "golang.org/x/crypto"
