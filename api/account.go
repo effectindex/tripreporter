@@ -19,6 +19,7 @@ func SetupAccountEndpoints(v1 *mux.Router) {
 	a1.HandleFunc("/account", AccountGet).Methods(http.MethodGet)
 	a1.HandleFunc("/account", AccountPatch).Methods(http.MethodPatch)
 	a1.HandleFunc("/account", AccountDelete).Methods(http.MethodDelete)
+	v1.HandleFunc("/account/login", AccountPostLogin).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/email/{email}", AccountValidateEmail).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/username/{username}", AccountValidateUsername).Methods(http.MethodPost)
 	v1.HandleFunc("/account/validate/password/{password}", AccountValidatePassword).Methods(http.MethodPost)
@@ -46,9 +47,41 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetAuthCookie(w, util.CookieRefreshToken, session.Refresh, time.Now().Add(time.Minute*15)) // TODO: Change this once we've implemented refreshing
+	SetAuthCookie(w, util.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
 
 	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusCreated)
+}
+
+func AccountPostLogin(w http.ResponseWriter, r *http.Request) {
+	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var a1 = &models.Account{Context: ctx.Context}
+	a1.FromData(account)
+	a1, err = a1.Get()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	account, err = a1.ValidatePassword(account.Password, "Password")
+	if err != nil {
+		ctx.Handle(w, r, MsgForbidden)
+		return
+	}
+
+	session, err := (&models.Session{Context: ctx.Context, Unique: account.Unique}).Post()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	SetAuthCookie(w, util.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
+
+	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusOK)
 }
 
 // AccountGet path is /api/v1/account
