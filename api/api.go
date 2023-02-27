@@ -30,7 +30,7 @@ func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 
 // CorsWrapper will wrap h in a CORS handler
 func CorsWrapper(h http.Handler) http.Handler {
-	serveUrl := os.Getenv("PROD_URL")
+	serveUrl := os.Getenv("VUE_APP_PROD_URL")
 	if dev {
 		addr := os.Getenv("SRV_ADDR")
 		port := os.Getenv("SRV_PORT")
