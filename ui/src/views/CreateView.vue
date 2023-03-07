@@ -35,8 +35,8 @@
               label="Setting"
               rows="5"
               validation="length:0,4096"
-              placeholder="Briefly describe the setting / place the experience started in."
               validation-visibility="live"
+              placeholder="Briefly describe the setting / place the experience started in."
               help="(optional)"
           />
 
@@ -57,24 +57,23 @@
               name="events"
           >
             <FormKit
-                v-model="event"
-                type="list"
-                name="event"
-            >
-                          <FormKit
-                              type="time"
-                              name="time"
-                              label="Time"
-                              value="23:15"
-                              help="What time will go home today?"
-                          />
+                type="select"
+                label="What type of report section is this?"
+                name="select"
+                id="select"
+                :options="[
+                    { label: 'Description', value: '1' },
+                    { label: 'Substance Dose', value: '2' },
+                  ]"
+                validation="required"
+            />
 
-              <FormKit
-                  name="email"
-                  label="Email address"
-                  validation="required|email"
-              />
-            </FormKit>
+            <FormKit
+                type="time"
+                name="timestamp"
+                label="Time"
+                :help="getEventTimestampText(value.events ? value.events[0] : '0')"
+            />
           </FormKit>
           <pre wrap>{{ value }}</pre>
           <pre wrap>{{ events }}</pre>
@@ -120,6 +119,18 @@ export default {
   name: "CreateView",
   created() {
     this.$emit('update:layout', LayoutDefault);
+  },
+  methods: {
+    getEventTimestampText(value) {
+      if (value === "1") {
+        return "What time did this description occur?"
+      }
+      if (value === "2") {
+        return "What time was this substance dosed?"
+      }
+
+      return "Select a report section type!"
+    }
   }
 }
 </script>
@@ -130,8 +141,8 @@ import {useSessionStore} from '@/assets/lib/sessionstore'
 import {useCreateStore} from "@/assets/lib/createstore";
 import NotFound from "@/views/NotFound.vue";
 
-const event = ref({"time": "23:15", email: "a@example.com", time1: "00:01"})
-const events = ref([[]])
+// const event = ref([])
+const events = ref([])
 let report = ref({})
 
 const store = useSessionStore();
