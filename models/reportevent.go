@@ -11,15 +11,15 @@ type ReportEvent struct {
 type ReportEventType int64
 
 const (
-	ReportEventUnknown   = iota
-	ReportEventNote      = 1
-	ReportEventSubstance = 2
+	ReportEventUnknown   ReportEventType = iota
+	ReportEventNote                      = 1
+	ReportEventSubstance                 = 2
 )
 
 type ReportEventSection int64
 
 const (
-	ReportEventSectionUnknown = iota
+	ReportEventSectionUnknown ReportEventSection = iota
 	ReportEventSectionDescription
 	ReportEventSectionOnset
 	ReportEventSectionPeak
