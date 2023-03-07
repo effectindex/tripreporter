@@ -2,7 +2,7 @@
   <div class="Home">
     <h1>Home</h1>
     <p>
-      Welcome to the TripReporter home page.
+      Welcome to the <span class="--tr-muted-text">subjective.report</span> home page.
     </p>
   </div>
 </template>
