@@ -13,14 +13,12 @@ import (
 type User struct { // todo: old name was Profile // todo: visible on public profile:
 	types.Context
 	Unique
-	Created     Timestamp       `json:"created" db:"created"`             // Required, set by default.
-	DisplayName string          `json:"display_name" db:"display_name"`   // Optional
-	Birth       Timestamp       `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset
-	Age         Age             `json:"age"`                              // Optional, updated by Birth and unfavored if Age set
-	Height      Decimal         `json:"height" db:"height"`               // Optional // TODO: Encryption?
-	Weight      Decimal         `json:"weight" db:"weight"`               // Optional // TODO: Encryption?
-	Medication  UserMedication  `json:"medication"`                       // User's saved medication // TODO: Add to schema
-	Preferences UserPreferences `json:"preferences"`                      // User's preferences // TODO: Add to schema
+	Created     Timestamp `json:"created" db:"created"`             // Required, set by default.
+	DisplayName string    `json:"display_name" db:"display_name"`   // Optional
+	Birth       Timestamp `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset
+	Age         Age       `json:"age"`                              // Optional, updated by Birth and unfavored if Age set
+	Height      Decimal   `json:"height" db:"height"`               // Optional // TODO: Encryption?
+	Weight      Decimal   `json:"weight" db:"weight"`               // Optional // TODO: Encryption?
 }
 
 func (u *User) Get() (*User, error) {
