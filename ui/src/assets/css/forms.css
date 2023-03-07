@@ -41,10 +41,23 @@
     -webkit-text-security: disc !important;
 }
 
-.DefaultView__form {
+.DefaultView__form, .DefaultView__form_wide {
     max-width: 25em;
     margin: auto;
     text-align: left;
+}
+
+/* override DefaultView__form_wide for browsers */
+@media only screen and (min-width: 680px) {
+    .DefaultView__form_wide {
+        max-width: 75vw;
+        margin: auto;
+        text-align: left;
+    }
+
+    .formkit-wrapper-wide {
+        max-width: 75vw;
+    }
 }
 
 .formkit-outer-hidden {
