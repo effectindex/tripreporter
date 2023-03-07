@@ -4,12 +4,16 @@ import log from "@/assets/lib/logger";
 
 export const useSessionStore = defineStore('session', {
     state: () => {
-        return { activeSession: false }
+        return {
+            updatedPreviously: false,
+            activeSession: false
+        }
     },
     actions: {
         updateSession(axios) {
             validateSession(axios).then((res) => {
                 this.activeSession = res;
+                this.updatedPreviously = true;
                 log(`store session is ${this.activeSession}`)
                 // emit("sessionUpdated", "hello from setup!") // TODO
             })
