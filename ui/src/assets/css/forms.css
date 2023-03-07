@@ -19,6 +19,10 @@
     }
 }
 
+[data-type="submit"] .formkit-input-hidden {
+    display: none;
+}
+
 [data-type="submit"] .formkit-input {
     background: var(--tr-default-primary);
 }
@@ -41,4 +45,17 @@
     max-width: 25em;
     margin: auto;
     text-align: left;
+}
+
+.formkit-outer-hidden {
+    display: none;
+}
+
+.DefaultView__inline_box {
+    text-align: center;
+    justify-content: center;
+}
+
+.DefaultView__inline {
+    display: flex;
 }

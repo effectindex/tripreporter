@@ -7,3 +7,7 @@
     --tr-default-alt-darker-text: #666;
     --tr-default-message-error: #a83232;
 }
+
+.--tr-muted-text {
+    color: var(--tr-default-alt-darker-text);
+}
