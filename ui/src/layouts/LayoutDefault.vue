@@ -1,12 +1,14 @@
 <template>
   <div class="LayoutDefault">
-    <nav class="LayoutDefault__nav">
-      <router-link class="LayoutDefault__item" to="/">Home</router-link>
-      <router-link class="LayoutDefault__item" to="/about">About</router-link>
-      <router-link v-if="!store.activeSession" class="LayoutDefault__item" to="/signup">Signup</router-link>
-      <router-link v-if="!store.activeSession" class="LayoutDefault__item" to="/login">Login</router-link>
-      <router-link v-if="store.activeSession" class="LayoutDefault__item" to="/create">Create Report</router-link>
-    </nav>
+    <div class="LayoutDefault__nav_box">
+      <nav class="LayoutDefault__nav">
+        <router-link class="LayoutDefault__item" to="/">Home</router-link>
+        <router-link class="LayoutDefault__item" to="/about">About</router-link>
+        <router-link v-if="!store.activeSession" class="LayoutDefault__item" to="/signup">Signup</router-link>
+        <router-link v-if="!store.activeSession" class="LayoutDefault__item" to="/login">Login</router-link>
+        <router-link v-if="store.activeSession" class="LayoutDefault__item" to="/create">Create Report</router-link>
+      </nav>
+    </div>
     <main class="LayoutDefault__main">
       <slot/>
     </main>
@@ -49,7 +51,7 @@ export default {
 
 <script setup>
 import {inject} from "vue";
-import { useSessionStore } from '@/assets/lib/sessionstore'
+import {useSessionStore} from '@/assets/lib/sessionstore'
 
 const axios = inject('axios');
 const store = useSessionStore();
@@ -74,6 +76,14 @@ store.updateSession(axios);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+}
+
+/* make navbar float on top */
+.LayoutDefault__nav_box {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1; /* fixes items rendering under navbar */
 }
 
 .LayoutDefault__nav {
@@ -115,6 +125,11 @@ store.updateSession(axios);
   align-self: center;
   transition: color .5s ease;
   margin: 0 1em;
+}
+
+/* push main view down to avoid being hidden under navbar + pad bottom */
+.LayoutDefault__main {
+  padding: 90px 0;
 }
 
 /* pin footer to bottom */
