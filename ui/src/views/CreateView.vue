@@ -12,18 +12,32 @@
         <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
       </div>
 
-      <div class="DefaultView__form">
+      <div class="DefaultView__form_wide">
         <!--        :submit-attrs="{inputClass: 'formkit-input-hidden'}"-->
         <FormKit type="form" :actions="false" @submit="submitForm" #default="{ value }">
 
           <FormKit
-              :classes="{ outer: createStore.submitClass }"
+              :classes="{ outer: createStore.submitClass, wrapper: 'formkit-wrapper-wide' }"
               type="text"
               id="title"
               name="title"
               label="Report Title"
               validation="required|length:0,4096"
               placeholder="My subjective experience with LSD"
+          />
+
+          <FormKit
+              :classes="{ outer: createStore.submitClass, wrapper: 'formkit-wrapper-wide' }"
+              v-show="createStore.page > 0"
+              type="textarea"
+              id="setting"
+              name="setting"
+              label="Setting"
+              rows="5"
+              validation="length:0,4096"
+              placeholder="Briefly describe the setting / place the experience started in."
+              validation-visibility="live"
+              help="(optional)"
           />
 
           <FormKit
@@ -38,43 +52,30 @@
           />
 
           <FormKit
-              v-show="createStore.page > 0"
-              type="textarea"
-              id="setting"
-              name="setting"
-              label="Setting"
-              rows="5"
-              validation="length:0,4096"
-              placeholder="Briefly describe the setting / place the experience started in."
-              validation-visibility="live"
-              help="(optional)"
-          />
+              v-model="events"
+              type="list"
+              name="events"
+          >
+            <FormKit
+                v-model="event"
+                type="list"
+                name="event"
+            >
+                          <FormKit
+                              type="time"
+                              name="time"
+                              label="Time"
+                              value="23:15"
+                              help="What time will go home today?"
+                          />
 
-<!--          <FormKit-->
-<!--              v-model="events"-->
-<!--              type="list"-->
-<!--              name="events"-->
-<!--          >-->
-<!--            <FormKit-->
-<!--                v-model="event"-->
-<!--                type="list"-->
-<!--                name="event"-->
-<!--            >-->
-              <!--            <FormKit-->
-              <!--                type="time"-->
-              <!--                name="time"-->
-              <!--                label="Time"-->
-              <!--                value="23:15"-->
-              <!--                help="What time will go home today?"-->
-              <!--            />-->
-
-<!--              <FormKit-->
-<!--                  name="email"-->
-<!--                  label="Email address"-->
-<!--                  validation="required|email"-->
-<!--              />-->
-<!--            </FormKit>-->
-<!--          </FormKit>-->
+              <FormKit
+                  name="email"
+                  label="Email address"
+                  validation="required|email"
+              />
+            </FormKit>
+          </FormKit>
           <pre wrap>{{ value }}</pre>
           <pre wrap>{{ events }}</pre>
           <!--                    <FormKit-->
@@ -129,7 +130,7 @@ import {useSessionStore} from '@/assets/lib/sessionstore'
 import {useCreateStore} from "@/assets/lib/createstore";
 import NotFound from "@/views/NotFound.vue";
 
-// const event = ref({"time": "23:15", email: "a@example.com", time1: "00:01"})
+const event = ref({"time": "23:15", email: "a@example.com", time1: "00:01"})
 const events = ref([[]])
 let report = ref({})
 
