@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// TODO: Refactor to simplify reused errors such as NotSpecified and NotFound
+
 //
 // Generic errors
 //
@@ -195,6 +197,29 @@ func (e ErrorReport) Error() string {
 		return "The specified report was not found."
 	case ErrorReportNotSpecified:
 		return "No report was specified."
+	default:
+		return ErrorUnknown.Error()
+	}
+}
+
+//
+// Drug related errors
+//
+
+type ErrorDrug int64
+
+const (
+	ErrorDrugUnknown ErrorDrug = iota
+	ErrorDrugNotFound
+	ErrorDrugNotSpecified
+)
+
+func (e ErrorDrug) Error() string {
+	switch e {
+	case ErrorDrugNotFound:
+		return "The specified drug was not found."
+	case ErrorDrugNotSpecified:
+		return "No drug was specified."
 	default:
 		return ErrorUnknown.Error()
 	}
