@@ -17,9 +17,9 @@ type ReportFull struct {
 	//Source       URL       `json:"source_url" db:"source_url"` // TODO
 	//Effects      []Effect  // TODO
 	//Submitter    Submitter // TODO
-	Title   string       `json:"title" db:"title"`
-	Setting string       `json:"setting" db:"setting"`
-	Events  ReportEvents `json:"events"` // Saved in report_events table and appended manually.
+	Title   string       `json:"title" db:"title"`               // Required.
+	Setting string       `json:"setting,omitempty" db:"setting"` // Optional.
+	Events  ReportEvents `json:"events,omitempty"`               // Saved in report_events table and appended manually.
 }
 
 func (r *ReportFull) Get() (*ReportFull, error) {
