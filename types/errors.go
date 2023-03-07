@@ -178,6 +178,29 @@ func (e ErrorSession) Error() string {
 }
 
 //
+// Report related errors
+//
+
+type ErrorReport int64
+
+const (
+	ErrorReportUnknown ErrorReport = iota
+	ErrorReportNotFound
+	ErrorReportNotSpecified
+)
+
+func (e ErrorReport) Error() string {
+	switch e {
+	case ErrorReportNotFound:
+		return "The specified report was not found."
+	case ErrorReportNotSpecified:
+		return "No report was specified."
+	default:
+		return ErrorUnknown.Error()
+	}
+}
+
+//
 // Context related errors
 //
 
