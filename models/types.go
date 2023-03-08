@@ -3,7 +3,8 @@ package models
 type RouteOfAdministration int64
 
 const ( // TODO: check if complete
-	RoaOther RouteOfAdministration = iota
+	RoaUnknown RouteOfAdministration = iota
+	RoaOther
 	RoaOral
 	RoaBuccal
 	RoaRectal
@@ -14,7 +15,7 @@ const ( // TODO: check if complete
 	RoaOtherInjection
 	RoaBuccalInjection
 	RoaIntravenousInjection
-	RoaSubcutanousInjection
+	RoaSubcutaneousInjection
 	RoaIntramuscularInjection
 )
 
@@ -25,6 +26,15 @@ const (
 	DosageMicrograms
 	DosageMilligrams
 	DosageGrams
+)
+
+type DrugPrescribed int64
+
+const (
+	DrugPrescribedUnknown DrugPrescribed = iota
+	DrugPrescribedOTC
+	DrugPrescribedNo
+	DrugPrescribedYes
 )
 
 type DisplayUnit int64
