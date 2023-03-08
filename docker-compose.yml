@@ -8,7 +8,7 @@ services:
     networks:
       - tripreporter-net
     ports:
-      - "${SRV_PORT}:${SRV_PORT}"
+      - "${DOCKER_HOST}:${SRV_PORT}:${SRV_PORT}"
 
   postgres:
     container_name: tripreporter-postgres
