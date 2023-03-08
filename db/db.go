@@ -65,7 +65,7 @@ var (
     		drug_dosage_unit int not null default 0,
     		drug_roa int not null default 0,
     		drug_frequency int default 0,
-    		drug_prescribed bool default false
+    		drug_prescribed int default 0
     	);`,
 	}
 	indexDefs = []string{
