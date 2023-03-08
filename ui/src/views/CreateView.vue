@@ -69,11 +69,99 @@
             />
 
             <FormKit
+                type="select"
+                label="During what part of the experience is this?"
+                name="section"
+                id="section"
+                :options="[
+                    { label: '', value: '0' },
+                    { label: 'Other', value: '1' },
+                    { label: 'Onset', value: '2' },
+                    { label: 'Peak', value: '3' },
+                    { label: 'Offset', value: '4' },
+                ]"
+                help="(optional)"
+            />
+
+            <FormKit
                 type="time"
                 name="timestamp"
                 label="Time"
-                :help="getEventTimestampText(value.events ? value.events[0] : '0')"
+                :help="'(optional) ' + getEventTimestampText(value)"
             />
+
+            <FormKit
+                v-if="!getEventType(value)"
+                :classes="{ outer: createStore.submitClass, wrapper: 'formkit-wrapper-wide' }"
+                type="textarea"
+                id="content"
+                name="content"
+                label="Description"
+                rows="5"
+                placeholder="Describe this part of the subjective experience."
+                help="(optional)"
+            />
+            <!-- TODO: Refactor substance dosing into separate component -->
+            <div v-else>
+              <FormKit
+                  :classes="{ outer: createStore.submitClass }"
+                  type="text"
+                  id="drug_name"
+                  name="drug_name"
+                  label="Substance name"
+                  validation="length:0,4096"
+                  placeholder="LSD"
+                  help="(optional) Leave blank if unknown."
+              />
+              <FormKit
+                  :classes="{ outer: createStore.submitClass }"
+                  type="text"
+                  id="drug_dosage"
+                  name="drug_dosage"
+                  label="Substance dosage"
+                  validation="length:0,4096"
+                  placeholder="100μg"
+                  help="(optional) Leave blank if unknown."
+              />
+              <FormKit
+                  type="select"
+                  label="Substance Route of Administration"
+                  name="roa"
+                  id="roa"
+                  :options="[
+                    { label: '', value: '0' },
+                    { label: 'Other', value: '1' },
+                    { label: 'Oral (swallowed)', value: '2' },
+                    { label: 'Sublingual (under tongue)', value: '8' },
+                    { label: 'Inhaled', value: '5' },
+                    { label: 'Intranasal (snorted)', value: '7' },
+                    { label: 'Rectal (boofed)', value: '4' },
+                    { label: 'Buccal (held in gums)', value: '3' },
+                    { label: 'Intravenous (IV injection)', value: '11' },
+                    { label: 'Intramuscular (injection into muscle)', value: '13' },
+                    { label: 'Intrabuccal (injection into gums)', value: '10' },
+                    { label: 'Subcutaneous (injection into fat)', value: '12' },
+                    { label: 'Sublabial (under the lip)', value: '6' },
+                    { label: 'Injection (other method)', value: '9' },
+                  ]"
+                  placeholder="How did you take the substance?"
+                  help="(optional)"
+              />
+              <FormKit
+                  type="select"
+                  label="Substance OTC / Prescription"
+                  name="prescribed"
+                  id="prescribed"
+                  :options="[
+                    { label: '', value: '0' },
+                    { label: 'It\'s over the counter', value: '1' },
+                    { label: 'It\'s prescribed by a doctor', value: '3' },
+                    { label: 'It\'s not prescribed by a doctor', value: '2' },
+                  ]"
+                  placeholder="Is this substance prescribed?"
+                  help="(optional)"
+              />
+            </div>
           </FormKit>
           <pre wrap>{{ value }}</pre>
           <pre wrap>{{ events }}</pre>
@@ -122,14 +210,16 @@ export default {
   },
   methods: {
     getEventTimestampText(value) {
-      if (value === "1") {
-        return "What time did this description occur?"
-      }
-      if (value === "2") {
+      const event = this.getEventType(value)
+      if (event) {
         return "What time was this substance dosed?"
       }
 
-      return "Select a report section type!"
+      return "What time did this description occur?"
+    },
+    getEventType(value) {
+      const event = value.events ? value.events[0] : '0'
+      return event === "2";
     }
   }
 }
