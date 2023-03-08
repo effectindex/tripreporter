@@ -1,6 +1,6 @@
 <template>
   <div class="signup">
-    <h1>Create your <span class="--tr-muted-text">subjective.report</span> Account</h1>
+    <h1>Create a <span class="--tr-muted-text">subjective.report</span> account 🚀</h1>
 
     <div class="DefaultView__message" id="DefaultView__message">
       <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
