@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@formkit/pro": "^1.0.0-alpha.106",
     "core-js": "^3.29.0",
     "dotenv": "^16.0.3",
     "pinia": "^2.0.33",
