@@ -8,12 +8,12 @@ import App from './App.vue'
 import router from './router'
 import apiClient from '@/api'
 
-const formkitPro = createProPlugin(process.env.FORMKIT_API_KEY, inputs)
+const formkitPro = createProPlugin(process.env.VUE_APP_FORMKIT_API_KEY, inputs)
 const pinia = createPinia()
 const app = createApp(App)
     .use(pinia)
     .use(router)
-    .use(plugin, defaultConfig({ plugins: [formkitPro()] }))
+    .use(plugin, defaultConfig({ theme: 'genesis', plugins: [formkitPro] }))
     .provide('axios', apiClient)
 
 app.mount('#app')
