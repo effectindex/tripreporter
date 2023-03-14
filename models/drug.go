@@ -4,8 +4,6 @@ import (
 	"regexp"
 	"strconv"
 	"time"
-
-	"github.com/effectindex/tripreporter/types"
 )
 
 var (
@@ -23,10 +21,10 @@ type Drug struct {
 	Prescribed DrugPrescribed        `json:"prescribed" db:"drug_prescribed"`   // Optional, uses DrugPrescribedUnknown if unset
 }
 
-func (d *Drug) ParseDose(dose string) error {
+func (d *Drug) ParseDose(dose string) {
 	parts := doseRegex.FindStringSubmatch(dose)
 	if len(parts) == 1 {
-		return types.ErrorDrugParseLen
+		return
 	}
 
 	dosage := 0
@@ -40,5 +38,5 @@ func (d *Drug) ParseDose(dose string) error {
 	d.Dosage = int64(dosage)
 	d.DosageUnit = parts[3]
 
-	return nil
+	return
 }
