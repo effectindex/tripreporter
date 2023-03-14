@@ -13,11 +13,10 @@
       </div>
 
       <div class="DefaultView__form_wide">
-        <!--        :submit-attrs="{inputClass: 'formkit-input-hidden'}"-->
         <FormKit type="form" :actions="false" @submit="submitForm" #default="{ value }">
 
           <FormKit
-              :classes="{ outer: createStore.submitClass, wrapper: 'formkit-wrapper-wide' }"
+              :classes="{ wrapper: 'formkit-wrapper-wide' }"
               type="text"
               id="title"
               name="title"
@@ -27,8 +26,7 @@
           />
 
           <FormKit
-              :classes="{ outer: createStore.submitClass, wrapper: 'formkit-wrapper-wide' }"
-              v-show="createStore.page > 0"
+              :classes="{ wrapper: 'formkit-wrapper-wide' }"
               type="textarea"
               id="setting"
               name="setting"
@@ -41,8 +39,6 @@
           />
 
           <FormKit
-              :classes="{ outer: createStore.submitClass }"
-              v-show="createStore.page > 0"
               type="date"
               id="date"
               name="report_date"
@@ -90,7 +86,7 @@
 
             <FormKit
                 v-if="!getEventType(value, index)"
-                :classes="{ outer: createStore.submitClass, wrapper: 'formkit-wrapper-wide' }"
+                :classes="{ wrapper: 'formkit-wrapper-wide' }"
                 type="textarea"
                 id="content"
                 name="content"
@@ -102,7 +98,6 @@
             <!-- TODO: Refactor substance dosing into separate component -->
             <div v-else>
               <FormKit
-                  :classes="{ outer: createStore.submitClass }"
                   type="text"
                   id="drug_name"
                   name="drug_name"
@@ -112,7 +107,6 @@
                   help="(optional) Leave blank if unknown."
               />
               <FormKit
-                  :classes="{ outer: createStore.submitClass }"
                   type="text"
                   id="drug_dosage"
                   name="drug_dosage"
@@ -161,33 +155,15 @@
               />
             </div>
           </FormKit>
-          <pre wrap>{{ value }}</pre>
-          <pre wrap>{{ events }}</pre>
-          <!--                    <FormKit-->
-          <!--                        type="submit"-->
-          <!--                        label="Register"-->
-          <!--                    />-->
+          <!--<pre wrap>{{ value }}</pre>-->
+
           <div class="DefaultView__inline_box">
             <div class="DefaultView__inline">
               <FormKit
-                  type="button"
-                  @click="updateBackProgress"
-                  :disabled="createStore.page === 0"
-              >
-                Back
-              </FormKit>
-              <FormKit
-                  type="button"
-                  @click="updateNextProgress"
-              >
-                Next
-              </FormKit>
-              <FormKit
                   type="submit"
                   @submit="submitForm"
-                  :submit-attrs="{inputClass: 'formkit-input-hidden'}"
               >
-                SubmitReal
+                Create Report!
               </FormKit>
             </div>
           </div>
@@ -233,38 +209,14 @@ export default {
 </script>
 
 <script setup>
-import {ref} from 'vue'
 import {useSessionStore} from '@/assets/lib/sessionstore'
-import {useCreateStore} from "@/assets/lib/createstore";
 import NotFound from "@/views/NotFound.vue";
 
-// const event = ref([])
-const events = ref([])
-let report = ref({})
-
 const store = useSessionStore();
-const createStore = useCreateStore();
 
 const submitForm = async (fields) => {
   // Let's pretend this is an ajax request:
-  // await new Promise((r) => setTimeout(r, 1000))
-  // createStore.page += 1
-  report.value = fields;
-  console.log(report.value.title)
-}
-
-createStore.page = 0;
-
-const updateBackProgress = async (fields) => {
-  createStore.page -= 1
-  if (createStore.page === 0) {
-    createStore.submitClass = 'formkit-outer'
-  }
-}
-
-const updateNextProgress = async (fields) => {
-  createStore.page += 1
-  createStore.submitClass = 'formkit-outer-hidden'
+  await new Promise((r) => setTimeout(r, 1000))
 }
 </script>
 
