@@ -52,46 +52,44 @@
           />
 
           <FormKit
-              v-model="events"
-              type="list"
-              name="events"
+              id="repeater"
+              name="report_sections"
+              type="repeater"
+              label="Report Content"
+              :add-button="false"
+              :insert-control="true"
+              #default="{ index }"
           >
             <FormKit
-                type="select"
-                label="What type of report section is this?"
-                name="select"
-                id="select"
-                :options="[
-                    { label: 'Description', value: '1' },
-                    { label: 'Substance Dose', value: '2' },
-                  ]"
-                validation="required"
+                type="time"
+                name="timestamp"
+                label="Time"
+                :help="'(optional) ' + getEventTimestampText(value, index)"
             />
 
             <FormKit
-                type="select"
+                type="radio"
                 label="During what part of the experience is this?"
                 name="section"
                 id="section"
+                :placeholder="getSectionPlaceholder(value, index)"
                 :options="[
-                    { label: '', value: '0' },
-                    { label: 'Other', value: '1' },
-                    { label: 'Onset', value: '2' },
-                    { label: 'Peak', value: '3' },
-                    { label: 'Offset', value: '4' },
+                  { label: 'Other', value: '1', help: 'This description is not during the experience itself.' },
+                  { label: 'Onset', value: '2' },
+                  { label: 'Peak', value: '3' },
+                  { label: 'Offset', value: '4' }
                 ]"
                 help="(optional)"
             />
 
             <FormKit
-                type="time"
-                name="timestamp"
-                label="Time"
-                :help="'(optional) ' + getEventTimestampText(value)"
+                type="toggle"
+                name="is_drug"
+                label="Adding substance dose?"
             />
 
             <FormKit
-                v-if="!getEventType(value)"
+                v-if="!getEventType(value, index)"
                 :classes="{ outer: createStore.submitClass, wrapper: 'formkit-wrapper-wide' }"
                 type="textarea"
                 id="content"
@@ -209,17 +207,26 @@ export default {
     this.$emit('update:layout', LayoutDefault);
   },
   methods: {
-    getEventTimestampText(value) {
-      const event = this.getEventType(value)
+    getEventTimestampText(value, index) {
+      const event = this.getEventType(value, index)
       if (event) {
         return "What time was this substance dosed?"
       }
 
       return "What time did this description occur?"
     },
-    getEventType(value) {
-      const event = value.events ? value.events[0] : '0'
-      return event === "2";
+    getEventType(value, index) {
+      if (!value.report_sections) {
+        return false
+      }
+      const event = value.report_sections[index] ? value.report_sections[index].is_drug : false
+      return event === true;
+    },
+    getSectionPlaceholder(value, index) {
+      console.log(`HERE: ${index}`)
+      if (!value.report_sections) {
+        return ""
+      }
     }
   }
 }
