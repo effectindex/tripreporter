@@ -62,7 +62,7 @@ var (
     		account_id uuid references accounts(id) on delete cascade,
     		drug_name varchar(4096) not null,
     		drug_dosage int not null default 0,
-    		drug_dosage_unit int not null default 0,
+    		drug_dosage_unit varchar(4096) not null,
     		drug_roa int not null default 0,
     		drug_frequency int default 0,
     		drug_prescribed int default 0
