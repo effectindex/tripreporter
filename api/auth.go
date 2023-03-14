@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -24,10 +25,10 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 			}
 
 			jwtToken, _ := r.Cookie(util.CookieJwtToken)
-			accountID, _ := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
+			sessionClaims, _ := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
 
 			// If we need to generate a new access token
-			if accountID == nil {
+			if sessionClaims == nil {
 				// First make sure we have a valid refresh token
 				account, err := (&models.Account{Context: ctx.Context}).FromRefreshToken(refreshToken)
 				if err != nil || &account.ID == nil {
@@ -49,6 +50,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 						Valid: true,
 					},
 				}
+				sessionClaims = &claims // Update so we can use it outside before serving
 
 				// Build the claims and set a new cookie to refresh the access token
 				token, err := ctx.JwtBuilder.Build(claims)
@@ -58,16 +60,22 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 
 				SetAuthCookie(w, util.CookieJwtToken, token.String(), expiryTime)
 
-				ctx.Logger.Debugw("Successfully refreshed access token", "path", r.URL.Path)
+				ctx.Logger.Debugw("Successfully refreshed access token", "account", account.ID, "path", r.URL.Path)
 			}
 
-			ctx.Logger.Debugw("Successfully authenticated user")
+			// Set SessionClaims as the context value
+			rCtx := r.Context()
+			values := &models.ContextValues{SessionClaims: *sessionClaims}
+			rCtx = context.WithValue(rCtx, models.ContextValuesKey, values)
+			r = r.WithContext(rCtx)
+
+			ctx.Logger.Debugw("Successfully authenticated user", "account", sessionClaims.Account.UUID, "path", r.URL.Path)
 			next.ServeHTTP(w, r)
 		})
 	}
 }
 
-func AccountIDFromToken(cookie *http.Cookie) (*uuid.UUID, error) {
+func AccountIDFromToken(cookie *http.Cookie) (*models.SessionClaims, error) {
 	if cookie == nil || len(cookie.Value) == 0 {
 		ctx.Logger.Debugw("Failed to get JWT cookie because nil")
 		return nil, nil
@@ -108,7 +116,7 @@ func AccountIDFromToken(cookie *http.Cookie) (*uuid.UUID, error) {
 	}
 
 	// Token has been validated, give it back
-	return &claims.Account.UUID, nil
+	return &claims, nil
 }
 
 func SetAuthCookie(w http.ResponseWriter, name string, token string, expiry time.Time) {
