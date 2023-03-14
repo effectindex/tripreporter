@@ -83,6 +83,7 @@ func Handler() http.Handler {
 
 	// API v1 endpoints
 	SetupAccountEndpoints(v1)
+	SetupReportEndpoints(v1)
 	SetupSessionEndpoints(v1)
 	SetupUserEndpoints(v1)
 

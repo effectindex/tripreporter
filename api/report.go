@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/effectindex/tripreporter/models"
 	"github.com/gorilla/mux"
 )
 
@@ -18,7 +19,14 @@ func SetupReportEndpoints(v1 *mux.Router) {
 
 // ReportPost path is /api/v1/report
 func ReportPost(w http.ResponseWriter, r *http.Request) {
-	ctx.HandleMessage(MsgNotImplemented)
+	report, err := (&models.ReportFull{Context: ctx.Context}).FromBody(r)
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx.Logger.Debugw("ReportPost", "report", report)
+	ctx.HandleMessage(MsgOk)
 }
 
 // ReportGet path is /api/v1/report/{id}
