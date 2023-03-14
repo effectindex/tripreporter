@@ -103,6 +103,7 @@
                   name="drug_name"
                   label="Substance name"
                   validation="length:0,4096"
+                  validation-visibility="live"
                   placeholder="LSD"
                   help="(optional) Leave blank if unknown."
               />
@@ -112,6 +113,7 @@
                   name="drug_dosage"
                   label="Substance dosage"
                   validation="length:0,4096"
+                  validation-visibility="live"
                   placeholder="100μg"
                   help="(optional) Leave blank if unknown."
               />
@@ -209,14 +211,31 @@ export default {
 </script>
 
 <script setup>
+import {inject} from "vue";
 import {useSessionStore} from '@/assets/lib/sessionstore'
 import NotFound from "@/views/NotFound.vue";
+import {handleMessageError, setMessage} from "@/assets/lib/message_util";
 
+const axios = inject('axios')
 const store = useSessionStore();
 
+const messageSuccess = "Successfully created report!";
+let success = false;
+
 const submitForm = async (fields) => {
-  // Let's pretend this is an ajax request:
-  await new Promise((r) => setTimeout(r, 1000))
+  // don't do anything if the user presses the button again, for example, while waiting for a redirect
+  if (success) {
+    return
+  }
+
+  await axios.post('/report', fields).then(function (response) {
+    success = response.status === 200;
+    setMessage(response.data.msg, messageSuccess, success);
+  }).catch(function (error) {
+    success = error.response.status === 200;
+    setMessage(error.response.data.msg, messageSuccess, success);
+    handleMessageError(error)
+  })
 }
 </script>
 
