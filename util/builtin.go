@@ -12,3 +12,9 @@ func SliceEqual[T comparable](a []T, b []T) bool {
 	}
 	return true
 }
+
+// SliceRemoveIndex will remove index i from s
+func SliceRemoveIndex[T comparable](s []T, i int) []T {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
