@@ -236,6 +236,7 @@ const (
 	ErrorContextNilLogger
 	ErrorContextNilDatabase
 	ErrorContextNilCache
+	ErrorContextCastFailed
 )
 
 // TODO: i18n here
@@ -247,6 +248,8 @@ func (e ErrorContext) Error() string {
 		return "ctx.Database is nil"
 	case ErrorContextNilCache:
 		return "ctx.Cache is nil"
+	case ErrorContextCastFailed:
+		return "Context failed to cast!"
 	default:
 		return ErrorUnknown.Error()
 	}
