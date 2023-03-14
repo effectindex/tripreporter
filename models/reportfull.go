@@ -2,10 +2,13 @@ package models
 
 import (
 	"context"
-	"go.uber.org/zap"
+	"encoding/json"
+	"io"
+	"net/http"
 
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"go.uber.org/zap"
 )
 
 type ReportFull struct {
@@ -19,7 +22,7 @@ type ReportFull struct {
 	//Submitter    Submitter // TODO
 	Title   string       `json:"title" db:"title"`               // Required.
 	Setting string       `json:"setting,omitempty" db:"setting"` // Optional.
-	Events  ReportEvents `json:"events,omitempty"`               // Saved in report_events table and appended manually.
+	Events  ReportEvents `json:"report_events,omitempty"`        // Saved in report_events table and appended manually.
 }
 
 func (r *ReportFull) Get() (*ReportFull, error) {
@@ -74,6 +77,53 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 	r.FromData(r1[0])
 	r.Events = r2
 
+	return r, nil
+}
+
+func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
+	r.InitType(r)
+
+	type ReportFormEvent struct {
+		Timestamp  string `json:"timestamp"`
+		IsDrug     bool   `json:"is_drug,omitempty"`
+		Section    int64  `json:"section,omitempty"`
+		Content    string `json:"content,omitempty"`
+		DrugName   string `json:"drug_name,omitempty"`
+		DrugDosage string `json:"drug_dosage,omitempty"`
+		RoA        int64  `json:"roa,omitempty"`
+		Prescribed int64  `json:"prescribed,omitempty"`
+	}
+
+	type ReportForm struct {
+		ReportSections []ReportFormEvent `json:"report_sections"`
+		Title          string            `json:"title"`
+		Setting        string            `json:"setting,omitempty"`
+		ReportDate     string            `json:"report_date"`
+	}
+
+	if r1.Body == nil {
+		return r, types.ErrorStringEmpty.PrefixedError("Request body")
+	}
+
+	defer r1.Body.Close()
+	body, err := io.ReadAll(r1.Body)
+	if err != nil {
+		return r, err
+	}
+
+	if len(body) == 0 {
+		return r, types.ErrorStringEmpty.PrefixedError("Request body")
+	}
+
+	var rf *ReportForm
+	err = json.Unmarshal(body, &rf)
+	if err != nil {
+		return r, err
+	}
+
+	r.Logger.Debugw("ReportFull.FromBody", "ReportForm", rf)
+	// TODO
+	//r.FromData(a1)
 	return r, nil
 }
 
