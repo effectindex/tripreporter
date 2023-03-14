@@ -20,6 +20,7 @@ deps-server:
 	go get -u "github.com/shopspring/decimal"
 	go get -u "go.uber.org/zap"
 	go get -u "golang.org/x/crypto"
+	go get -u "golang.org/x/exp/slices"
 	go mod tidy
 
 ##########################################################
