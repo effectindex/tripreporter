@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"strings"
 
 	"github.com/effectindex/tripreporter/ui"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 )
 
 var (
@@ -20,6 +22,7 @@ var (
 
 	staticFS, _ = fs.Sub(ui.StaticFiles, "dist")
 	httpFS      = http.FileServer(http.FS(staticFS))
+	staticIcons = []string{"android-chrome-192x192.png", "android-chrome-512x512.png", "apple-touch-icon.png", "favicon-16x16.png", "favicon-32x32.png"}
 )
 
 // Setup manages functions that should be ready to use before
@@ -97,8 +100,9 @@ func Router(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.URL.Path == "/favicon.ico" {
-		rawFile, _ := ui.StaticFiles.ReadFile("dist/favicon.ico")
+	if r.URL.Path == "/favicon.ico" || r.URL.Path == "/site.webmanifest" ||
+		(strings.HasSuffix(r.URL.Path, ".png") && slices.Contains(staticIcons, r.URL.Path)) {
+		rawFile, _ := ui.StaticFiles.ReadFile("dist" + r.URL.Path)
 		w.Write(rawFile)
 		return
 	}
