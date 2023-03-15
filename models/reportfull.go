@@ -14,6 +14,7 @@ import (
 type ReportFull struct {
 	types.Context
 	Unique
+	Account      Unique    `json:"account_id" db:"account_id"` // References the account that created this report.
 	Created      Timestamp `json:"creation_time" db:"creation_time"`
 	LastModified Timestamp `json:"modified_time" db:"modified_time"`
 	Date         Timestamp `json:"report_date" db:"report_date"`
