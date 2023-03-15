@@ -23,6 +23,8 @@
               label="Report Title"
               validation="required|length:0,4096"
               placeholder="My subjective experience with LSD"
+              :help="getValueLengthText(value.title, 4096)"
+              :delay="60"
           />
 
           <FormKit
@@ -33,9 +35,9 @@
               label="Setting"
               rows="5"
               validation="length:0,4096"
-              validation-visibility="live"
-              placeholder="Briefly describe the setting / place the experience started in."
-              help="(optional)"
+              placeholder="Describe the setting / place the experience started in."
+              :help="'(optional) ' + getValueLengthText(value.setting, 4096)"
+              :delay="60"
           />
 
           <FormKit
@@ -68,7 +70,6 @@
                 label="During what part of the experience is this?"
                 name="section"
                 id="section"
-                :placeholder="getSectionPlaceholder(value, index)"
                 :options="[
                   { label: 'Other', value: '1', help: 'This description is not during the experience itself.' },
                   { label: 'Onset', value: '2' },
@@ -93,7 +94,8 @@
                 label="Description"
                 rows="5"
                 placeholder="Describe this part of the subjective experience."
-                help="(optional)"
+                :help="'(optional) ' + getValueLengthText(value.report_sections ? value.report_sections[index] ? value.report_sections[index].content : '' : '', 10485760)"
+                :delay="60"
             />
             <!-- TODO: Refactor substance dosing into separate component -->
             <div v-else>
@@ -200,11 +202,12 @@ export default {
       const event = value.report_sections[index] ? value.report_sections[index].is_drug : false
       return event === true;
     },
-    getSectionPlaceholder(value, index) {
-      console.log(`HERE: ${index}`)
-      if (!value.report_sections) {
+    getValueLengthText(value, max) {
+      if (!value) {
         return ""
       }
+
+      return `(${value.length} / ${max.toLocaleString()})`
     }
   }
 }
