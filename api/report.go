@@ -19,13 +19,23 @@ func SetupReportEndpoints(v1 *mux.Router) {
 
 // ReportPost path is /api/v1/report
 func ReportPost(w http.ResponseWriter, r *http.Request) {
-	report, err := (&models.ReportFull{Context: ctx.Context}).FromBody(r)
+	ctxVal, ok := ctx.GetCtxValOrHandle(w, r)
+	if !ok {
+		return
+	}
+
+	report, err := (&models.ReportFull{Context: ctx.Context, Account: models.Unique{ID: ctxVal.SessionClaims.Account.UUID}}).FromBody(r)
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	ctx.Logger.Debugw("ReportPost", "report", report)
+	report, err = report.Post()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	ctx.HandleMessage(MsgOk)
 }
 
