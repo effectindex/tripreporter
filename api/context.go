@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/cristalhq/jwt/v4"
+	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
 	"github.com/joho/godotenv"
@@ -140,6 +141,19 @@ func (c *Context) HandleFunc(fn func(http.ResponseWriter, *http.Request), handle
 		fn(w, r)
 		handler.ServeHTTP(w, r)
 	}
+}
+
+// GetCtxValOrHandle will return the requests models.ContextValues and an ok if successful.
+// It will return an http.StatusBadRequest if unsuccessful.
+func (c *Context) GetCtxValOrHandle(w http.ResponseWriter, r *http.Request) (*models.ContextValues, bool) {
+	rCtx := r.Context()
+	ctxVal, ok := rCtx.Value(models.ContextValuesKey).(*models.ContextValues)
+	if ok {
+		return ctxVal, ok
+	}
+
+	ctx.HandleStatus(w, r, types.ErrorContextCastFailed.Error(), http.StatusBadRequest)
+	return nil, false
 }
 
 // CreateLogger will create a new Zap logger from an http.ResponseWriter, to log to an http request directly.
