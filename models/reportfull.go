@@ -111,14 +111,6 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 		}
 	}
 
-	rCtx := r1.Context()
-	ctxValues, ok := rCtx.Value(ContextValuesKey).(*ContextValues)
-	if !ok {
-		return r, types.ErrorContextCastFailed
-	}
-
-	accountID := ctxValues.SessionClaims.Account.UUID
-
 	if r1.Body == nil {
 		return r, types.ErrorStringEmpty.PrefixedError("Request body")
 	}
@@ -194,12 +186,10 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 
 	// Now we can parse the sections properly
 	sections := make(ReportEvents, 0)
-	accountUnique := Unique{ID: accountID}
-	accountUnique.InitType(&Account{})
 
 	for n, s := range rf.ReportSections {
 		event := &ReportEvent{
-			Unique:  r.Unique,
+			Report:  r.Unique,
 			Index:   int64(n),
 			Type:    ReportEventNote,
 			Content: s.Content,
@@ -208,19 +198,19 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 		if s.IsDrug {
 			event.Type = ReportEventDrug
 			event.Drug = Drug{ // TODO: Frequency is not parsed here
-				Account:    accountUnique,
+				Account:    r.Account,
 				Name:       s.DrugName,
 				RoA:        RouteOfAdministration(s.RoA),
 				Prescribed: DrugPrescribed(s.Prescribed),
 			}
 			event.Drug.ParseDose(s.DrugDosage)
-			event.Drug.InitType(event.Drug)
+			event.Drug.Unique.InitType(event.Drug)
 
 			if err != nil {
 				return r, err
 			}
 
-			err = event.Drug.InitUUID(r.Logger)
+			err = event.Drug.Unique.InitUUID(r.Logger)
 			if err != nil {
 				return r, err
 			}
