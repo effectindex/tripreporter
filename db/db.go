@@ -38,34 +38,34 @@ var (
     		session_key uuid not null unique,
     		primary key(account_id, session_index)
     	);`,
+		`create table if not exists drugs (
+			id uuid primary key,
+			account_id uuid references accounts(id) on delete cascade,
+			drug_name varchar(4096) not null,
+			drug_dosage int not null default 0,
+			drug_dosage_unit varchar(4096) not null,
+			drug_roa int not null default 0,
+			drug_frequency int default 0,
+			drug_prescribed int default 0
+		);`,
 		`create table if not exists reports (
     		id uuid primary key,
     		account_id uuid references accounts(id),
     		creation_time timestamptz not null default to_timestamp('0'),    		
     		modified_time timestamptz not null default to_timestamp('0'),
-    		report_date timestamptz not null default to_timestamp('0'),
+    		report_date timestamptz default to_timestamp('0'),
     		title varchar(4096) not null, -- 156*16, or 4KiB
     		setting varchar(4096) not null -- 156*16, or 4KiB
     	);`,
 		`create table if not exists report_events (
     		report_id uuid references reports(id) on delete cascade,
     		event_index int not null,
-    		event_timestamp timestamptz not null default to_timestamp('0'),
+    		event_timestamp timestamptz default to_timestamp('0'),
     		event_type int not null,
     		event_section int not null default 0,
     		event_content varchar(10485760), -- 10MiB
-    		event_drug uuid,
+    		event_drug uuid references drugs(id) on delete cascade ,
     		primary key(report_id, event_index)
-    	);`,
-		`create table if not exists drugs (
-    		id uuid primary key,
-    		account_id uuid references accounts(id) on delete cascade,
-    		drug_name varchar(4096) not null,
-    		drug_dosage int not null default 0,
-    		drug_dosage_unit varchar(4096) not null,
-    		drug_roa int not null default 0,
-    		drug_frequency int default 0,
-    		drug_prescribed int default 0
     	);`,
 	}
 	indexDefs = []string{
