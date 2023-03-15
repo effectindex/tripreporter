@@ -3,12 +3,14 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"go.uber.org/zap"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
-	"go.uber.org/zap"
 )
 
 type ReportFull struct {
@@ -77,6 +79,97 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 	r2.Sort()
 	r.FromData(r1[0])
 	r.Events = r2
+
+	return r, nil
+}
+
+func (r *ReportFull) Post() (*ReportFull, error) {
+	r.InitType(r)
+	db := r.DB()
+	defer db.Commit(context.Background())
+
+	// Init report UUID
+	if r.NilUUID() {
+		if err := r.InitUUID(r.Logger); err != nil {
+			return r, err
+		}
+
+		// We don't need to fix r.Events IDs because we just use r.ID when inserting
+	}
+
+	// Insert report
+	if _, err := db.Exec(context.Background(),
+		`insert into reports(
+			id,
+			account_id,
+			creation_time,
+			modified_time,
+			report_date,
+			title,
+			setting
+		) values($1, $2, $3, $4, $5, $6, $7);`,
+		r.ID, r.Account.ID, r.Created.String(), r.LastModified.String(), r.Date.String(), r.Title, r.Setting,
+	); err != nil {
+		r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
+		_ = db.Rollback(context.Background())
+		return r, err
+	}
+
+	// Insert report drugs
+	for _, e := range r.Events {
+		if e.Type == ReportEventDrug {
+			if _, err := db.Exec(context.Background(),
+				`insert into drugs(
+						id,
+						account_id,
+						drug_name,
+						drug_dosage,
+						drug_dosage_unit,
+						drug_roa,
+						drug_frequency,
+						drug_prescribed
+					) values($1, $2, $3, $4, $5, $6, $7, $8);`,
+				e.Drug.ID, e.Drug.Account.ID, e.Drug.Name, e.Drug.Dosage, e.Drug.DosageUnit, e.Drug.RoA, e.Drug.Frequency, e.Drug.Prescribed,
+			); err != nil {
+				r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
+				_ = db.Rollback(context.Background())
+				return r, err
+			}
+		}
+	}
+
+	// Finally, insert report events
+	for _, e := range r.Events {
+		// Create our query dynamically. This really only exists to append `drug_uuid` when needed, a better solution would be nicer.
+		insertFields := make([]interface{}, 0)
+
+		insertQuery := []string{"report_id", "event_index", "event_timestamp", "event_type", "event_section", "event_content"}
+		insertFields = append(insertFields, r.ID, e.Index, e.Timestamp.String(), e.Type, e.Section, e.Content)
+
+		if !e.Drug.NilUUID() {
+			insertQuery = append(insertQuery, "event_drug")
+			insertFields = append(insertFields, e.Drug.ID)
+		}
+
+		insertValues := make([]string, 0)
+		for n, _ := range insertQuery {
+			insertValues = append(insertValues, fmt.Sprintf("$%v", n+1))
+		}
+
+		query := fmt.Sprintf(
+			`insert into report_events(%s) values(%s);`,
+			strings.Join(insertQuery, ", "), strings.Join(insertValues, ", "),
+		)
+
+		if _, err := db.Exec(context.Background(),
+			query,
+			insertFields...,
+		); err != nil {
+			r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
+			_ = db.Rollback(context.Background())
+			return r, err
+		}
+	}
 
 	return r, nil
 }
