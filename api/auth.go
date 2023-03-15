@@ -28,7 +28,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 			sessionClaims, _ := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
 
 			// If we need to generate a new access token
-			if sessionClaims == nil {
+			if sessionClaims == nil || sessionClaims.Account.UUID == uuid.Nil {
 				// First make sure we have a valid refresh token
 				account, err := (&models.Account{Context: ctx.Context}).FromRefreshToken(refreshToken)
 				if err != nil || &account.ID == nil {
@@ -39,7 +39,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 
 				// Refresh token is okay, build the access token
 				expiryTime := time.Now().Add(time.Minute * 15) // TODO: Change this once we've implemented refreshing
-				claims := models.SessionClaims{
+				claims := &models.SessionClaims{
 					RegisteredClaims: jwt.RegisteredClaims{
 						Audience:  jwt.Audience([]string{"account"}),
 						IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -50,7 +50,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 						Valid: true,
 					},
 				}
-				sessionClaims = &claims // Update so we can use it outside before serving
+				sessionClaims = claims // Update so we can use it outside before serving
 
 				// Build the claims and set a new cookie to refresh the access token
 				token, err := ctx.JwtBuilder.Build(claims)
@@ -65,7 +65,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 
 			// Set SessionClaims as the context value
 			rCtx := r.Context()
-			values := &models.ContextValues{SessionClaims: *sessionClaims}
+			values := &models.ContextValues{SessionClaims: sessionClaims}
 			rCtx = context.WithValue(rCtx, models.ContextValuesKey, values)
 			r = r.WithContext(rCtx)
 

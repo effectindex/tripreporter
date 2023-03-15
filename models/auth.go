@@ -1,7 +1,7 @@
 package models
 
 type ContextValues struct {
-	SessionClaims SessionClaims
+	SessionClaims *SessionClaims
 }
 
 type ContextKey string
