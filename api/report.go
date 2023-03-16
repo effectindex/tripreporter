@@ -36,20 +36,20 @@ func ReportPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.HandleMessage(MsgOk)
+	ctx.HandleJson(w, r, report, http.StatusCreated)
 }
 
 // ReportGet path is /api/v1/report/{id}
 func ReportGet(w http.ResponseWriter, r *http.Request) {
-	ctx.HandleMessage(MsgNotImplemented)
+	ctx.Handle(w, r, MsgNotImplemented)
 }
 
 // ReportPatch path is /api/v1/report/{id}
 func ReportPatch(w http.ResponseWriter, r *http.Request) {
-	ctx.HandleMessage(MsgNotImplemented)
+	ctx.Handle(w, r, MsgNotImplemented)
 }
 
 // ReportDelete path is /api/v1/report/{id}
 func ReportDelete(w http.ResponseWriter, r *http.Request) {
-	ctx.HandleMessage(MsgNotImplemented)
+	ctx.Handle(w, r, MsgNotImplemented)
 }
