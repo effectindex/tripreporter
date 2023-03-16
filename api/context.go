@@ -143,6 +143,13 @@ func (c *Context) HandleFunc(fn func(http.ResponseWriter, *http.Request), handle
 	}
 }
 
+// HandleRedirect is a wrapper to redirect to a destination and set the status code.
+// TODO: This is not functional on frontend pages, see #90.
+func (c *Context) HandleRedirect(w http.ResponseWriter, r *http.Request, url string, status int) {
+	c.Logger.Debugw("API Redirect", "status", status, "path", r.URL.Path, "destination", url)
+	http.Redirect(w, r, url, status)
+}
+
 // GetCtxValOrHandle will return the requests models.ContextValues and an ok if successful.
 // It will return an http.StatusBadRequest if unsuccessful.
 func (c *Context) GetCtxValOrHandle(w http.ResponseWriter, r *http.Request) (*models.ContextValues, bool) {
