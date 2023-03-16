@@ -35,18 +35,18 @@ func SetupContext(c types.Context) {
 
 // SetupJwt will set up the JWT file, key and builder
 func SetupJwt() {
-	if err := godotenv.Load(".jwt.env"); err != nil {
-		ctx.Logger.Warnw("err loading .jwt.env file, creating new one", zap.Error(err))
+	if err := godotenv.Load("config/.jwt.env"); err != nil {
+		ctx.Logger.Warnw("err loading config/.jwt.env file, creating new one", zap.Error(err))
 	}
 
-	// Get key from .jwt.env, decode it
+	// Get key from config/.jwt.env, decode it
 	jwtKey := make([]byte, 512/8) // 512-bit key
 	key := os.Getenv("JWT_AUTH_KEY")
 	decodedKey, err := base64.StdEncoding.DecodeString(key)
 
 	// Check if decoded key is the right length, make a new one and write it if not
 	if len(decodedKey) != 512/8 || err != nil {
-		ctx.Logger.Warnw("JWT key in .jwt.env missing or not good, creating new one", zap.Error(err))
+		ctx.Logger.Warnw("JWT key in config/.jwt.env missing or not good, creating new one", zap.Error(err))
 
 		jwtKey, err := util.GenerateRandomBytes(512 / 8)
 		if err != nil {
@@ -54,9 +54,9 @@ func SetupJwt() {
 		}
 
 		encodedKey := base64.StdEncoding.EncodeToString(jwtKey)
-		err = godotenv.Write(map[string]string{"JWT_AUTH_KEY": encodedKey}, ".jwt.env")
+		err = godotenv.Write(map[string]string{"JWT_AUTH_KEY": encodedKey}, "config/.jwt.env")
 		if err != nil {
-			ctx.Logger.Fatalw("Failed to write new .jwt.env", zap.Error(err))
+			ctx.Logger.Fatalw("Failed to write new config/.jwt.env", zap.Error(err))
 		}
 	} else {
 		jwtKey = decodedKey
