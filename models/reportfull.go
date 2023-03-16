@@ -85,6 +85,7 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 
 func (r *ReportFull) Post() (*ReportFull, error) {
 	r.InitType(r)
+	r.Account.InitType(&Account{})
 	db := r.DB()
 	defer db.Commit(context.Background())
 
