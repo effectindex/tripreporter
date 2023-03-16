@@ -219,6 +219,7 @@ import {useSessionStore} from '@/assets/lib/sessionstore'
 import NotFound from "@/views/NotFound.vue";
 import {handleMessageError, setMessage} from "@/assets/lib/message_util";
 
+const router = inject('router')
 const axios = inject('axios')
 const store = useSessionStore();
 
@@ -232,11 +233,11 @@ const submitForm = async (fields) => {
   }
 
   await axios.post('/report', fields).then(function (response) {
-    success = response.status === 200;
-    setMessage(response.data.msg, messageSuccess, success);
+    success = response.status === 201;
+    setMessage(response.data.msg, messageSuccess, success, router, `/reports?id=${response.data.id}`);
   }).catch(function (error) {
-    success = error.response.status === 200;
-    setMessage(error.response.data.msg, messageSuccess, success);
+    success = error.response.status === 201;
+    setMessage(error.response.data.msg, messageSuccess, success, router, `/reports?id=${error.response.data.id}`);
     handleMessageError(error)
   })
 }

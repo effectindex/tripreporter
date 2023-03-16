@@ -1,6 +1,6 @@
 import log from "@/assets/lib/logger";
 
-export function setMessage(message, messageSuccess, status, location) {
+export function setMessage(message, messageSuccess, status, router, location, routerTimeout) {
     const elemText = document.getElementById("DefaultView__message_text");
     elemText.textContent = message;
 
@@ -11,10 +11,11 @@ export function setMessage(message, messageSuccess, status, location) {
         elem.style.background = 'var(--tr-default-primary)'
         elemText.innerHTML = messageSuccess;
 
-        if (location) {
+        if (router && location) {
+            const timeout = routerTimeout ? routerTimeout : 0
             window.setTimeout(function () {
-                window.location.href = location; // faster than window.location.replace()
-            }, 3000);
+                router.push(location)
+            }, timeout);
         }
     } else {
         elem.style.background = 'var(--tr-default-message-error)'
