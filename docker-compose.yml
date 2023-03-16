@@ -5,6 +5,8 @@ services:
     build: .
     restart: always
     env_file: [".env"]
+    volumes:
+      - "./config/:/tripreporter/config/"
     networks:
       - tripreporter-net
     ports:
