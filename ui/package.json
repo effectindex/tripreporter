@@ -20,7 +20,7 @@
     "@babel/core": "^7.21.0",
     "@babel/eslint-parser": "^7.19.1",
     "@formkit/i18n": "^1.0.0-beta.15",
-    "@formkit/vue": "^1.0.0-beta.15",
+    "@formkit/vue": "^0.16.1",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
