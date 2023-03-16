@@ -49,9 +49,9 @@ func main() {
 		logger.Fatal("err loading .env file (copy the .env.example)", zap.Error(err))
 	}
 
-	// "SRV_ADDR" and "REDIS_PASS" can be empty, they're the only optional ones
+	// Only SRV_ADDR, REDIS_PASS and DOCKER_HOST can be empty, anything else is validated.
 	if err := validateEnvKeys(
-		"SRV_PORT", "DEV_PORT", "SITE_NAME", "WORDLIST", "ACCOUNT_CONFIG", "DOCS_URL", "VUE_APP_PROD_URL", "DB_NAME", "DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", "REDIS_HOST", "REDIS_HOST", "DOCKER_POSTGRES_HOST", "DOCKER_REDIS_HOST",
+		"SRV_PORT", "DEV_PORT", "SITE_NAME", "WORDLIST", "ACCOUNT_CONFIG", "DOCS_URL", "CORS_LOGGING", "VUE_APP_PROD_URL", "VUE_APP_DEV_URL", "VUE_APP_FORMKIT_API_KEY", "DB_NAME", "DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", "REDIS_HOST", "REDIS_HOST", "DOCKER_POSTGRES_HOST", "DOCKER_REDIS_HOST",
 	); err != nil {
 		logger.Fatal("missing .env variables (copy the .env.example)", zap.Error(err))
 	}
