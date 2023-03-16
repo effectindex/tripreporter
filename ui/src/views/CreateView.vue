@@ -207,7 +207,7 @@ export default {
         return ""
       }
 
-      return `(${value.length} / ${max.toLocaleString()})`
+      return `(${value.length.toLocaleString()} / ${max.toLocaleString()})`
     }
   }
 }
