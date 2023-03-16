@@ -34,6 +34,8 @@ func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
 // CorsWrapper will wrap h in a CORS handler
 func CorsWrapper(h http.Handler, logger *zap.SugaredLogger) http.Handler {
 	serveUrl := os.Getenv("VUE_APP_PROD_URL")
+	corsLog := dev && os.Getenv("CORS_LOGGING") == "true"
+
 	if dev {
 		addr := os.Getenv("SRV_ADDR")
 		port := os.Getenv("SRV_PORT")
@@ -50,10 +52,10 @@ func CorsWrapper(h http.Handler, logger *zap.SugaredLogger) http.Handler {
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE"},
 		AllowedHeaders:   []string{"*"},
-		Debug:            dev,
+		Debug:            corsLog,
 	})
 
-	if dev {
+	if corsLog {
 		c.Log = &util.StdLogWrapper{Prefix: "[cors] ", Level: zap.DebugLevel, Logger: logger.Desugar()}
 	}
 
@@ -110,6 +112,7 @@ func Router(w http.ResponseWriter, r *http.Request) {
 
 	// Proxy everything else in dev. The static file below isn't auto-injected and doesn't have hot reload capability.
 	if dev {
+		ctx.Logger.Debugw("Serving proxy", "path", r.URL.Path)
 		proxy.ServeHTTP(w, r)
 		return
 	}
