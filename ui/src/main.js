@@ -15,5 +15,6 @@ const app = createApp(App)
     .use(router)
     .use(plugin, defaultConfig({ theme: 'genesis', plugins: [formkitPro] }))
     .provide('axios', apiClient)
+    .provide('router', router)
 
 app.mount('#app')
