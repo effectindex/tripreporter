@@ -62,9 +62,12 @@ export default {
 <script setup>
 import {inject} from 'vue'
 import {handleMessageError, setMessage} from '@/assets/lib/message_util';
+import {useSessionStore} from "@/assets/lib/sessionstore";
 
 const router = inject('router')
 const axios = inject('axios')
+const store = useSessionStore();
+
 const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
 let success = false;
 
@@ -74,14 +77,14 @@ const submitForm = async (fields) => {
     return
   }
 
-  const location = `/login?username=${fields.username}`;
+  store.lastUsername = fields.username;
 
   axios.post('/account', fields).then(function (response) {
     success = response.status === 201;
-    setMessage(response.data.msg, messageSuccess, success, router, location, 3000);
+    setMessage(response.data.msg, messageSuccess, success, router, '/login', 3000);
   }).catch(function (error) {
     success = error.response.status === 201;
-    setMessage(error.response.data.msg, messageSuccess, success, router, location, 3000);
+    setMessage(error.response.data.msg, messageSuccess, success, router, '/login', 3000);
     handleMessageError(error)
   })
 }
