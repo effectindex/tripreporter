@@ -6,7 +6,8 @@ export const useSessionStore = defineStore('session', {
     state: () => {
         return {
             updatedPreviously: false,
-            activeSession: false
+            activeSession: false,
+            lastUsername: ""
         }
     },
     actions: {
