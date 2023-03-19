@@ -15,7 +15,7 @@
               label="Username"
               validation="required"
               placeholder="mark76"
-              :value="queryUsername()"
+              :value="store.lastUsername"
           />
 
           <FormKit
@@ -42,11 +42,6 @@ export default {
   name: "LoginView",
   created() {
     this.$emit('update:layout', LayoutDefault);
-  },
-  methods: {
-    queryUsername() {
-      return this.$route.query.username ? this.$route.query.username : "";
-    }
   }
 }
 </script>
@@ -67,6 +62,8 @@ const submitForm = async (fields) => {
   if (success) {
     return
   }
+
+  store.lastUsername = fields.username;
 
   await axios.post('/account/login', fields).then(function (response) {
     success = response.status === 200;
