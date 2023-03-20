@@ -65,8 +65,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 
 			// Set SessionClaims as the context value
 			rCtx := r.Context()
-			values := &models.ContextValues{SessionClaims: sessionClaims}
-			rCtx = context.WithValue(rCtx, models.ContextValuesKey, values)
+			rCtx = context.WithValue(rCtx, models.ContextValuesKey, &models.ContextValues{Account: sessionClaims.Account.UUID, SessionClaims: sessionClaims})
 			r = r.WithContext(rCtx)
 
 			ctx.Logger.Debugw("Successfully authenticated user", "account", sessionClaims.Account.UUID, "path", r.URL.Path)
