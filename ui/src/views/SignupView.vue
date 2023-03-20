@@ -85,7 +85,7 @@ const submitForm = async (fields) => {
   }).catch(function (error) {
     success = error.response.status === 201;
     setMessage(error.response.data.msg, messageSuccess, success, router, '/login', 3000);
-    handleMessageError(error)
+    handleMessageError(error);
   })
 }
 </script>

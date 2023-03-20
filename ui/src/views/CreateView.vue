@@ -238,7 +238,7 @@ const submitForm = async (fields) => {
   }).catch(function (error) {
     success = error.response.status === 201;
     setMessage(error.response.data.msg, messageSuccess, success, router, `/reports?id=${error.response.data.id}`);
-    handleMessageError(error)
+    handleMessageError(error);
   })
 }
 </script>

@@ -71,7 +71,7 @@ const submitForm = async (fields) => {
   }).catch(function (error) {
     success = error.response.status === 200;
     setMessage(error.response.data.msg, messageSuccess, success);
-    handleMessageError(error)
+    handleMessageError(error);
   })
 
   if (success) {
