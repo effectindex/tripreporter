@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/effectindex/tripreporter/models"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -41,7 +42,21 @@ func ReportPost(w http.ResponseWriter, r *http.Request) {
 
 // ReportGet path is /api/v1/report/{id}
 func ReportGet(w http.ResponseWriter, r *http.Request) {
-	ctx.Handle(w, r, MsgNotImplemented)
+	vars := mux.Vars(r)
+	idStr, _ := vars["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		ctx.Handle(w, r, MsgNotFound)
+		return
+	}
+
+	report, err := (&models.ReportFull{Context: ctx.Context, Unique: models.Unique{ID: id}}).Get()
+	if err != nil {
+		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx.HandleJson(w, r, report, http.StatusOK)
 }
 
 // ReportPatch path is /api/v1/report/{id}
