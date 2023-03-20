@@ -76,6 +76,7 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 			}
 
 			r2[n].Drug = *d1[0]
+			r2[n].Drug.InitType(r2[n].Drug)
 		}
 	}
 
@@ -149,7 +150,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 		insertQuery := []string{"report_id", "event_index", "event_timestamp", "event_type", "event_section", "event_content"}
 		insertFields = append(insertFields, r.ID, e.Index, e.Timestamp.String(), e.Type, e.Section, e.Content)
 
-		if e.DrugID != uuid.Nil {
+		if e.Drug.ID != uuid.Nil {
 			insertQuery = append(insertQuery, "event_drug")
 			insertFields = append(insertFields, e.Drug.ID)
 		}
