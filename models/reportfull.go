@@ -287,18 +287,22 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 		// First we parse each event's timestamp to add to the event
 		time := "T" + s.Timestamp + ":00Z"
 		timestamp, err := r.Date.Parse(rf.ReportDate + time)
-		if err != nil {
+		if err != nil && len(s.Timestamp) > 0 {
 			return r, err
 		}
 
 		// Create default event
 		event := &ReportEvent{
-			Report:    r.Unique.ID,
-			Index:     int64(n),
-			Timestamp: *timestamp,
-			Type:      ReportEventNote,
-			Section:   ReportEventSection(s.Section),
-			Content:   s.Content,
+			Report:  r.Unique.ID,
+			Index:   int64(n),
+			Type:    ReportEventNote,
+			Section: ReportEventSection(s.Section),
+			Content: s.Content,
+		}
+
+		// If we parsed a timestamp, add it
+		if timestamp != nil {
+			event.Timestamp = *timestamp
 		}
 
 		// Add drug info if it's a drug
@@ -312,10 +316,6 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 			}
 			event.Drug.ParseDose(s.DrugDosage)
 			event.Drug.Unique.InitType(event.Drug)
-
-			if err != nil {
-				return r, err
-			}
 
 			err = event.Drug.Unique.InitUUID(r.Logger)
 			if err != nil {
