@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 var (
@@ -12,7 +14,7 @@ var (
 
 type Drug struct {
 	Unique
-	Account    Unique                `json:"account_id" db:"account_id"`        // References account that created this drug.
+	Account    uuid.UUID             `json:"account_id" db:"account_id"`        // References account that created this drug.
 	Name       string                `json:"name" db:"drug_name"`               // Required
 	Dosage     int64                 `json:"dosage" db:"drug_dosage"`           // Optional
 	DosageUnit string                `json:"dosage_unit" db:"drug_dosage_unit"` // Optional, uses "unknown" if unset
