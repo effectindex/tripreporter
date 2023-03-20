@@ -60,17 +60,19 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 	}
 
 	for n, i := range r2 {
-		if i.Type == ReportEventDrug && !i.Drug.NilUUID() {
+		if i.Type == ReportEventDrug && i.DrugID != uuid.Nil {
 			var d1 []*Drug
 			if err := pgxscan.Select(context.Background(), db, &d1,
-				`select * from drugs where id=$1`, r.ID,
+				`select * from drugs where id=$1`, i.DrugID,
 			); err != nil {
 				r.Logger.Warnw("Failed to get drug from DB", zap.Error(err))
 				return r, err // only return if we error here, as this one matters
 			} else if len(d1) == 0 {
 				r.Logger.Warnw("No drugs found for parameters", "report event", i)
+				continue
 			} else if len(d1) > 1 { // This shouldn't happen
 				r.Logger.Warnw("Multiple drugs found for parameters", "drugs", d1)
+				continue
 			}
 
 			r2[n].Drug = *d1[0]
@@ -147,7 +149,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 		insertQuery := []string{"report_id", "event_index", "event_timestamp", "event_type", "event_section", "event_content"}
 		insertFields = append(insertFields, r.ID, e.Index, e.Timestamp.String(), e.Type, e.Section, e.Content)
 
-		if !e.Drug.NilUUID() {
+		if e.DrugID != uuid.Nil {
 			insertQuery = append(insertQuery, "event_drug")
 			insertFields = append(insertFields, e.Drug.ID)
 		}
@@ -283,7 +285,7 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 
 	for n, s := range rf.ReportSections {
 		event := &ReportEvent{
-			Report:  r.Unique,
+			Report:  r.Unique.ID,
 			Index:   int64(n),
 			Type:    ReportEventNote,
 			Content: s.Content,
