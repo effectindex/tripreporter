@@ -24,14 +24,10 @@ export default {
     const axios = inject('axios')
 
     await axios.get('/report/'+props.id).then(function (response) {
-      store.apiSuccess = response.status === 200;
-      store.data = response.data;
-      console.log(response.data)
-      setMessage(response.data.msg, `<wrap pre>${JSON.stringify(response.data, null, 4)}</wrap>`, store.apiSuccess);
+      store.updateData(response.status, response.data)
+      setMessage(response.data.msg, "", store.apiSuccess);
     }).catch(function (error) {
-      console.log(error.response)
-      console.log(error.response.data.msg)
-      store.apiSuccess = error.response.status === 200;
+      store.updateData(error.response.status, error.response.data)
       setMessage(error.response.data.msg, "", store.apiSuccess);
       handleMessageError(error);
     })
