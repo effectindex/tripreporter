@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"io"
 	"net/http"
@@ -16,7 +17,7 @@ import (
 type ReportFull struct {
 	types.Context
 	Unique
-	Account      Unique    `json:"account_id" db:"account_id"` // References the account that created this report.
+	Account      uuid.UUID `json:"account_id" db:"account_id"` // References the account that created this report.
 	Created      Timestamp `json:"creation_time" db:"creation_time"`
 	LastModified Timestamp `json:"modified_time" db:"modified_time"`
 	Date         Timestamp `json:"report_date" db:"report_date"`
@@ -85,7 +86,6 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 
 func (r *ReportFull) Post() (*ReportFull, error) {
 	r.InitType(r)
-	r.Account.InitType(&Account{})
 	db := r.DB()
 	defer db.Commit(context.Background())
 
@@ -130,7 +130,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 						drug_frequency,
 						drug_prescribed
 					) values($1, $2, $3, $4, $5, $6, $7, $8);`,
-				e.Drug.ID, e.Drug.Account.ID, e.Drug.Name, e.Drug.Dosage, e.Drug.DosageUnit, e.Drug.RoA, e.Drug.Frequency, e.Drug.Prescribed,
+				e.Drug.ID, e.Drug.Account, e.Drug.Name, e.Drug.Dosage, e.Drug.DosageUnit, e.Drug.RoA, e.Drug.Frequency, e.Drug.Prescribed,
 			); err != nil {
 				r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
 				_ = db.Rollback(context.Background())
@@ -327,6 +327,7 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 func (r *ReportFull) FromData(r1 *ReportFull) {
 	r.InitType(r)
 	r.ID = r1.ID
+	r.Account = r1.Account
 	r.Created = r1.Created
 	r.LastModified = r1.LastModified
 	r.Date = r1.Date
