@@ -284,13 +284,24 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 	sections := make(ReportEvents, 0)
 
 	for n, s := range rf.ReportSections {
-		event := &ReportEvent{
-			Report:  r.Unique.ID,
-			Index:   int64(n),
-			Type:    ReportEventNote,
-			Content: s.Content,
+		// First we parse each event's timestamp to add to the event
+		time := "T" + s.Timestamp + ":00Z"
+		timestamp, err := r.Date.Parse(rf.ReportDate + time)
+		if err != nil {
+			return r, err
 		}
 
+		// Create default event
+		event := &ReportEvent{
+			Report:    r.Unique.ID,
+			Index:     int64(n),
+			Timestamp: *timestamp,
+			Type:      ReportEventNote,
+			Section:   ReportEventSection(s.Section),
+			Content:   s.Content,
+		}
+
+		// Add drug info if it's a drug
 		if s.IsDrug {
 			event.Type = ReportEventDrug
 			event.Drug = Drug{ // TODO: Frequency is not parsed here
@@ -312,8 +323,7 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 			}
 		}
 
-		event.Section = ReportEventSection(s.Section)
-
+		// Add this to the parsed sections type
 		sections = append(sections, event)
 	}
 
