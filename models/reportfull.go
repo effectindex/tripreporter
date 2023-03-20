@@ -111,7 +111,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 			title,
 			setting
 		) values($1, $2, $3, $4, $5, $6, $7);`,
-		r.ID, r.Account.ID, r.Created.String(), r.LastModified.String(), r.Date.String(), r.Title, r.Setting,
+		r.ID, r.Account, r.Created.String(), r.LastModified.String(), r.Date.String(), r.Title, r.Setting,
 	); err != nil {
 		r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
