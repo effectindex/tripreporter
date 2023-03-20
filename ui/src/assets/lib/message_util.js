@@ -2,6 +2,11 @@ import log from "@/assets/lib/logger";
 
 export function setMessage(message, messageSuccess, status, router, location, routerTimeout) {
     const elemText = document.getElementById("DefaultView__message_text");
+    if (elemText === null) {
+        log(`elemText is null!`, arguments)
+        return
+    }
+
     elemText.textContent = message;
 
     const elem = document.getElementById("DefaultView__message")
