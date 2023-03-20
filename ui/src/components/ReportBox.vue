@@ -21,7 +21,6 @@
                               :showSection="showCurrentSection(index, report.report_events)"/>
           </div>
         </div>
-        <pre wrap>{{ getStore().data }}</pre>
       </div>
     </div>
   </div>
