@@ -1,7 +1,7 @@
 <template>
   <div class="reports">
     <Suspense>
-      <report-box :id="this.$route.query.id ? this.$route.query.id : ''" />
+      <report-box :id="this.queryID" />
     </Suspense>
     <div v-if="!store.hideMessage" class="DefaultView__message" id="DefaultView__message">
       <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
@@ -20,6 +20,7 @@ export default {
   },
   created() {
     this.$emit('update:layout', LayoutDefault);
+    this.queryID = this.$route.query.id;
   }
 }
 </script>
