@@ -24,7 +24,7 @@ func ReportPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	report, err := (&models.ReportFull{Context: ctx.Context, Account: models.Unique{ID: ctxVal.SessionClaims.Account.UUID}}).FromBody(r)
+	report, err := (&models.ReportFull{Context: ctx.Context, Account: ctxVal.Account}).FromBody(r)
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
