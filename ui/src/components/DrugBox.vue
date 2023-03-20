@@ -78,7 +78,12 @@ export default {
         return drug.dosage_unit
       }
 
-      return `${drug.dosage}${drug.dosage_unit}`
+      let joiner = " "
+      if (drug.dosage_unit.length < 5) {
+        joiner = ""
+      }
+
+      return `${drug.dosage}${joiner}${drug.dosage_unit}`
     }
   }
 }
