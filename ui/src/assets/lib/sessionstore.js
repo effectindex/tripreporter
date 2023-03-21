@@ -15,8 +15,7 @@ export const useSessionStore = defineStore('session', {
             validateSession(axios).then((res) => {
                 this.activeSession = res;
                 this.updatedPreviously = true;
-                log(`store session is ${this.activeSession}`)
-                // emit("sessionUpdated", "hello from setup!") // TODO
+                log(`Loaded store session: ${this.activeSession ? "active session" : "no session"}`)
             })
         },
     },

@@ -3,7 +3,7 @@ import log from "@/assets/lib/logger";
 export function setMessage(message, messageSuccess, status, router, location, routerTimeout) {
     const elemText = document.getElementById("DefaultView__message_text");
     if (elemText === null) {
-        log(`elemText is null!`, arguments)
+        log("elemText is null!", arguments)
         return
     }
 
@@ -33,6 +33,6 @@ export function handleMessageError(error) {
     } else if (error.request) {
         log(error.request);
     } else {
-        log(`Error: ${error.message} - ${error}`);
+        log("Unexpected error when handling message", error);
     }
 }
