@@ -18,7 +18,6 @@ This step is necessary for both development and production use.
 
 ## Building and running
 
-
 <details><summary><h3>For production (with Docker)</h3></summary>
 
 This is intended for production use.

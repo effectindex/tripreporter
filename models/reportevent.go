@@ -14,7 +14,7 @@ type ReportEvent struct {
 	Section   ReportEventSection `json:"section" db:"event_section"`        // Section event is in
 	Content   string             `json:"content" db:"event_content"`        // Content of event, if ReportEventNote
 	DrugID    uuid.UUID          `json:"drug_id,omitempty" db:"event_drug"` // DrugID of event, corresponds to Drug, if ReportEventDrug
-	Drug      Drug               `json:"drug,omitempty"`                    // Drug of event,if ReportEventDrug
+	Drug      Drug               `json:"drug,omitempty"`                    // Drug of event, if ReportEventDrug
 }
 
 type ReportEventType int64

@@ -4,7 +4,6 @@
   </component>
 </template>
 
-
 <style>
 html,
 body {
