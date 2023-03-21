@@ -6,7 +6,7 @@
       </div>
     </div>
     <div v-else>
-      <h1>Create a Subjective Experience Report</h1>
+      <h1 class="--tr-not-bold">Create a Subjective Experience Report</h1>
 
       <div class="DefaultView__message" id="DefaultView__message">
         <div class="DefaultView__message_text" id="DefaultView__message_text"></div>

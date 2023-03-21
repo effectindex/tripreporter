@@ -1,7 +1,7 @@
 <template>
   <div class="LayoutReport__main" v-if="getStore().data !== undefined">
     <div v-for="(report, index) in [getStore().data]" :key="index">
-      <h1>{{ report.title }}</h1>
+      <h1 class="--tr-not-bold">{{ report.title }}</h1>
 
       <div class="LayoutReport__report">
         <div class="LayoutReport__setting">

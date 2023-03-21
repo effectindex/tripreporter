@@ -11,3 +11,7 @@
 .--tr-muted-text {
     color: var(--tr-default-alt-darker-text);
 }
+
+.--tr-not-bold {
+    font-weight: normal;
+}

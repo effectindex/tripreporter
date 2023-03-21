@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1 class="--tr-not-bold">This is an about page</h1>
   </div>
 </template>
 
@@ -14,8 +14,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
-
