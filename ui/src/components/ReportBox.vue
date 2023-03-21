@@ -62,7 +62,6 @@ export default {
       classes[boxClass] = true
       classes['LayoutReportBox_last'] = index === sections.length - 1
 
-      console.log(classes)
       return classes
     }
   },
