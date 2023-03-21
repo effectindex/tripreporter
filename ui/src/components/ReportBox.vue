@@ -4,6 +4,28 @@
       <h1 class="--tr-not-bold">{{ report.title }}</h1>
 
       <div class="LayoutReport__report">
+        <div class="LayoutReport__report_summary">
+<!--          TODO: See #99 / #100 -->
+<!--          <div class="LayoutReport__report_summary_entry">-->
+<!--            <header-row-box-->
+<!--                style="margin-left: 0;"-->
+<!--                header="User"-->
+<!--                icon="user"-->
+<!--                :columns="['Name', 'Date', 'Gender', 'Height', 'Weight']"-->
+<!--                :rows="{-->
+<!--                    'Name': 'Josie Kins',-->
+<!--                  'Date': getFormattedTimestamp({data: report.report_date, longFormat: true}),-->
+<!--                  'Gender': 'Female',-->
+<!--                  'Height': '5\'9',-->
+<!--                  'Weight': '~150 lbs'-->
+<!--              }"-->
+<!--            />-->
+<!--          </div>-->
+          <div class="LayoutReport__report_summary_entry">
+            <drug-summary-box style="margin-right: 0;" :events="report.report_events"/>
+          </div>
+        </div>
+
         <div class="LayoutReport__setting">
           <div :class="{'LayoutReportBox': true, 'LayoutReportBox_last': true}">
             Experienced on
@@ -32,6 +54,9 @@ import {handleMessageError, setMessage} from "@/assets/lib/message_util";
 import {useReportsStore} from "@/assets/lib/reportsstore";
 import TimestampText from "@/components/TimestampText.vue";
 import ReportEventBox from "@/components/ReportEventBox.vue";
+import DrugSummaryBox from "@/components/DrugSummaryBox.vue";
+import getFormattedTimestamp from "@/assets/lib/timestamp";
+import HeaderRowBox from "@/components/HeaderRowBox.vue";
 
 const store = useReportsStore();
 let ranSetup = false
@@ -39,6 +64,8 @@ let ranSetup = false
 export default {
   name: "ReportBox",
   components: {
+    HeaderRowBox,
+    DrugSummaryBox,
     ReportEventBox,
     TimestampText
   },
@@ -46,6 +73,7 @@ export default {
     id: String
   },
   methods: {
+    getFormattedTimestamp,
     getStore() {
       return store
     },
@@ -99,6 +127,22 @@ export default {
 .LayoutReport__report {
   max-width: 75%;
   margin: auto;
+}
+
+.LayoutReport__report_summary {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+.LayoutReport__report_summary_entry {
+  flex-grow: 1;
+}
+
+.LayoutReport__report_summary_entry:first-child {
+  margin-right: 1em;
 }
 
 .LayoutReport__setting, .LayoutReport__events {
