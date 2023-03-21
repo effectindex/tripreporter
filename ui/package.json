@@ -17,7 +17,7 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.0",
+    "@babel/core": "^7.21.3",
     "@babel/eslint-parser": "^7.19.1",
     "@formkit/i18n": "^0.16.1",
     "@formkit/vue": "^0.16.1",
