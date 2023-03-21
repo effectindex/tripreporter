@@ -70,6 +70,7 @@
                 label="During what part of the experience is this?"
                 name="section"
                 id="section"
+                :value="getRadioDefault(value, index)"
                 :options="[
                   { label: 'Other', value: '1', help: 'This description is not during the experience itself.' },
                   { label: 'Onset', value: '2' },
@@ -201,6 +202,12 @@ export default {
       }
       const event = value.report_sections[index] ? value.report_sections[index].is_drug : false
       return event === true;
+    },
+    getRadioDefault(value, index) {
+      if (!value.report_sections || index === 0) {
+        return '0'
+      }
+      return value.report_sections[index - 1] ? value.report_sections[index - 1].section : '0'
     },
     getValueLengthText(value, max) {
       if (!value) {
