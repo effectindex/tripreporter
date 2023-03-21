@@ -56,7 +56,6 @@ import TimestampText from "@/components/TimestampText.vue";
 import ReportEventBox from "@/components/ReportEventBox.vue";
 import DrugSummaryBox from "@/components/DrugSummaryBox.vue";
 import getFormattedTimestamp from "@/assets/lib/timestamp";
-import HeaderRowBox from "@/components/HeaderRowBox.vue";
 
 const store = useReportsStore();
 let ranSetup = false
@@ -64,7 +63,6 @@ let ranSetup = false
 export default {
   name: "ReportBox",
   components: {
-    HeaderRowBox,
     DrugSummaryBox,
     ReportEventBox,
     TimestampText
