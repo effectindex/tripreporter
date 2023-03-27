@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -55,7 +56,7 @@ func (e ErrorString) Error() string {
 	case ErrorStringLong:
 		return "String is too long."
 	case ErrorStringInvalidChar:
-		return "String contains invalid character(s)."
+		return "String contains invalid characters."
 	case ErrorStringUniqueChar:
 		return "String does not contain enough unique characters."
 	case ErrorStringSymbolChar:
@@ -69,6 +70,52 @@ func (e ErrorString) Error() string {
 
 func (e ErrorString) PrefixedError(s string) error {
 	return errors.New(s + strings.TrimPrefix(e.Error(), "String"))
+}
+
+func (e ErrorString) ContextError(ctx ...any) error {
+	if len(ctx) == 0 {
+		return e
+	}
+
+	// Remove the period suffix, we will re-add it after.
+	// Make the error singular if context is 1.
+	err := strings.TrimSuffix(e.Error(), ".")
+	if strings.HasSuffix(err, "s") && len(ctx) == 1 {
+		strings.TrimSuffix(err, "s")
+	}
+
+	// Convert context elems to a []string
+	var ctxStr []string
+	notNum := false
+	for _, c := range ctx {
+		// If we find anything that isn't an int, we will want to use a different separator
+		if _, ok := c.(int); !ok {
+			notNum = true
+		}
+
+		// Special case for using map[string]bool as a de-duplicated []string
+		if s, ok := c.(map[string]bool); ok {
+			for v := range s {
+				ctxStr = append(ctxStr, v)
+			}
+			continue
+		}
+
+		ctxStr = append(ctxStr, fmt.Sprintf("%v", c))
+	}
+
+	sep := " / "
+	pre := " ("
+	suf := ")"
+
+	if notNum {
+		sep = ", "
+		pre = ": "
+		suf = ""
+	}
+
+	// Return the context string with our original error
+	return errors.New(fmt.Sprintf("%s%s%s%s.", err, pre, strings.Join(ctxStr, sep), suf))
 }
 
 //
