@@ -23,7 +23,6 @@ export default {
           rows.push({'Name': e.drug.name, 'Dosage': getDose(e.drug), 'RoA': getRoA(e.drug)})
         }
       })
-      console.log(rows)
       return rows
     }
   },
