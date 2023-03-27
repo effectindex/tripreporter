@@ -1,3 +1,4 @@
+import { ref } from "vue";
 import { defineStore } from 'pinia'
 import { validateSession } from "@/assets/lib/session";
 import log from "@/assets/lib/logger";
@@ -7,7 +8,8 @@ export const useSessionStore = defineStore('session', {
         return {
             updatedPreviously: false,
             activeSession: false,
-            lastUsername: ""
+            lastUsername: "",
+            createAccountForm: ref({}), // Used when creating an account
         }
     },
     actions: {
