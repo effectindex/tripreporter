@@ -7,7 +7,6 @@ import (
 	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/util"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -34,7 +33,7 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	account = account.ClearImmutable()
-	account.ID = uuid.Nil // We don't want to let users set the ID and so on when creating an account
+	account.Default(account) // We don't want to let users set the ID and so on when creating an account
 	account, err = account.Post()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
