@@ -11,9 +11,10 @@ type Message int64
 const (
 	MsgUnknown Message = iota
 	MsgNotImplemented
-	MsgNotFound
 	MsgForbidden
+	MsgNotFound
 	MsgMethodNotAllowed
+	MsgNotAcceptable
 	MsgInvalidEndpoint
 	MsgInvalidApiVersion
 	MsgNilVariable
@@ -24,12 +25,14 @@ func (e Message) String() string {
 	switch e {
 	case MsgNotImplemented:
 		return types.ErrorNotImplemented.Error()
-	case MsgNotFound:
-		return http.StatusText(http.StatusNotFound)
 	case MsgForbidden:
 		return http.StatusText(http.StatusForbidden)
+	case MsgNotFound:
+		return http.StatusText(http.StatusNotFound)
 	case MsgMethodNotAllowed:
-		return "Method not allowed!"
+		return http.StatusText(http.StatusMethodNotAllowed)
+	case MsgNotAcceptable:
+		return http.StatusText(http.StatusNotAcceptable)
 	case MsgInvalidEndpoint:
 		return "Invalid API endpoint!"
 	case MsgInvalidApiVersion:
@@ -47,12 +50,14 @@ func (e Message) Status() int {
 	switch e {
 	case MsgNotImplemented:
 		return http.StatusNotImplemented
-	case MsgNotFound:
-		return http.StatusNotFound
 	case MsgForbidden:
 		return http.StatusForbidden
+	case MsgNotFound:
+		return http.StatusNotFound
 	case MsgMethodNotAllowed:
 		return http.StatusMethodNotAllowed
+	case MsgNotAcceptable:
+		return http.StatusNotAcceptable
 	case MsgInvalidEndpoint:
 		return http.StatusBadRequest
 	case MsgInvalidApiVersion:
