@@ -23,7 +23,7 @@
               label="Report Title"
               validation="required|length:0,4096"
               placeholder="My subjective experience with LSD"
-              :help="getValueLengthText(value.title, 4096)"
+              :help="getTextLength(value.title, 4096)"
               :delay="60"
           />
 
@@ -36,7 +36,7 @@
               rows="5"
               validation="length:0,4096"
               placeholder="Describe the setting / place the experience started in."
-              :help="'(optional) ' + getValueLengthText(value.setting, 4096)"
+              :help="'(optional) ' + getTextLength(value.setting, 4096)"
               :delay="60"
           />
 
@@ -95,7 +95,7 @@
                 label="Description"
                 rows="5"
                 placeholder="Describe this part of the subjective experience."
-                :help="'(optional) ' + getValueLengthText(value.report_sections ? value.report_sections[index] ? value.report_sections[index].content : '' : '', 10485760)"
+                :help="'(optional) ' + getTextLength(value.report_sections ? value.report_sections[index] ? value.report_sections[index].content : '' : '', 10485760)"
                 :delay="60"
             />
             <!-- TODO: Refactor substance dosing into separate component -->
@@ -208,13 +208,6 @@ export default {
         return '0'
       }
       return value.report_sections[index - 1] ? value.report_sections[index - 1].section : '0'
-    },
-    getValueLengthText(value, max) {
-      if (!value) {
-        return ""
-      }
-
-      return `(${value.length.toLocaleString()} / ${max.toLocaleString()})`
     }
   }
 }
@@ -225,6 +218,7 @@ import {inject} from "vue";
 import {useSessionStore} from '@/assets/lib/sessionstore'
 import NotFound from "@/views/NotFound.vue";
 import {handleMessageError, setMessage} from "@/assets/lib/message_util";
+import {getTextLength} from "@/assets/lib/form";
 
 const router = inject('router')
 const axios = inject('axios')
