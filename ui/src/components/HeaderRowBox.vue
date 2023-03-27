@@ -15,7 +15,7 @@
     <div v-if="columns" class="HeaderRowBox__row_wrapper">
       <div v-for="(label, index) in columns" :key="index" class="HeaderRowBox__row">
         <div class="HeaderRowBox__row_label">
-          {{ label }}:
+          {{ label }}
         </div>
         <div class="HeaderRowBox__row_entry">
           {{ rows[label] }}
