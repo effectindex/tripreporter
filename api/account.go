@@ -40,6 +40,19 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If a new user is not provided when making an account, we default to making a blank one
+	if account.NewUser == nil {
+		account.NewUser = &models.User{Context: ctx.Context, Unique: account.Unique}
+	}
+
+	// Create the associated user for the account.
+	account.NewUser, err = account.NewUser.Post()
+	if err != nil {
+		ctx.HandleStatus(w, r, "user: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Create an auth session.
 	session, err := (&models.Session{Context: ctx.Context, Unique: account.Unique}).Post()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
