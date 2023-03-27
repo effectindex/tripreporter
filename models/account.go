@@ -28,11 +28,13 @@ type Account struct { // todo: this should be oauth / credentials. allow changin
 	Unique
 	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
 	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
-	Password string `json:"password"`                           // Optional. Only used in API requests, is here to so API users aren't confused by `password_hash` when making a new account.
-	NewPass  string `json:"new_password"`                       // Optional. Only used in PATCH API requests, when changing the password.
 	Salt     []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
 	Hash     []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
 	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
+
+	Password string `json:"password"`           // Optional. Only used in API requests, is here to so API users aren't confused by `password_hash` when making a new account.
+	NewPass  string `json:"new_password"`       // Optional. Only used in PATCH API requests, when changing the password.
+	NewUser  *User  `json:"new_user,omitempty"` // Optional. Only used in API requests, when creating an account.
 }
 
 type AccountPublic struct {
@@ -402,7 +404,20 @@ func (a *Account) FromBody(r *http.Request) (*Account, error) {
 	}
 
 	a.FromData(a1)
-	return a, nil
+
+	if a.NewUser != nil {
+		// Make sure to copy over the context
+		a.NewUser.Context = a.Context
+
+		// Don't allow requests to set the user ID, we want to use the account ID.
+		a.NewUser.Unique = a.Unique
+		a.NewUser.Unique.InitType(a.Logger)
+
+		// Don't allow requests to set created value themselves, we want to set it ourselves.
+		a.NewUser.Created.Default()
+	}
+
+	return a, nil // TODO: Ensure a.Unique.Type is not mutated by the above
 }
 
 func (a *Account) FromData(a1 *Account) {
