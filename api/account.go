@@ -19,9 +19,7 @@ func SetupAccountEndpoints(v1 *mux.Router) {
 	a1.HandleFunc("/account", AccountPatch).Methods(http.MethodPatch)
 	a1.HandleFunc("/account", AccountDelete).Methods(http.MethodDelete)
 	v1.HandleFunc("/account/login", AccountPostLogin).Methods(http.MethodPost)
-	v1.HandleFunc("/account/validate/email/{email}", AccountValidateEmail).Methods(http.MethodPost)
-	v1.HandleFunc("/account/validate/username/{username}", AccountValidateUsername).Methods(http.MethodPost)
-	v1.HandleFunc("/account/validate/password/{password}", AccountValidatePassword).Methods(http.MethodPost)
+	v1.HandleFunc("/account/validate", AccountValidate).Methods(http.MethodPost)
 }
 
 // AccountPost path is /api/v1/account
@@ -154,57 +152,56 @@ func AccountDelete(w http.ResponseWriter, r *http.Request) {
 	ctx.HandleJson(w, r, account.ClearAll(), http.StatusOK)
 }
 
-// AccountValidateEmail path is /api/v1/account/validate/email/{email}
-func AccountValidateEmail(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	email, ok := vars["email"]
-
-	if !ok {
-		ctx.HandlePrefixed(w, r, "`email`", MsgNilVariable)
-		return
-	}
-
-	_, err := (&models.Account{Context: ctx.Context, Email: email}).ValidateEmail()
+// AccountValidate path is /api/v1/account/validate
+func AccountValidate(w http.ResponseWriter, r *http.Request) {
+	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	ctx.Handle(w, r, MsgOk)
-}
-
-// AccountValidateUsername path is /api/v1/account/validate/username/{username}
-func AccountValidateUsername(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	username, ok := vars["username"]
-
-	if !ok {
-		ctx.HandlePrefixed(w, r, "`username`", MsgNilVariable)
+	// Check if we have fields to validate, to avoid making an unnecessary DB GET.
+	if len(account.Email) == 0 && len(account.Username) == 0 && len(account.Password) == 0 {
+		ctx.HandleStatus(w, r, "Account validation data required.", http.StatusBadRequest)
 		return
 	}
 
-	_, err := (&models.Account{Context: ctx.Context, Username: username}).ValidateUsername()
-	if err != nil {
-		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+	// Validate password first, because we don't need to check the DB for it.
+	if len(account.Password) > 0 {
+		_, err = (&models.Account{Context: ctx.Context}).ValidatePassword(account.Password, "Password")
+		if err != nil {
+			ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		ctx.Handle(w, r, MsgOk)
 		return
 	}
 
-	ctx.Handle(w, r, MsgOk)
-}
-
-// AccountValidatePassword path is /api/v1/account/validate/password/{password}
-func AccountValidatePassword(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	password, ok := vars["password"]
-
-	if !ok {
-		ctx.HandlePrefixed(w, r, "`password`", MsgNilVariable)
-		return
+	// Validate email
+	if len(account.Email) > 0 {
+		_, err = account.ValidateEmail()
+		if err != nil {
+			ctx.HandleStatus(w, r, err.Error(), http.StatusNotAcceptable)
+			return
+		}
 	}
 
-	_, err := (&models.Account{Context: ctx.Context}).ValidatePassword(password, "Password")
-	if err != nil {
-		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+	// Validate username
+	if len(account.Username) > 0 {
+		_, err = account.ValidateUsername()
+		if err != nil {
+			ctx.HandleStatus(w, r, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+	}
+
+	// Now that either or email or username exist and are valid, we can check if it's in use already.
+	// Because we don't want to allow anyone to GET an account by its ID, we only want to copy the email and username.
+	// Then, we GET the account to see if we catch any errors.
+	_, err = (&models.Account{Context: ctx.Context, Email: account.Email, Username: account.Username}).Get()
+	if err == nil || err != types.ErrorAccountNotFound {
+		ctx.HandleStatus(w, r, "Email or username already in use!", http.StatusNotAcceptable)
 		return
 	}
 
