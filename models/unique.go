@@ -43,6 +43,15 @@ func (u *Unique) NilUUID() bool {
 	return &u.ID == nil || u.ID == uuid.Nil
 }
 
+func (u *Unique) Default(a any) {
+	if u == nil {
+		*u = Unique{ID: uuid.Nil}
+		return
+	}
+
+	u.ID = uuid.Nil
+}
+
 func (u *Unique) InitType(a any) {
 	if len(u.Type) == 0 {
 		t := strings.Split(fmt.Sprintf("%T", a), ".")
