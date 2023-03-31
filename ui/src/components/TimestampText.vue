@@ -1,15 +1,19 @@
 <template>
-  <span>{{ getFormattedTimestamp({data, showTime, hideDate, longFormat}) }}</span>
+  <span>{{ new Timestamp({date: date, showTime: showTime, hideDate: hideDate, longFormat: longFormat}).get() }}</span>
 </template>
 
 <script>
-import getFormattedTimestamp from "../assets/lib/timestamp";
+import Timestamp from "../assets/lib/timestamp";
 
 export default {
   name: "TimestampText",
-  methods: {getFormattedTimestamp},
+  computed: {
+    Timestamp() {
+      return Timestamp
+    }
+  },
   props: {
-    data: String,
+    date: String,
     showTime: Boolean,
     hideDate: Boolean,
     longFormat: Boolean

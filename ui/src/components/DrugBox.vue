@@ -2,26 +2,18 @@
   <div class="DrugBox">
     <img class="DrugBox__pill" src="../assets/svg/pills.svg" alt="Pills icon" width="32" height="32">
     <span class="DrugBox__text">
-      {{ getDose(drug) }}<span v-if="getDose(drug)"> of </span>{{ drug.name }}{{ getRoAJoined(drug) }}
+      {{ drug.getDose() }}<span v-if="drug.getDose()"> of </span>{{ drug.name }}{{ drug.getRoA() ? `, ${drug.getRoA()}` : '' }}
     </span>
   </div>
 </template>
 
 <script>
-import {getDose, getRoAJoined} from "@/assets/lib/drugs";
+import DrugData from "@/assets/lib/drug-data";
 
 export default {
   name: "DrugBox",
-  methods: {getRoAJoined, getDose},
   props: {
-    drug: {
-      name: String,
-      dosage: Number,
-      dosage_unit: String,
-      roa: Number,
-      frequency: Number,
-      Prescribed: Number
-    }
+    drug: DrugData
   }
 }
 </script>

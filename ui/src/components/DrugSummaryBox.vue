@@ -8,26 +8,28 @@
 </template>
 
 <script>
-import {getDose, getRoA} from "@/assets/lib/drugs";
 import HeaderColumnBox from "@/components/HeaderColumnBox.vue";
+import DrugData from "@/assets/lib/drug-data";
 
 export default {
   name: "DrugSummaryBox",
   components: {HeaderColumnBox},
   methods: {
-    getDose, getRoA,
     getRows() {
       let rows = []
       this.events.forEach(e => {
-        if (e.type === 2) {
-          rows.push({'Name': e.drug.name, 'Dosage': getDose(e.drug), 'RoA': getRoA(e.drug)})
+        const drug = new DrugData({obj: e.drug})
+
+        if (e['type'] === 2) {
+          rows.push({'Name': drug.name, 'Dosage': drug.getDose(), 'RoA': drug.getRoA()})
         }
       })
       return rows
     }
   },
   props: {
-    events: undefined
+    // TODO: Switch to proper shared type that reflects the Go variation / #106
+    events: Array
   },
 }
 </script>

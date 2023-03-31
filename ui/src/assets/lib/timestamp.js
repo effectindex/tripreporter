@@ -1,25 +1,43 @@
-export default function getFormattedTimestamp({data, showTime, hideDate, longFormat}) {
-    const date = new Date(data);
-
-    // Golang zero time
-    if (date.getTime() === -62135596800000) {
-        return ""
+// A formatted Date with easy to use options.
+export default class Timestamp { // TODO: Rewrite in TS for #106
+    constructor({date, showTime, hideDate, longFormat}) {
+        this.date = new Date(date);
+        this.showTime = showTime;
+        this.hideDate = hideDate;
+        this.longFormat = longFormat;
+        return this;
     }
-
-    let options = longFormat ? {weekday: "long", year: "numeric", month: "long", day: "numeric"} : {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric"
-    };
-
-    if (showTime) {
-        options.hour = "numeric";
-        options.minute = "numeric";
+    raw() { // Return the raw Timestamp data
+        return this.date.toJSON()
     }
-
-    if (hideDate) {
-        return date.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
+    epoch() {
+        return -62135596800000
     }
+    get() { // Return the formatted Timestamp based on the provided options
+        if (this.date === undefined) {
+            return ""
+        }
 
-    return date.toLocaleString(undefined, options);
+        // Golang zero time in Unix epoch milliseconds
+        if (this.date.getTime() === this.epoch()) {
+            return ""
+        }
+
+        let options = this.longFormat ? {weekday: "long", year: "numeric", month: "long", day: "numeric"} : {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric"
+        };
+
+        if (this.showTime) {
+            options.hour = "numeric";
+            options.minute = "numeric";
+        }
+
+        if (this.hideDate) {
+            return this.date.toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
+        }
+
+        return this.date.toLocaleString(undefined, options);
+    }
 }

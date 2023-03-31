@@ -1,17 +1,17 @@
 <template>
-  <div :class="getSectionClass(event.section)">
+  <div class="ReportEventBoxSection__wrapper">
     <div class="ReportEventBoxSection">
-      <div class="ReportEventBoxSectionText">{{ showSection ? getSection(event.section) : "" }}</div>
+      <div :class="getSectionClass(event.section)">{{ showSection ? getSection(event.section) : "" }}</div>
     </div>
 
     <div v-if="event.timestamp !== '0001-01-01T00:00:00Z'" class="ReportEventBoxTime">
-      <timestamp-text :data="event.timestamp" :hide-date="true"/>
+      <timestamp-text :date="event.timestamp" :hide-date="true"/>
     </div>
-    <div v-if="event.type === 1">
+    <div v-if="event['type'] === 1">
       {{ event.content }}
     </div>
     <div v-else>
-      <drug-box :drug="event.drug"/>
+      <drug-box :drug="new DrugData({obj: event.drug})"/>
     </div>
   </div>
 </template>
@@ -19,12 +19,19 @@
 <script>
 import TimestampText from "@/components/TimestampText.vue";
 import DrugBox from "@/components/DrugBox.vue";
+import ReportEvent from "@/assets/lib/report-event";
+import DrugData from "@/assets/lib/drug-data";
 
 export default {
   name: "ReportEventBox",
+  computed: {
+    DrugData() {
+      return DrugData
+    }
+  },
   components: {DrugBox, TimestampText},
   props: {
-    event: undefined,
+    event: ReportEvent,
     showSection: Boolean
   },
   methods: {
@@ -41,19 +48,25 @@ export default {
       }
     },
     getSectionClass(section) {
+      let textClass = "ReportEventBox__section_other";
+
       switch (section) {
         case 1:
-          return "ReportEventBox__section_description"
+          textClass = "ReportEventBox__section_description"
+          break
         case 2:
-          return "ReportEventBox__section_onset"
+          textClass = "ReportEventBox__section_onset"
+          break
         case 3:
-          return "ReportEventBox__section_peak"
+          textClass = "ReportEventBox__section_peak"
+          break
         case 4:
-          return "ReportEventBox__section_offset"
-        default:
-          return "ReportEventBox__section_other"
+          textClass = "ReportEventBox__section_offset"
+          break
       }
-    },
+
+      return `{ 'ReportEventBoxSectionText': true, '${textClass}': true`
+    }
   }
 }
 </script>
@@ -64,7 +77,7 @@ export default {
   right: 0;
 }
 
-.ReportEventBoxSectionText {
+.ReportEventBoxSection {
   color: #ccc;
   transform: translateX(-0.5em) translateY(-0.75em);
   /*TODO: transform: rotate(90deg);*/
@@ -76,5 +89,9 @@ export default {
   color: #8a8a8a;
   font-size: 12px;
   margin-bottom: 2px;
+}
+
+.ReportEventBox__section_onset {
+  color: rgb(221, 255, 221)
 }
 </style>

@@ -1,26 +1,26 @@
 <template>
-  <div class="LayoutReport__main" v-if="getStore().data !== undefined">
-    <div v-for="(report, index) in [getStore().data]" :key="index">
+  <div class="LayoutReport__main" v-if="getStore().isLoaded()">
+    <div v-for="(report, index) in [getStore().reportJson]" :key="index">
       <h1 class="--tr-not-bold">{{ report.title }}</h1>
 
       <div class="LayoutReport__report">
         <div class="LayoutReport__report_summary">
-<!--          TODO: See #99 / #100 -->
-<!--          <div class="LayoutReport__report_summary_entry">-->
-<!--            <header-row-box-->
-<!--                style="margin-left: 0;"-->
-<!--                header="User"-->
-<!--                icon="user"-->
-<!--                :columns="['Name', 'Date', 'Gender', 'Height', 'Weight']"-->
-<!--                :rows="{-->
-<!--                    'Name': 'Josie Kins',-->
-<!--                  'Date': getFormattedTimestamp({data: report.report_date, longFormat: true}),-->
-<!--                  'Gender': 'Female',-->
-<!--                  'Height': '5\'9',-->
-<!--                  'Weight': '~150 lbs'-->
-<!--              }"-->
-<!--            />-->
-<!--          </div>-->
+          <!--          TODO: See #99 / #100 -->
+          <div class="LayoutReport__report_summary_entry">
+            <header-row-box
+                style="margin-left: 0;"
+                header="User"
+                icon="user"
+                :columns="['Name', 'Date', 'Gender', 'Height', 'Weight']"
+                :rows="{
+                  'Name': 'Josie Kins',
+                  'Date': new Timestamp({date: report.report_date, longFormat: true}).get(),
+                  'Gender': 'Female',
+                  'Height': '5\'9',
+                  'Weight': '~150 lbs'
+              }"
+            />
+          </div>
           <div class="LayoutReport__report_summary_entry">
             <drug-summary-box style="margin-right: 0;" :events="report.report_events"/>
           </div>
@@ -29,7 +29,7 @@
         <div class="LayoutReport__setting">
           <div :class="{'LayoutReportBox': true, 'LayoutReportBox_last': true}">
             Experienced on
-            <timestamp-text :data="report.report_date" :long-format="true"/>
+            <timestamp-text :date="report.report_date" :long-format="true"/>
             <br>
             <div v-if="report.setting" class="LayoutReport__setting_text">
               {{ report.setting }}
@@ -55,14 +55,21 @@ import {useReportsStore} from "@/assets/lib/reportsstore";
 import TimestampText from "@/components/TimestampText.vue";
 import ReportEventBox from "@/components/ReportEventBox.vue";
 import DrugSummaryBox from "@/components/DrugSummaryBox.vue";
-import getFormattedTimestamp from "@/assets/lib/timestamp";
+import HeaderRowBox from "@/components/HeaderRowBox.vue";
+import Timestamp from "@/assets/lib/timestamp";
 
 const store = useReportsStore();
 let ranSetup = false
 
 export default {
   name: "ReportBox",
+  computed: {
+    Timestamp() {
+      return Timestamp
+    }
+  },
   components: {
+    HeaderRowBox,
     DrugSummaryBox,
     ReportEventBox,
     TimestampText
@@ -71,7 +78,6 @@ export default {
     id: String
   },
   methods: {
-    getFormattedTimestamp,
     getStore() {
       return store
     },
