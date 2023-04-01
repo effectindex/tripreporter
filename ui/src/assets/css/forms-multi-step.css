@@ -1,0 +1,17 @@
+.formkit-outer[data-type="multi-step"] > .formkit-wrapper > .formkit-steps {
+    border: unset;
+    border-top: unset;
+    border-radius: unset;
+    padding: unset;
+}
+
+.formkit-outer[data-type="multi-step"] > [data-tab-style="progress"] > .formkit-steps {
+    border: unset;
+    border-radius: unset;
+    box-shadow: unset;
+}
+
+.formkit-outer[data-type="multi-step"] > [data-tab-style="progress"][data-hide-labels="true"] > .formkit-tabs {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
