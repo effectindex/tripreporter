@@ -496,20 +496,15 @@ func (a *Account) ValidateUsername() (*Account, error) {
 
 	err := AccountCfg.Username.Validate(a.Username)
 
-	if err, ok := err.(types.ErrorString); ok {
-		return a, err.PrefixedError("Username")
-	}
-	return a, err
+	return a, types.PrefixedError(err, "Username")
 }
 
 func (a *Account) ValidatePassword(password, prefix string) (*Account, error) {
 	a.InitType(a)
 
 	err := AccountCfg.Password.Validate(password)
-	if err, ok := err.(types.ErrorString); ok {
-		return a, err.PrefixedError(prefix)
-	}
-	return a, err
+
+	return a, types.PrefixedError(err, prefix)
 }
 
 func (a *Account) ExistsWithEmail(db pgx.Tx) (*Account, error) {
