@@ -10,6 +10,7 @@ export const useSessionStore = defineStore('session', {
             activeSession: false,
             lastUsername: "",
             createAccountForm: ref({}), // Used when creating an account
+            createUserForm: ref({}), // Used when creating an account user
         }
     },
     actions: {

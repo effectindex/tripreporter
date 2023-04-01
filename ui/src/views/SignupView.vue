@@ -8,69 +8,74 @@
 
     <!--    meow-->
     <div class="DefaultView__form">
-      <!--      <pre wrap>{{ store.createAccountForm }}</pre>-->
+      <pre wrap>{{ store.createAccountForm }}</pre>
+      <pre wrap>{{ store.createUserForm }}</pre>
     </div>
     <div class="DefaultView__form">
-      <FormKit type="form" @submit="submitForm" v-model="store.createAccountForm">
+      <FormKit type="form" @submit="submitForm" :actions="false">
 
         <!--        <FormKit type="multi-step" tab-style="tab"></FormKit>-->
         <!--          <FormKit type="step"></FormKit>-->
         <!-- TODO: Make email optional. -->
         <!-- TODO: Implement user signup (#77) -->
-        <div>
-          <FormKit
-              type="email"
-              name="email"
-              id="email"
-              label="Email address"
-              help="Used for password recovery."
-              preserve-errors="true"
-              validation="required|email|validateAccount"
-              validation-visibility="dirty"
-              :validation-rules="{ validateAccount }"
-              placeholder="lyv@effectindex.com"
-          />
+        <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true"
+                 :allow-incomplete="false">
+          <FormKit type="step" name="account_info" v-model="store.createAccountForm">
+            <FormKit
+                type="email"
+                name="email"
+                id="email"
+                label="Email address"
+                help="Used for password recovery."
+                preserve-errors="true"
+                validation="required|email|validateAccount"
+                validation-visibility="dirty"
+                :validation-rules="{ validateAccount }"
+                placeholder="lyv@effectindex.com"
+            />
 
-          <FormKit
-              type="text"
-              name="username"
-              id="username"
-              label="Username"
-              help="Used to login. You can use letters, numbers and symbols."
-              preserve-errors="true"
-              validation="required|length:3,32|validateAccount"
-              validation-visibility="dirty"
-              :validation-rules="{ validateAccount }"
-              placeholder="lyv76"
-          />
+            <FormKit
+                type="text"
+                name="username"
+                id="username"
+                label="Username"
+                help="Used to login. You can use letters, numbers and symbols."
+                preserve-errors="true"
+                validation="required|length:3,32|validateAccount"
+                validation-visibility="dirty"
+                :validation-rules="{ validateAccount }"
+                placeholder="lyv76"
+            />
 
-          <FormKit
-              type="password"
-              name="password"
-              id="password"
-              label="Password"
-              help="Used to login. Must contain at least 2 symbols."
-              preserve-errors="true"
-              validation="required|length:8,32|validateAccount"
-              validation-visibility="dirty"
-              :validation-rules="{ validateAccount }"
-              placeholder="----------"
-          />
-        </div>
-        <!--        TODO: Implement user signup (#77) -->
-        <!--        <div v-show="!showFirstPage()">-->
-        <!--          <FormKit type="group" name="new_user" group="new_user">-->
-        <!--            <FormKit-->
-        <!--                type="text"-->
-        <!--                name="display_name"-->
-        <!--                id="display_name"-->
-        <!--                label="Display Name"-->
-        <!--                placeholder="Lyvergic Acid"-->
-        <!--                help="Shown to other users when viewing your profile."-->
-        <!--            />-->
-        <!--          </FormKit>-->
-        <!--        </div>-->
-        <!--        <FormKit type="button" @click="" :disabled="!pageUser" label="Back"/>-->
+            <FormKit
+                type="password"
+                name="password"
+                id="password"
+                label="Password"
+                help="Used to login. Must contain at least 2 symbols."
+                preserve-errors="true"
+                validation="required|length:8,32|validateAccount"
+                validation-visibility="dirty"
+                :validation-rules="{ validateAccount }"
+                placeholder="----------"
+            />
+          </FormKit>
+          <FormKit type="step" name="user_info" v-model="store.createUserForm">
+            <FormKit
+                type="text"
+                name="display_name"
+                id="display_name"
+                label="Display Name"
+                placeholder="Lyvergic Acid"
+                help="Shown to other users when viewing your profile."
+            />
+
+            <!--suppress VueUnrecognizedSlot -->
+            <template #stepNext>
+              <FormKit type="submit" data-next="true"/>
+            </template>
+          </FormKit>
+        </FormKit>
       </FormKit>
     </div>
   </div>
@@ -117,32 +122,53 @@ const messageSuccess = "Account successfully created!<br>You will be redirected 
 // let pageUser = ref(false);
 let success = ref(false);
 
-const submitForm = async (fields, node) => {
-  log("submitForm", fields, node)
+// eslint-disable-next-line no-unused-vars
+const submitForm = async (fields, handlers) => {
+  log("submitForm", fields)
   // don't do anything if the user presses the button again, for example, while waiting for a redirect
-  if (success.value) {
-    return
-  }
-
-  store.lastUsername = fields.username;
-
-  // if (store.createAccountForm && store.createAccountForm.display_name) {
-  //   fields.new_user = {"display_name": store.createAccountForm.display_name}
+  // if (success.value) {
+  //   return
   // }
 
-  // TODO: Implement user signup (#77)
-  axios.post('/account', fields).then(function (response) {
-    success.value = response.status === 201;
-    // lastResponse.value = response.data.msg;
-    // pageUser.value = lastResponse.value.startsWith("user: ")
-    setMessage(response.data.msg, messageSuccess, success.value, router, '/login', 3000);
-  }).catch(function (error) {
-    success.value = error.response.status === 201;
-    // lastResponse.value = error.response.data.msg;
-    // pageUser.value = lastResponse.value.startsWith("user: ")
-    setMessage(error.response.data.msg, messageSuccess, success.value, router, '/login', 3000);
-    handleMessageError(error);
+  let lastPage = true;
+
+  handlers.children[0].walk(child => {
+    if (child.name === "account_info") {
+      child.context.handlers.incrementStep(1, child.context)()
+      lastPage = false
+      log("account_info", lastPage, child.context)
+    }
+
+    if (child.name === "user_info") {
+      lastPage = child.context.isLastStep
+      log("user_info", lastPage, child.context)
+    }
   })
+
+  log("submitForm: if", lastPage)
+  if (lastPage) {
+    store.lastUsername = fields.username;
+
+    log("submitForm: got store", store.createAccountForm)
+    if (store.createAccountForm) {
+      store.createAccountForm.new_user = store.createUserForm
+    }
+    log("submitForm: got full store", store.createAccountForm)
+
+    // TODO: Implement user signup (#77)
+    axios.post('/account', fields).then(function (response) {
+      success.value = response.status === 201;
+      // lastResponse.value = response.data.msg;
+      // pageUser.value = lastResponse.value.startsWith("user: ")
+      setMessage(response.data.msg, messageSuccess, success.value, router, '/login', 3000);
+    }).catch(function (error) {
+      success.value = error.response.status === 201;
+      // lastResponse.value = error.response.data.msg;
+      // pageUser.value = lastResponse.value.startsWith("user: ")
+      setMessage(error.response.data.msg, messageSuccess, success.value, router, '/login', 3000);
+      handleMessageError(error);
+    })
+  }
 }
 
 let validationCache = ref({})
@@ -222,6 +248,7 @@ const validateAccount = async (node) => {
 
 <style>
 @import url(@/assets/css/forms.css);
+@import url(@/assets/css/forms-multi-step.css);
 </style>
 
 <style scoped>
