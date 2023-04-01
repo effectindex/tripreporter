@@ -1,9 +1,14 @@
 import log from "@/assets/lib/logger";
 
 export function setMessage(message, messageSuccess, status, router, location, routerTimeout) {
+    if (!message) {
+        log("message_util: message is null!", arguments)
+        return
+    }
+
     const elemText = document.getElementById("DefaultView__message_text");
     if (elemText === null) {
-        log("elemText is null!", arguments)
+        log("message_util: elemText is null!", arguments)
         return
     }
 
