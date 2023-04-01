@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@formkit/addons": "^0.16.4",
     "@formkit/pro": "^1.0.0-alpha.108",
     "@formkit/themes": "^0.16.2",
     "core-js": "^3.29.1",
