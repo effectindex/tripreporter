@@ -59,7 +59,7 @@ func SetupAccountConfig(ctx types.Context) {
 			MaxLength:          32,
 			MinUniqueTotal:     1,
 			MinUniqueSymbol:    0,
-			MinUniqueNonSymbol: 2,
+			MinUniqueNonSymbol: 0,
 			Message:            "a-z 0-9 _ -",
 			Allowed: allowedChars{
 				Symbol: map[string]bool{
