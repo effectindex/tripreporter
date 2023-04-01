@@ -24,7 +24,9 @@
               id="email"
               label="Email address"
               help="Used for password recovery."
-              validation="required|email|(500)validateAccount"
+              preserve-errors="true"
+              validation="required|email|validateAccount"
+              validation-visibility="dirty"
               :validation-rules="{ validateAccount }"
               placeholder="lyv@effectindex.com"
           />
@@ -35,7 +37,9 @@
               id="username"
               label="Username"
               help="Used to login. You can use letters, numbers and symbols."
-              validation="required|length:3,32|(500)validateAccount"
+              preserve-errors="true"
+              validation="required|length:3,32|validateAccount"
+              validation-visibility="dirty"
               :validation-rules="{ validateAccount }"
               placeholder="lyv76"
           />
@@ -46,24 +50,26 @@
               id="password"
               label="Password"
               help="Used to login. Must contain at least 2 symbols."
-              validation="required|length:8,32|(100)validateAccount"
+              preserve-errors="true"
+              validation="required|length:8,32|validateAccount"
+              validation-visibility="dirty"
               :validation-rules="{ validateAccount }"
               placeholder="----------"
           />
         </div>
-<!--        TODO: Implement user signup (#77) -->
-<!--        <div v-show="!showFirstPage()">-->
-<!--          <FormKit type="group" name="new_user" group="new_user">-->
-<!--            <FormKit-->
-<!--                type="text"-->
-<!--                name="display_name"-->
-<!--                id="display_name"-->
-<!--                label="Display Name"-->
-<!--                placeholder="Lyvergic Acid"-->
-<!--                help="Shown to other users when viewing your profile."-->
-<!--            />-->
-<!--          </FormKit>-->
-<!--        </div>-->
+        <!--        TODO: Implement user signup (#77) -->
+        <!--        <div v-show="!showFirstPage()">-->
+        <!--          <FormKit type="group" name="new_user" group="new_user">-->
+        <!--            <FormKit-->
+        <!--                type="text"-->
+        <!--                name="display_name"-->
+        <!--                id="display_name"-->
+        <!--                label="Display Name"-->
+        <!--                placeholder="Lyvergic Acid"-->
+        <!--                help="Shown to other users when viewing your profile."-->
+        <!--            />-->
+        <!--          </FormKit>-->
+        <!--        </div>-->
         <!--        <FormKit type="button" @click="" :disabled="!pageUser" label="Back"/>-->
       </FormKit>
     </div>
@@ -96,20 +102,23 @@ export default {
 </script>
 
 <script setup>
-import {inject, ref} from 'vue'
-import {handleMessageError, setMessage} from '@/assets/lib/message_util';
+import {inject, ref} from "vue"
+import {handleMessageError, setMessage} from "@/assets/lib/message_util";
+import log from "@/assets/lib/logger";
 import {useSessionStore} from "@/assets/lib/sessionstore";
 
 const router = inject('router')
 const axios = inject('axios')
 const store = useSessionStore();
 
+// const accountFormID = "create-account-form";
 const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
 // let lastResponse = ref("");
 // let pageUser = ref(false);
 let success = ref(false);
 
-const submitForm = async (fields) => {
+const submitForm = async (fields, node) => {
+  log("submitForm", fields, node)
   // don't do anything if the user presses the button again, for example, while waiting for a redirect
   if (success.value) {
     return
@@ -136,8 +145,36 @@ const submitForm = async (fields) => {
   })
 }
 
+let validationCache = ref({})
+let nodeListeners = ref({})
+
+// This is used to validate our account fields with the API, as well as caching the validation to limit API requests.
 const validateAccount = async (node) => {
-  function getMsg(msg) {
+  // getCached will look for a [node.name][node.value] and see if we already have a cached error for this
+  // specific node's input value.
+  function getCached() {
+    if (validationCache.value[node.name] && validationCache.value[node.name][`${node.value}`]) {
+      return validationCache.value[node.name][`${node.value}`]
+    }
+
+    return undefined
+  }
+
+  // Insert into the cache when we get an error from the API.
+  function setCached(msg) {
+    if (validationCache.value[node.name]) {
+      validationCache.value[node.name][`${node.value}`] = msg
+    } else {
+      validationCache.value[node.name] = {[`${node.value}`]: msg}
+    }
+  }
+
+  // This will create a struct to use for node.setErrors, in addition to setting the cache.
+  function getMsg(msg, setCache) {
+    if (setCache) {
+      setCached(msg)
+    }
+
     if (msg.startsWith("Email or username")) {
       return {[node.name]: `${node.name.charAt(0).toUpperCase()}${node.name.slice(1)} ${msg.slice(18)}`}
     }
@@ -145,14 +182,38 @@ const validateAccount = async (node) => {
     return {[node.name]: msg}
   }
 
+  // If we haven't created a listener for this node yet, make one
+  if (!nodeListeners.value[node.name]) {
+    nodeListeners.value[node.name] = node.on('commit', ({payload}) => {
+      // We do this to ensure previous API errors are not displayed when the input is being validated by 'required'
+      // or another validation rule that is not ours.
+      node.clearErrors()
+    })
+  }
+
+  // First we want to check if we already have a cached error for the [node.name][node.input] value, to avoid making
+  // an unnecessary API request.
+  const cachedMsg = getCached()
+  if (cachedMsg !== undefined) {
+    return new Promise((resolve) => {
+      node.setErrors([], getMsg(cachedMsg, false))
+      resolve(cachedMsg)
+    })
+  }
+
+  // Now that we know we don't have a cached error, check if the input is valid using the API.
   axios.post('/account/validate', {[node.name]: node.value}).then(function (response) {
     if (response.status !== 200) {
-      node.setErrors([], getMsg(response.data.msg))
+      node.setErrors([], getMsg(response.data.msg, true))
+    } else {
+      node.clearErrors()
     }
     return response.status === 200
   }).catch(function (error) {
     if (error.response.status !== 200) {
-      node.setErrors([], getMsg(error.response.data.msg))
+      node.setErrors([], getMsg(error.response.data.msg, true))
+    } else {
+      node.clearErrors()
     }
     return error.response.status === 200
   })
