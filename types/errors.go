@@ -72,6 +72,15 @@ func (e ErrorString) PrefixedError(s string) error {
 	return errors.New(s + strings.TrimPrefix(e.Error(), "String"))
 }
 
+// PrefixedError will return e with any "String" prefix removed and s prefixed instead. TODO: #107
+func PrefixedError(e error, s string) error {
+	if e == nil {
+		return nil
+	}
+
+	return errors.New(s + strings.TrimPrefix(e.Error(), "String"))
+}
+
 func (e ErrorString) ContextError(ctx ...any) error {
 	if len(ctx) == 0 {
 		return e
