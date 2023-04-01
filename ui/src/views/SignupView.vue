@@ -134,13 +134,18 @@ const submitForm = async (fields, handlers) => {
 
   handlers.children[0].walk(child => {
     if (child.name === "account_info") {
-      child.context.handlers.incrementStep(1, child.context)()
-      lastPage = false
+      // child.context.handlers.incrementStep(1, child.context)()
+      // Increment to the next page if the user pressed enter on the first page.
+      // This is necessary because
+      if (child.context.isActiveStep) {
+        lastPage = false
+        child.context.handlers.next()
+      }
       log("account_info", lastPage, child.context)
     }
 
     if (child.name === "user_info") {
-      lastPage = child.context.isLastStep
+      // lastPage = child.context.isLastStep
       log("user_info", lastPage, child.context)
     }
   })
