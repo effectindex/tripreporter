@@ -162,7 +162,7 @@ func AccountValidate(w http.ResponseWriter, r *http.Request) {
 
 	// Check if we have fields to validate, to avoid making an unnecessary DB GET.
 	if len(account.Email) == 0 && len(account.Username) == 0 && len(account.Password) == 0 {
-		ctx.HandleStatus(w, r, "Account validation data required.", http.StatusBadRequest)
+		ctx.HandleStatus(w, r, "Account validation data required.", http.StatusNotAcceptable)
 		return
 	}
 
@@ -170,7 +170,7 @@ func AccountValidate(w http.ResponseWriter, r *http.Request) {
 	if len(account.Password) > 0 {
 		_, err = (&models.Account{Context: ctx.Context}).ValidatePassword(account.Password, "Password")
 		if err != nil {
-			ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+			ctx.HandleStatus(w, r, err.Error(), http.StatusNotAcceptable)
 			return
 		}
 
