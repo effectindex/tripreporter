@@ -15,9 +15,9 @@ ij_visual_guides = none
 ij_wrap_on_typing = false
 
 [*.css]
-ij_css_tab_width = 2
-ij_css_indent_size = 2
-ij_css_continuation_indent_size = 2
+ij_css_tab_width = 4
+ij_css_indent_size = 4
+ij_css_continuation_indent_size = 8
 ij_css_align_closing_brace_with_properties = false
 ij_css_blank_lines_around_nested_selector = 1
 ij_css_blank_lines_between_blocks = 1
@@ -367,9 +367,9 @@ ij_sass_use_double_quotes = true
 ij_sass_value_alignment = 0
 
 [*.scss]
-ij_scss_tab_width = 2
-ij_scss_indent_size = 2
-ij_scss_continuation_indent_size = 2
+ij_scss_tab_width = 4
+ij_scss_indent_size = 4
+ij_scss_continuation_indent_size = 8
 ij_scss_align_closing_brace_with_properties = false
 ij_scss_blank_lines_around_nested_selector = 1
 ij_scss_blank_lines_between_blocks = 1
