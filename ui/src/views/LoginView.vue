@@ -7,7 +7,7 @@
         <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
       </div>
       <div class="DefaultView__form">
-        <FormKit type="form" @submit="submitForm" submit-label="Login">
+        <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
           <FormKit
               type="text"
               name="username"
@@ -26,6 +26,8 @@
               validation="required"
               placeholder="----------"
           />
+
+        <FormKit type="submit" label="Login" data-next="true" :disabled="errors && submitting"/>
         </FormKit>
       </div>
     </div>
@@ -47,7 +49,7 @@ export default {
 </script>
 
 <script setup>
-import {inject} from 'vue'
+import {inject, ref} from 'vue'
 import {handleMessageError, setMessage} from '@/assets/lib/message_util';
 import {useSessionStore} from '@/assets/lib/sessionstore'
 
@@ -55,26 +57,25 @@ const axios = inject('axios')
 const store = useSessionStore();
 
 const messageSuccess = "Successfully logged in!";
-let success = false;
+let success = ref(false);
+let submitting = ref(false);
 
 const submitForm = async (fields) => {
-  // don't do anything if the user presses the button again, for example, while waiting for a redirect
-  if (success) {
-    return
-  }
-
   store.lastUsername = fields.username;
+  submitting.value = true;
 
   await axios.post('/account/login', fields).then(function (response) {
-    success = response.status === 200;
-    setMessage(response.data.msg, messageSuccess, success);
+    success.value = response.status === 200;
+    submitting.value = false;
+    setMessage(response.data.msg, messageSuccess, success.value);
   }).catch(function (error) {
-    success = error.response.status === 200;
-    setMessage(error.response.data.msg, messageSuccess, success);
+    success.value = error.response.status === 200;
+    submitting.value = false;
+    setMessage(error.response.data.msg, messageSuccess, success.value);
     handleMessageError(error);
   })
 
-  if (success) {
+  if (success.value) {
     store.updateSession(axios); // TODO: Make login UX less confusing
   }
 }
