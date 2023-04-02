@@ -147,6 +147,17 @@ store.updateSession(axios);
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+  font-size: 0.75em;
+}
+
+/* override LayoutDefault__footer_text for desktop browsers */
+@media only screen and (min-width: 680px) {
+    .LayoutDefault__footer_text {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: revert;
+    }
 }
 
 /* move social icons further down */
