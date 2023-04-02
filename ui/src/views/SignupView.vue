@@ -7,8 +7,7 @@
     </div>
 
     <div class="DefaultView__form">
-      <FormKit type="form" @submit="submitForm" :actions="false">
-
+      <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
         <!-- TODO: Make email optional. -->
         <!-- TODO: Implement user signup (#77) -->
         <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true"
@@ -65,7 +64,7 @@
 
             <!--suppress VueUnrecognizedSlot -->
             <template #stepNext>
-              <FormKit type="submit" data-next="true"/>
+              <FormKit type="submit" data-next="true" :disabled="errors && submitting"/>
             </template>
           </FormKit>
         </FormKit>
@@ -95,25 +94,19 @@ const router = inject('router')
 const axios = inject('axios')
 const store = useSessionStore();
 
-// const accountFormID = "create-account-form";
 const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
-// let lastResponse = ref("");
-// let pageUser = ref(false);
 let success = ref(false);
 let submitting = ref(false);
 
 const submitForm = async (fields, handlers) => {
   log("submitForm", fields)
-  // don't do anything if the user presses the button again, for example, while waiting for a redirect
-  // if (success.value) {
-  //   return
-  // }
 
   let lastPage = true;
   let makeUserInputActive = false;
 
   handlers.children[0].walk(child => {
     if (child.name === "account_info") {
+      // Used to disable submit button if on last page
       // Increment to the next page if the user pressed enter on the first page.
       // TODO: Workaround for https://github.com/formkit/formkit/issues/641
       if (child.context.isActiveStep) {
@@ -195,15 +188,6 @@ const validateAccount = async (node) => {
 
     return {[node.name]: msg}
   }
-
-  // First we check if the form has been successfully submitted already, as it will start colliding with
-  // our current input values.
-  // log("validateAccount", node)
-  // if (success.value) {
-  //   return new Promise((resolve) => {
-  //     resolve(true)
-  //   })
-  // }
 
   // If we haven't created a listener for this node yet, make one
   if (!nodeListeners.value[node.name]) {
