@@ -44,10 +44,12 @@
 .DefaultView__form, .DefaultView__form_wide {
     max-width: 25em;
     margin: auto;
+    padding-left: 1em;
+    padding-right: 1em;
     text-align: left;
 }
 
-/* override DefaultView__form_wide for browsers */
+/* override DefaultView__form_wide for desktop browsers */
 @media only screen and (min-width: 680px) {
     .DefaultView__form_wide {
         max-width: 75vw;
