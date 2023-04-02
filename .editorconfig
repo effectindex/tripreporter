@@ -424,7 +424,9 @@ ij_xml_text_wrap = normal
 ij_xml_use_custom_settings = false
 
 [{*.ats,*.cts,*.mts,*.ts}]
-ij_continuation_indent_size = 4
+ij_typescript_tab_width = 2
+ij_typescript_indent_size = 2
+ij_typescript_continuation_indent_size = 4
 ij_typescript_align_imports = false
 ij_typescript_align_multiline_array_initializer_expression = false
 ij_typescript_align_multiline_binary_operation = false
@@ -605,7 +607,9 @@ ij_shell_switch_cases_indented = false
 ij_shell_use_unix_line_separator = true
 
 [{*.cjs,*.js}]
-ij_continuation_indent_size = 4
+ij_javascript_tab_width = 2
+ij_javascript_indent_size = 2
+ij_javascript_continuation_indent_size = 4
 ij_javascript_align_imports = false
 ij_javascript_align_multiline_array_initializer_expression = false
 ij_javascript_align_multiline_binary_operation = false
