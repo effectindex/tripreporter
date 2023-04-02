@@ -79,7 +79,7 @@ func AccountPostLogin(w http.ResponseWriter, r *http.Request) {
 
 	account, err = a1.ValidatePassword(account.Password, "Password")
 	if err != nil {
-		ctx.Handle(w, r, MsgForbidden)
+		ctx.HandleStatus(w, r, "Invalid username or password!", http.StatusForbidden)
 		return
 	}
 
