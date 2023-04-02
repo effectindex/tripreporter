@@ -15,6 +15,9 @@ ij_visual_guides = none
 ij_wrap_on_typing = false
 
 [*.css]
+ij_css_tab_width = 2
+ij_css_indent_size = 2
+ij_css_continuation_indent_size = 2
 ij_css_align_closing_brace_with_properties = false
 ij_css_blank_lines_around_nested_selector = 1
 ij_css_blank_lines_between_blocks = 1
@@ -304,7 +307,9 @@ ij_java_wrap_first_method_in_call_chain = false
 ij_java_wrap_long_lines = false
 
 [*.less]
-indent_size = 2
+ij_less_tab_width = 2
+ij_less_indent_size = 2
+ij_less_continuation_indent_size = 4
 ij_less_align_closing_brace_with_properties = false
 ij_less_blank_lines_around_nested_selector = 1
 ij_less_blank_lines_between_blocks = 1
@@ -362,7 +367,9 @@ ij_sass_use_double_quotes = true
 ij_sass_value_alignment = 0
 
 [*.scss]
-indent_size = 2
+ij_scss_tab_width = 2
+ij_scss_indent_size = 2
+ij_scss_continuation_indent_size = 2
 ij_scss_align_closing_brace_with_properties = false
 ij_scss_blank_lines_around_nested_selector = 1
 ij_scss_blank_lines_between_blocks = 1
