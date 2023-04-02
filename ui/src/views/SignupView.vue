@@ -6,16 +6,9 @@
       <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
     </div>
 
-    <!--    meow-->
-    <div class="DefaultView__form">
-      <pre wrap>{{ store.createAccountForm }}</pre>
-      <pre wrap>{{ store.createUserForm }}</pre>
-    </div>
     <div class="DefaultView__form">
       <FormKit type="form" @submit="submitForm" :actions="false">
 
-        <!--        <FormKit type="multi-step" tab-style="tab"></FormKit>-->
-        <!--          <FormKit type="step"></FormKit>-->
         <!-- TODO: Make email optional. -->
         <!-- TODO: Implement user signup (#77) -->
         <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true"
@@ -89,20 +82,6 @@ export default {
   created() {
     this.$emit('update:layout', LayoutDefault);
   }
-  // TODO: Implement user signup (#77)
-  // methods: {
-  //   getUserSubmitLabel(value) {
-  //     const labelEmpty = "Skip"
-  //     const labelSubmit = "Submit"
-  //
-  //     // TODO: Add value.date_of_birth, value.height and value.weight once we have encryption implemented.
-  //     if (value && value.display_name) {
-  //       return labelSubmit
-  //     }
-  //
-  //     return labelEmpty
-  //   }
-  // }
 }
 </script>
 
@@ -121,8 +100,8 @@ const messageSuccess = "Account successfully created!<br>You will be redirected 
 // let lastResponse = ref("");
 // let pageUser = ref(false);
 let success = ref(false);
+let submitting = ref(false);
 
-// eslint-disable-next-line no-unused-vars
 const submitForm = async (fields, handlers) => {
   log("submitForm", fields)
   // don't do anything if the user presses the button again, for example, while waiting for a redirect
@@ -131,45 +110,49 @@ const submitForm = async (fields, handlers) => {
   // }
 
   let lastPage = true;
+  let makeUserInputActive = false;
 
   handlers.children[0].walk(child => {
     if (child.name === "account_info") {
-      // child.context.handlers.incrementStep(1, child.context)()
       // Increment to the next page if the user pressed enter on the first page.
-      // This is necessary because
+      // TODO: Workaround for https://github.com/formkit/formkit/issues/641
       if (child.context.isActiveStep) {
         lastPage = false
+        makeUserInputActive = true
         child.context.handlers.next()
       }
-      log("account_info", lastPage, child.context)
     }
 
-    if (child.name === "user_info") {
-      // lastPage = child.context.isLastStep
-      log("user_info", lastPage, child.context)
+    // Focus the next text input if the user presses enter, and we've switched to the last page
+    if (child.name === "user_info" && makeUserInputActive) {
+      setTimeout(function () {
+        const el = document.getElementById(child.context.node.children[0].props.id)
+        el.focus()
+        el.click()
+      }, 20)
     }
   })
 
-  log("submitForm: if", lastPage)
-  if (lastPage) {
-    store.lastUsername = fields.username;
+  submitting.value = true;
 
-    log("submitForm: got store", store.createAccountForm)
+  if (lastPage) {
     if (store.createAccountForm) {
+      store.lastUsername = store.createAccountForm["username"];
       store.createAccountForm.new_user = store.createUserForm
     }
-    log("submitForm: got full store", store.createAccountForm)
+
+    log("submitForm: got store", store.createAccountForm)
 
     // TODO: Implement user signup (#77)
-    axios.post('/account', fields).then(function (response) {
+    axios.post('/account', store.createAccountForm).then(function (response) {
       success.value = response.status === 201;
-      // lastResponse.value = response.data.msg;
-      // pageUser.value = lastResponse.value.startsWith("user: ")
+      submitting.value = false;
+      validationCache.value = {};
       setMessage(response.data.msg, messageSuccess, success.value, router, '/login', 3000);
     }).catch(function (error) {
       success.value = error.response.status === 201;
-      // lastResponse.value = error.response.data.msg;
-      // pageUser.value = lastResponse.value.startsWith("user: ")
+      submitting.value = false;
+      validationCache.value = {};
       setMessage(error.response.data.msg, messageSuccess, success.value, router, '/login', 3000);
       handleMessageError(error);
     })
@@ -213,6 +196,15 @@ const validateAccount = async (node) => {
     return {[node.name]: msg}
   }
 
+  // First we check if the form has been successfully submitted already, as it will start colliding with
+  // our current input values.
+  // log("validateAccount", node)
+  // if (success.value) {
+  //   return new Promise((resolve) => {
+  //     resolve(true)
+  //   })
+  // }
+
   // If we haven't created a listener for this node yet, make one
   if (!nodeListeners.value[node.name]) {
     nodeListeners.value[node.name] = node.on('commit', ({payload}) => {
@@ -222,7 +214,7 @@ const validateAccount = async (node) => {
     })
   }
 
-  // First we want to check if we already have a cached error for the [node.name][node.input] value, to avoid making
+  // Next we want to check if we already have a cached error for the [node.name][node.input] value, to avoid making
   // an unnecessary API request.
   const cachedMsg = getCached()
   if (cachedMsg !== undefined) {
@@ -230,6 +222,14 @@ const validateAccount = async (node) => {
       node.setErrors([], getMsg(cachedMsg, false))
       resolve(cachedMsg)
     })
+  }
+
+  // Pause validation if we're currently submitting the form
+  if (submitting.value) {
+        return new Promise((resolve) => {
+          log("skipping validation", validationCache.value, node.store.submitted)
+          resolve(true)
+        })
   }
 
   // Now that we know we don't have a cached error, check if the input is valid using the API.
