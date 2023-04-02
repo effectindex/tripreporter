@@ -59,7 +59,7 @@
                 id="display_name"
                 label="Display Name"
                 placeholder="Lyvergic Acid"
-                help="Shown to other users when viewing your profile."
+                help="(optional) Shown to other users when viewing your profile."
             />
 
             <!--suppress VueUnrecognizedSlot -->
