@@ -93,6 +93,14 @@ func (e ErrorString) ContextError(ctx ...any) error {
 		strings.TrimSuffix(err, "s")
 	}
 
+	fmtSpace := func(s string) string {
+		if s == " " {
+			return "' '"
+		}
+
+		return s
+	}
+
 	// Convert context elems to a []string
 	var ctxStr []string
 	notNum := false
@@ -105,8 +113,14 @@ func (e ErrorString) ContextError(ctx ...any) error {
 		// Special case for using map[string]bool as a de-duplicated []string
 		if s, ok := c.(map[string]bool); ok {
 			for v := range s {
-				ctxStr = append(ctxStr, v)
+				ctxStr = append(ctxStr, fmtSpace(v))
 			}
+			continue
+		}
+
+		// Special case for strings, we want to explicitly format spaces when adding them
+		if s, ok := c.(string); ok && s == " " {
+			ctxStr = append(ctxStr, fmtSpace(s))
 			continue
 		}
 
