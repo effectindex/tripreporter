@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/google/uuid"
+	"go.uber.org/zap"
 
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
