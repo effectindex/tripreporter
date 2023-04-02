@@ -40,7 +40,7 @@
         <div class="LayoutReport__events">
           <div v-for="(event, index) in report.report_events" :key="index">
             <report-event-box :class="getClasses(index, report.report_events)" :event="event"
-                              :showSection="showCurrentSection(index, report.report_events)"/>
+                :showSection="showCurrentSection(index, report.report_events)"/>
           </div>
         </div>
       </div>
@@ -49,9 +49,9 @@
 </template>
 
 <script>
-import {inject} from "vue";
-import {handleMessageError, setMessage} from "@/assets/lib/message_util";
-import {useReportsStore} from "@/assets/lib/reportsstore";
+import { inject } from "vue";
+import { handleMessageError, setMessage } from "@/assets/lib/message_util";
+import { useReportsStore } from "@/assets/lib/reportsstore";
 import TimestampText from "@/components/TimestampText.vue";
 import ReportEventBox from "@/components/ReportEventBox.vue";
 import DrugSummaryBox from "@/components/DrugSummaryBox.vue";
@@ -121,56 +121,56 @@ export default {
 @import url(@/assets/css/message_util.css);
 
 .LayoutReport__main {
-  text-align: left;
+    text-align: left;
 }
 
 .LayoutReport__main h1 {
-  text-align: center;
+    text-align: center;
 }
 
 .LayoutReport__report {
-  max-width: 75%;
-  margin: auto;
+    max-width: 75%;
+    margin: auto;
 }
 
 .LayoutReport__report_summary {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: center;
-  margin-bottom: 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+    margin-bottom: 1em;
 }
 
 .LayoutReport__report_summary_entry {
-  flex-grow: 1;
+    flex-grow: 1;
 }
 
 .LayoutReport__report_summary_entry:first-child {
-  margin-right: 1em;
+    margin-right: 1em;
 }
 
 .LayoutReport__setting, .LayoutReport__events {
-  background-color: #fbfbfb;
-  border-radius: 10px;
-  border: 1px solid hsla(0, 0%, 66.7%, .35);
-  position: relative;
-  margin-bottom: 1em;
+    background-color: #fbfbfb;
+    border-radius: 10px;
+    border: 1px solid hsla(0, 0%, 66.7%, .35);
+    position: relative;
+    margin-bottom: 1em;
 }
 
 .LayoutReport__setting_text {
-  margin: 0.5em;
+    margin: 0.5em;
 }
 
 .LayoutReportBox, .LayoutReportBox_alt {
-  padding: 10px;
-  border-bottom: 1px solid hsla(0, 0%, 66.7%, .35);
+    padding: 10px;
+    border-bottom: 1px solid hsla(0, 0%, 66.7%, .35);
 }
 
 .LayoutReportBox_alt {
-  background-color: #f6f6f6;
+    background-color: #f6f6f6;
 }
 
 .LayoutReportBox_last {
-  border-bottom: none;
+    border-bottom: none;
 }
 </style>

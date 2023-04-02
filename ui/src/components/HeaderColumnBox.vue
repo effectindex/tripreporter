@@ -4,9 +4,9 @@
       <h3 class="HeaderColumnBox__header">
         <!-- TODO: Make icon dynamic -->
         <img v-if="icon === 'pills'" class="HeaderColumnBox__header_icon" src="../assets/svg/pills.svg" alt="Pills icon"
-             width="20" height="20">
+            width="20" height="20">
         <img v-else class="HeaderColumnBox__header_icon" src="../assets/svg/user.svg" alt="User icon"
-             width="20" height="20">
+            width="20" height="20">
         <span class="HeaderColumnBox__header_text">
         {{ header }}
       </span>
@@ -60,52 +60,53 @@ export default {
 
 <style scoped>
 .HeaderColumnBox {
-  flex: 1;
-  background-color: #fbfbfb;
-  border-radius: 10px;
-  border: 1px solid hsla(0, 0%, 66.7%, .35);
+    flex: 1;
+    background-color: #fbfbfb;
+    border-radius: 10px;
+    border: 1px solid hsla(0, 0%, 66.7%, .35);
 }
 
 .HeaderColumnBox__header_wrapper h3 {
-  margin: 0;
+    margin: 0;
 }
 
 .HeaderColumnBox__header {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  background-color: #eee;
-  padding: 0.25em 0.5em 0.5em;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color: #eee;
+    padding: 0.25em 0.5em 0.5em;
 }
 
 .HeaderColumnBox__header_icon {
-  vertical-align: bottom;
-  margin-bottom: 3px;}
+    vertical-align: bottom;
+    margin-bottom: 3px;
+}
 
 .HeaderColumnBox__header_text {
-  font-weight: bold;
-  padding-left: 0.5em;
+    font-weight: bold;
+    padding-left: 0.5em;
 }
 
 .HeaderColumnBox__table_wrapper {
-  padding: 0.75em;
-  border-collapse: collapse;
+    padding: 0.75em;
+    border-collapse: collapse;
 }
 
 .HeaderColumnBox__table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .HeaderColumnBox__table_columns {
-  font-weight: bold;
-  padding: 5px 10px;
+    font-weight: bold;
+    padding: 5px 10px;
 }
 
 .HeaderColumnBox__table_rows {
-  padding: 5px 10px;
+    padding: 5px 10px;
 }
 
 .HeaderColumnBox__table_row td, .HeaderColumnBox__table_row_alt td {
-  padding: 3px 0;
+    padding: 3px 0;
 }
 </style>

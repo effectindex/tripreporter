@@ -1,5 +1,5 @@
 <template>
-  <span>{{ new Timestamp({date: date, showTime: showTime, hideDate: hideDate, longFormat: longFormat}).get() }}</span>
+  <span>{{ new Timestamp({ date: date, showTime: showTime, hideDate: hideDate, longFormat: longFormat }).get() }}</span>
 </template>
 
 <script>

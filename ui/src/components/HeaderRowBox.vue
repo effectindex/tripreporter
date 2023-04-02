@@ -4,9 +4,9 @@
       <h3 class="HeaderRowBox__header">
         <!-- TODO: Make icon dynamic -->
         <img v-if="icon === 'pills'" class="HeaderRowBox__header_icon" src="../assets/svg/pills.svg" alt="Pills icon"
-             width="20" height="20">
+            width="20" height="20">
         <img v-else class="HeaderRowBox__header_icon" src="../assets/svg/user.svg" alt="User icon"
-             width="20" height="20">
+            width="20" height="20">
         <span class="HeaderRowBox__header_text">
         {{ header }}
       </span>
@@ -39,49 +39,50 @@ export default {
 
 <style scoped>
 .HeaderRowBox {
-  flex: 1;
-  background-color: #fbfbfb;
-  border-radius: 10px;
-  border: 1px solid hsla(0, 0%, 66.7%, .35);
+    flex: 1;
+    background-color: #fbfbfb;
+    border-radius: 10px;
+    border: 1px solid hsla(0, 0%, 66.7%, .35);
 }
 
 .HeaderRowBox__header_wrapper h3 {
-  margin: 0;
+    margin: 0;
 }
 
 .HeaderRowBox__header {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  background-color: #eee;
-  padding: 0.25em 0.5em 0.5em;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color: #eee;
+    padding: 0.25em 0.5em 0.5em;
 }
 
 .HeaderRowBox__header_icon {
-  vertical-align: bottom;
-  margin-bottom: 3px;
+    vertical-align: bottom;
+    margin-bottom: 3px;
 }
 
 .HeaderRowBox__header_text {
-  font-weight: bold;
-  padding-left: 0.5em;
+    font-weight: bold;
+    padding-left: 0.5em;
 }
 
 .HeaderRowBox__row_wrapper {
-  padding: 0.25em;
+    padding: 0.25em;
 }
+
 .HeaderRowBox__row {
-  padding: 5px 10px;
-  display: flex;
-  flex-direction: row;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: row;
 }
 
 .HeaderRowBox__row_label {
-  flex: 2;
-  color: #333;
-  font-weight: 700;
+    flex: 2;
+    color: #333;
+    font-weight: 700;
 }
 
 .HeaderRowBox__row_entry {
-  flex: 5;
+    flex: 5;
 }
 </style>

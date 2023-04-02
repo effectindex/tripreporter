@@ -27,7 +27,7 @@
               placeholder="----------"
           />
 
-        <FormKit type="submit" label="Login" data-next="true" :disabled="errors && submitting"/>
+          <FormKit type="submit" label="Login" data-next="true" :disabled="errors && submitting"/>
         </FormKit>
       </div>
     </div>
@@ -49,9 +49,9 @@ export default {
 </script>
 
 <script setup>
-import {inject, ref} from 'vue'
-import {handleMessageError, setMessage} from '@/assets/lib/message_util';
-import {useSessionStore} from '@/assets/lib/sessionstore'
+import { inject, ref } from 'vue'
+import { handleMessageError, setMessage } from '@/assets/lib/message_util';
+import { useSessionStore } from '@/assets/lib/sessionstore'
 
 const axios = inject('axios')
 const store = useSessionStore();

@@ -29,7 +29,7 @@ export default {
       return DrugData
     }
   },
-  components: {DrugBox, TimestampText},
+  components: { DrugBox, TimestampText },
   props: {
     event: ReportEvent,
     showSection: Boolean
@@ -73,25 +73,25 @@ export default {
 
 <style scoped>
 .ReportEventBoxSection {
-  position: absolute;
-  right: 0;
+    position: absolute;
+    right: 0;
 }
 
 .ReportEventBoxSection {
-  color: #ccc;
-  transform: translateX(-0.5em) translateY(-0.75em);
-  /*TODO: transform: rotate(90deg);*/
-  text-transform: uppercase;
-  font-size: 12px;
+    color: #ccc;
+    transform: translateX(-0.5em) translateY(-0.75em);
+    /*TODO: transform: rotate(90deg);*/
+    text-transform: uppercase;
+    font-size: 12px;
 }
 
 .ReportEventBoxTime {
-  color: #8a8a8a;
-  font-size: 12px;
-  margin-bottom: 2px;
+    color: #8a8a8a;
+    font-size: 12px;
+    margin-bottom: 2px;
 }
 
 .ReportEventBox__section_onset {
-  color: rgb(221, 255, 221)
+    color: rgb(221, 255, 221)
 }
 </style>

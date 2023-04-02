@@ -7,14 +7,14 @@
 <style>
 html,
 body {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
 }
 
 #app {
-  height: inherit;
-  width: inherit;
+    height: inherit;
+    width: inherit;
 }
 </style>
 

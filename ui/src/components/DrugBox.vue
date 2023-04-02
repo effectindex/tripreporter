@@ -20,11 +20,11 @@ export default {
 
 <style scoped>
 .DrugBox__pill {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 .DrugBox__text {
-  font-weight: bold;
-  padding-left: 0.5em;
+    font-weight: bold;
+    padding-left: 0.5em;
 }
 </style>

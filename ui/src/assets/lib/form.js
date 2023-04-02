@@ -1,7 +1,7 @@
 export function getTextLength(text, max) {
-    if (!text) {
-        return ""
-    }
+  if (!text) {
+    return ""
+  }
 
-    return `(${text.length.toLocaleString()} / ${max.toLocaleString()})`
+  return `(${text.length.toLocaleString()} / ${max.toLocaleString()})`
 }

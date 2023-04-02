@@ -11,7 +11,7 @@
         <!-- TODO: Make email optional. -->
         <!-- TODO: Implement user signup (#77) -->
         <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true"
-                 :allow-incomplete="false">
+            :allow-incomplete="false">
           <FormKit type="step" name="account_info" v-model="store.createAccountForm">
             <FormKit
                 type="email"
@@ -85,10 +85,10 @@ export default {
 </script>
 
 <script setup>
-import {inject, ref} from "vue"
-import {handleMessageError, setMessage} from "@/assets/lib/message_util";
+import { inject, ref } from "vue"
+import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import log from "@/assets/lib/logger";
-import {useSessionStore} from "@/assets/lib/sessionstore";
+import { useSessionStore } from "@/assets/lib/sessionstore";
 
 const router = inject('router')
 const axios = inject('axios')
@@ -172,7 +172,7 @@ const validateAccount = async (node) => {
     if (validationCache.value[node.name]) {
       validationCache.value[node.name][`${node.value}`] = msg
     } else {
-      validationCache.value[node.name] = {[`${node.value}`]: msg}
+      validationCache.value[node.name] = { [`${node.value}`]: msg }
     }
   }
 
@@ -183,15 +183,15 @@ const validateAccount = async (node) => {
     }
 
     if (msg.startsWith("Email or username")) {
-      return {[node.name]: `${node.name.charAt(0).toUpperCase()}${node.name.slice(1)} ${msg.slice(18)}`}
+      return { [node.name]: `${node.name.charAt(0).toUpperCase()}${node.name.slice(1)} ${msg.slice(18)}` }
     }
 
-    return {[node.name]: msg}
+    return { [node.name]: msg }
   }
 
   // If we haven't created a listener for this node yet, make one
   if (!nodeListeners.value[node.name]) {
-    nodeListeners.value[node.name] = node.on('commit', ({payload}) => {
+    nodeListeners.value[node.name] = node.on('commit', ({ payload }) => {
       // We do this to ensure previous API errors are not displayed when the input is being validated by 'required'
       // or another validation rule that is not ours.
       node.clearErrors()
@@ -210,14 +210,14 @@ const validateAccount = async (node) => {
 
   // Pause validation if we're currently submitting the form
   if (submitting.value) {
-        return new Promise((resolve) => {
-          log("skipping validation", validationCache.value, node.store.submitted)
-          resolve(true)
-        })
+    return new Promise((resolve) => {
+      log("skipping validation", validationCache.value, node.store.submitted)
+      resolve(true)
+    })
   }
 
   // Now that we know we don't have a cached error, check if the input is valid using the API.
-  axios.post('/account/validate', {[node.name]: node.value}).then(function (response) {
+  axios.post('/account/validate', { [node.name]: node.value }).then(function (response) {
     if (response.status !== 200) {
       node.setErrors([], getMsg(response.data.msg, true))
     } else {

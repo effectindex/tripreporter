@@ -214,11 +214,11 @@ export default {
 </script>
 
 <script setup>
-import {inject} from "vue";
-import {useSessionStore} from '@/assets/lib/sessionstore'
+import { inject } from "vue";
+import { useSessionStore } from '@/assets/lib/sessionstore'
 import NotFound from "@/views/NotFound.vue";
-import {handleMessageError, setMessage} from "@/assets/lib/message_util";
-import {getTextLength} from "@/assets/lib/form";
+import { handleMessageError, setMessage } from "@/assets/lib/message_util";
+import { getTextLength } from "@/assets/lib/form";
 
 const router = inject('router')
 const axios = inject('axios')
