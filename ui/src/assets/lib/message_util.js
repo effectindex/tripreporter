@@ -32,6 +32,23 @@ export function setMessage(message, messageSuccess, status, router, location, ro
     }
 }
 
+export function clearMessage(expectStatus, status, clearTimeout) {
+    if (expectStatus !== status) {
+        return
+    }
+
+    const elem = document.getElementById("DefaultView__message")
+    if (elem === null) {
+        log("message_util: elem is null!")
+        return
+    }
+
+    const timeout = clearTimeout ? clearTimeout : 0
+    window.setTimeout(function () {
+        elem.style.display = 'none';
+    }, timeout);
+}
+
 export function handleMessageError(error) {
     if (error.response) {
         log(error.response)
