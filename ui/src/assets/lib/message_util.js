@@ -1,8 +1,8 @@
 import log from "@/assets/lib/logger";
 
 export function setMessage(message, messageSuccess, status, router, location, routerTimeout) {
-    if (!message) {
-        log("message_util: message is null!", arguments)
+    if (!message && !messageSuccess) {
+        log("message_util: message and messageSuccess are null!", arguments)
         return
     }
 
