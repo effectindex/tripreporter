@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div v-if="!store.activeSession" class="no-session">
-      <h1 class="--tr-not-bold">Login to your <span class="--tr-muted-text">subjective.report</span> account ✨</h1>
+      <h1 class="--tr-header-h1">Login to your <span class="--tr-muted-text">subjective.report</span> account ✨</h1>
 
       <div class="DefaultView__message" id="DefaultView__message">
         <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
@@ -32,7 +32,7 @@
       </div>
     </div>
     <div v-else>
-      <h1 class="--tr-not-bold">You're logged in! 🎉</h1>
+      <h1 class="--tr-header-h1">You're logged in! 🎉</h1>
     </div>
   </div>
 </template>

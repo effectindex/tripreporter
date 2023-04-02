@@ -12,6 +12,6 @@
     color: var(--tr-default-alt-darker-text);
 }
 
-.--tr-not-bold {
+.--tr-header-h1 {
     font-weight: normal;
 }

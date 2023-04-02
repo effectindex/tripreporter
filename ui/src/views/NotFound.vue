@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="--tr-not-bold">Not Found</h1>
+    <h1 class="--tr-header-h1">Not Found</h1>
     <p>
       Oops, we couldn't find that page. Try going
       <router-link to="/">home</router-link>

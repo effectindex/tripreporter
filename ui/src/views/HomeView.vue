@@ -1,6 +1,6 @@
 <template>
   <div class="Home">
-    <h1 class="--tr-not-bold">Home</h1>
+    <h1 class="--tr-header-h1">Home</h1>
     <p>
       Welcome to the <span class="--tr-muted-text">subjective.report</span> home page.
     </p>

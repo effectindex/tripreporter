@@ -1,7 +1,7 @@
 <template>
   <div class="LayoutReport__main" v-if="getStore().isLoaded()">
     <div v-for="(report, index) in [getStore().reportJson]" :key="index">
-      <h1 class="--tr-not-bold">{{ report.title }}</h1>
+      <h1 class="--tr-header-h1">{{ report.title }}</h1>
 
       <div class="LayoutReport__report">
         <div class="LayoutReport__report_summary">
