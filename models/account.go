@@ -159,7 +159,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	defer db.Commit(context.Background())
 
 	// Init account UUID
-	if err := a.InitUUID(a.Logger); err != nil {
+	if err := a.InitUUIDv4(a.Logger); err != nil {
 		return a, err
 	}
 
