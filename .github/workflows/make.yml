@@ -48,3 +48,5 @@ jobs:
       - name: Build project
         run: make
         id: run_make
+  run-codeql-workflow:
+    uses: ./.github/workflows/codeql.yml
