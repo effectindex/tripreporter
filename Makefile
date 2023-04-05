@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: OSL-3.0
 
-tripreporter: reuse-lint deps-ui build-ui deps-server build-server
+tripreporter: deps-ui build-ui deps-server build-server
 
 ##########################################################
 # licensing
