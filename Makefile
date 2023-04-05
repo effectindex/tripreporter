@@ -1,4 +1,8 @@
-tripreporter: deps-ui build-ui deps-server build-server
+# SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+#
+# SPDX-License-Identifier: OSL-3.0
+
+tripreporter: reuse-lint deps-ui build-ui deps-server build-server
 
 ##########################################################
 # deps

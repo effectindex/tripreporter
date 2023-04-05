@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+//
+// SPDX-License-Identifier: OSL-3.0
+
 // A formatted Date with easy to use options.
 export default class Timestamp { // TODO: Rewrite in TS for #106
   constructor({ date, showTime, hideDate, longFormat }) {

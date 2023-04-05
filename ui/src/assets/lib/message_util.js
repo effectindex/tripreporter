@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+//
+// SPDX-License-Identifier: OSL-3.0
+
 import log from "@/assets/lib/logger";
 
 export function setMessage(message, messageSuccess, status, router, location, routerTimeout) {

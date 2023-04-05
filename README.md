@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+
+SPDX-License-Identifier: OSL-3.0
+-->
+
 # tripreporter
 [![Docker Build](https://img.shields.io/github/actions/workflow/status/effectindex/tripreporter/make.yml?logo=go&logoColor=#00ADD8&branch=master)](https://github.com/effectindex/tripreporter/actions/workflows/make.yml)
 [![Docker Build](https://img.shields.io/github/actions/workflow/status/effectindex/tripreporter/docker.yml?logo=docker&logoColor=white&branch=master)](https://github.com/effectindex/tripreporter/actions/workflows/docker.yml)

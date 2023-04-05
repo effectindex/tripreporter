@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+
+SPDX-License-Identifier: OSL-3.0
+-->
+
 <template>
   <component :is="layout">
     <router-view v-model:layout="layout"/>

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+//
+// SPDX-License-Identifier: OSL-3.0
+
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 

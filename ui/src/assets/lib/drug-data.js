@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+//
+// SPDX-License-Identifier: OSL-3.0
+
 export default class DrugData { // TODO: Rewrite in TS for #106
   constructor({ obj, name, dosage, dosage_unit, roa, frequency, prescribed }) {
     this.name = name;

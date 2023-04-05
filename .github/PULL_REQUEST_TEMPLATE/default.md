@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+
+SPDX-License-Identifier: OSL-3.0
+-->
+
 **Is there a relevant issue to link?**
 <!-- If there is no issue to link, describe the feature you are adding / bug you are fixing. --->
 Closes #issue-number

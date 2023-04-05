@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+
+SPDX-License-Identifier: OSL-3.0
+-->
+
 <template>
   <div class="signup">
     <h1 class="--tr-header-h1">Create a <span class="--tr-muted-text">subjective.report</span> account 🚀</h1>

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+//
+// SPDX-License-Identifier: OSL-3.0
+
 import axios from 'axios'
 
 let url = process.env.VUE_APP_PROD_URL

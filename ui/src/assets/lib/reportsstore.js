@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+//
+// SPDX-License-Identifier: OSL-3.0
+
 import { defineStore } from "pinia";
 import log from "@/assets/lib/logger";
 import Report from "@/assets/lib/report";

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+
+SPDX-License-Identifier: OSL-3.0
+-->
+
 <template>
   <div class="DrugBox">
     <img class="DrugBox__pill" src="../assets/svg/pills.svg" alt="Pills icon" width="32" height="32">

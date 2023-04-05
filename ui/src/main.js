@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+//
+// SPDX-License-Identifier: OSL-3.0
+
 import '@formkit/themes/genesis'
 import '@formkit/pro/genesis'
 import '@formkit/addons/css/multistep'

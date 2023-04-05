@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+
+SPDX-License-Identifier: OSL-3.0
+-->
+
 <template>
   <div class="LayoutReport__main" v-if="getStore().isLoaded()">
     <div v-for="(report, index) in [getStore().reportJson]" :key="index">
