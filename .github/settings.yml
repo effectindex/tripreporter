@@ -144,6 +144,9 @@ milestones:
   - title: 1.0.0
     description: Required for stable 1.0.0 release
     state: open
+  - title: 1.1.0
+    description: 1.1.0 feature and fixes release
+    state: open
   - title: long-term
     description: For issues that are planned further into the future
     state: open
