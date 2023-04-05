@@ -8,7 +8,7 @@ services:
     container_name: tripreporter
     build: .
     restart: always
-    env_file: [".env"]
+    env_file: [ ".env" ]
     volumes:
       - "./config/:/tripreporter/config/"
     networks:
@@ -21,7 +21,7 @@ services:
     image: postgres
     build: db/.
     restart: always
-    env_file: [".env"]
+    env_file: [ ".env" ]
     environment:
       POSTGRES_DB: "${DB_NAME}"
       POSTGRES_USER: "${DB_USER}"
@@ -35,7 +35,7 @@ services:
     container_name: tripreporter-redis
     image: "redis:alpine"
     restart: always
-    env_file: [".env"]
+    env_file: [ ".env" ]
     volumes:
       - "redis_data:/data"
       - "./config/redis.conf:/data/config/redis.conf"
