@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -464,7 +465,7 @@ func (a *Account) VerifyPassword(password string) (*Account, error) {
 	}
 
 	providedHash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
-	if !util.SliceEqual(providedHash, a.Hash) {
+	if subtle.ConstantTimeCompare(providedHash, a.Hash) != 1 {
 		return a, types.ErrorAccountPasswordMatch
 	}
 
