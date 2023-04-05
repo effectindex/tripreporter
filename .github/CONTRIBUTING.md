@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
-
-SPDX-License-Identifier: OSL-3.0
--->
-
 # Contributing Guidelines
 
 Thank you for your interest in contributing to the Effect Index TripReporter project!
