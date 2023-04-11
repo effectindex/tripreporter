@@ -19,7 +19,7 @@ SPDX-License-Identifier: OSL-3.0
       </div>
 
       <div class="DefaultView__form_wide">
-        <FormKit type="form" :actions="false" @submit="submitForm" #default="{ value }">
+        <FormKit type="form" @submit="submitForm" #default="{ value, state: { errors } }" :actions="false" >
 
           <FormKit
               :classes="{ wrapper: 'formkit-wrapper-wide' }"
@@ -221,6 +221,7 @@ SPDX-License-Identifier: OSL-3.0
               <FormKit
                   type="submit"
                   @submit="submitForm"
+                  :disabled="errors && submitting"
               >
                 Create Report!
               </FormKit>
@@ -268,7 +269,7 @@ export default {
 </script>
 
 <script setup>
-import { inject } from "vue";
+import { inject, ref } from "vue";
 import NotFound from "@/views/NotFound.vue";
 import { useSessionStore } from '@/assets/lib/sessionstore'
 import { useCreateStore } from "@/assets/lib/createstore";
@@ -284,20 +285,20 @@ const createStore = useCreateStore();
 const optionsGender = ["Male", "Female", "Nonbinary"];
 
 const messageSuccess = "Successfully created report!";
-let success = false;
+let success = ref(false);
+let submitting = ref(false);
 
 const submitForm = async (fields) => {
-  // don't do anything if the user presses the button again, for example, while waiting for a redirect
-  if (success) {
-    return
-  }
+  submitting.value = true;
 
   await axios.post('/report', fields).then(function (response) {
-    success = response.status === 201;
-    setMessage(response.data.msg, messageSuccess, success, router, `/reports?id=${response.data.id}`);
+    success.value = response.status === 201;
+    submitting.value = false;
+    setMessage(response.data.msg, messageSuccess, success.value, router, `/reports?id=${response.data.id}`);
   }).catch(function (error) {
-    success = error.response.status === 201;
-    setMessage(error.response.data.msg, messageSuccess, success, router, `/reports?id=${error.response.data.id}`);
+    success.value = error.response.status === 201;
+    submitting.value = false;
+    setMessage(error.response.data.msg, messageSuccess, success.value, router, `/reports?id=${error.response.data.id}`);
     handleMessageError(error);
   })
 }
