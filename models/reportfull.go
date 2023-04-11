@@ -22,18 +22,16 @@ import (
 type ReportFull struct {
 	types.Context
 	Unique
-	Account      uuid.UUID `json:"account_id" db:"account_id"` // References the account that created this report.
-	Created      Timestamp `json:"creation_time" db:"creation_time"`
-	LastModified Timestamp `json:"modified_time" db:"modified_time"`
-	Date         Timestamp `json:"report_date" db:"report_date"`
-	//Source       URL       `json:"source_url" db:"source_url"` // TODO
-	//Effects      []Effect  // TODO
-	//Submitter    Submitter // TODO
-	Title   string         `json:"title" db:"title"`               // Required.
-	Setting string         `json:"setting,omitempty" db:"setting"` // Optional.
-	Sources ReportSources  `json:"report_sources,omitempty"`       // Saved in the report_sources table and appended manually.
-	Subject *ReportSubject `json:"report_subject,omitempty"`       // Saved in the report_subjects table and appended manually.
-	Events  ReportEvents   `json:"report_events,omitempty"`        // Saved in the report_events table and appended manually.
+	Account      uuid.UUID      `json:"account_id" db:"account_id"`       // References the account that created this report.
+	Created      Timestamp      `json:"creation_time" db:"creation_time"` // Required, set when creating a report.
+	LastModified Timestamp      `json:"modified_time" db:"modified_time"` // Required, defaults to Created and set when modifying a report.
+	Date         Timestamp      `json:"report_date" db:"report_date"`     // Required.
+	Title        string         `json:"title" db:"title"`                 // Required.
+	Setting      string         `json:"setting,omitempty" db:"setting"`   // Optional.
+	Sources      ReportSources  `json:"report_sources,omitempty"`         // Saved in the report_sources table and appended manually.
+	Subject      *ReportSubject `json:"report_subject,omitempty"`         // Saved in the report_subjects table and appended manually.
+	Events       ReportEvents   `json:"report_events,omitempty"`          // Saved in the report_events table and appended manually.
+	//Effects      []Effect  // TODO: #118
 }
 
 func (r *ReportFull) Get() (*ReportFull, error) {
