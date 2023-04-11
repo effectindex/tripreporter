@@ -6,7 +6,7 @@ package models
 
 type RouteOfAdministration int64
 
-const ( // TODO: check if complete
+const ( // TODO: Incomplete. See #30
 	RoaUnknown RouteOfAdministration = iota
 	RoaOther
 	RoaOral
