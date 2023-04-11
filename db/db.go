@@ -61,6 +61,24 @@ var (
     		title varchar(4096) not null, -- 156*16, or 4KiB
     		setting varchar(4096) not null -- 156*16, or 4KiB
     	);`,
+		`create table if not exists report_sources (
+    		report_id uuid references reports(id) on delete cascade,
+    		source_index int not null,
+    		source_is_author bool not null,
+    		source_name varchar(256) not null,
+    		source_url varchar(4096) not null,
+    		source_type int default 0,
+    		primary key(report_id, source_index)
+    	);`,
+		`create table if not exists report_subjects (
+    		report_id uuid primary key references reports(id) on delete cascade,
+			subject_age timestamptz not null default to_timestamp('0'),
+			subject_gender varchar(256),
+			subject_display_unit int default 1,
+			subject_height_cm decimal default 0,
+			subject_weight_kg decimal default 0,
+			subject_medications uuid[] -- references drugs(id) // TODO: Proper way to do this?
+    	);`,
 		`create table if not exists report_events (
     		report_id uuid references reports(id) on delete cascade,
     		event_index int not null,
@@ -68,7 +86,7 @@ var (
     		event_type int not null,
     		event_section int not null default 0,
     		event_content varchar(10485760), -- 10MiB
-    		event_drug uuid references drugs(id) on delete cascade ,
+    		event_drug uuid references drugs(id) on delete cascade,
     		primary key(report_id, event_index)
     	);`,
 	}
