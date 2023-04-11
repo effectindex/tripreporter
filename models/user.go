@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type User struct { // todo: old name was Profile // todo: visible on public profile:
+type User struct {
 	types.Context
 	Unique
 	Created     Timestamp `json:"created" db:"created"`             // Required, set by default.
