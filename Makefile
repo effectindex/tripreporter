@@ -8,7 +8,7 @@ tripreporter: deps-ui build-ui deps-server build-server test-server
 # licensing
 
 reuse-lint:
-	which reuse || { echo "`reuse` not found! see https://reuse.software/"; exit 1; }
+	@which reuse || { echo "reuse not found! see https://reuse.software/"; exit 1; }
 	reuse lint || exit 1
 
 ##########################################################
