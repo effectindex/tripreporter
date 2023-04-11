@@ -81,11 +81,18 @@ SPDX-License-Identifier: OSL-3.0
 
 <script>
 import LayoutDefault from "@/layouts/LayoutDefault.vue";
+import { getNode } from "@formkit/core";
 
 export default {
   name: "SignupView",
   created() {
     this.$emit('update:layout', LayoutDefault);
+  },
+  mounted() {
+    // Ensure username is lowercase when entering it
+    getNode('username').hook.commit((payload, next) => {
+      return next(payload.toLowerCase());
+    });
   }
 }
 </script>
