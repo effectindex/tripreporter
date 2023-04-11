@@ -104,65 +104,13 @@ SPDX-License-Identifier: OSL-3.0
                 :help="'(optional) ' + getTextLength(value.report_sections ? value.report_sections[index] ? value.report_sections[index].content : '' : '', 10485760)"
                 :delay="60"
             />
-            <!-- TODO: Refactor substance dosing into separate component -->
             <div v-else>
-              <FormKit
-                  type="text"
-                  id="drug_name"
-                  name="drug_name"
-                  label="Substance name"
-                  validation="length:0,4096"
-                  validation-visibility="live"
-                  placeholder="LSD"
-                  help="(optional) Leave blank if unknown."
-              />
-              <FormKit
-                  type="text"
-                  id="drug_dosage"
-                  name="drug_dosage"
-                  label="Substance dosage"
-                  validation="length:0,4096"
-                  validation-visibility="live"
-                  placeholder="100μg"
-                  help="(optional) Leave blank if unknown."
-              />
-              <FormKit
-                  type="select"
-                  label="Substance Route of Administration"
-                  name="roa"
-                  id="roa"
-                  :options="[
-                    { label: '', value: '0' },
-                    { label: 'Other', value: '1' },
-                    { label: 'Oral (swallowed)', value: '2' },
-                    { label: 'Sublingual (under tongue)', value: '8' },
-                    { label: 'Inhaled', value: '5' },
-                    { label: 'Intranasal (snorted)', value: '7' },
-                    { label: 'Rectal (boofed)', value: '4' },
-                    { label: 'Buccal (held in gums)', value: '3' },
-                    { label: 'Intravenous (IV injection)', value: '11' },
-                    { label: 'Intramuscular (injection into muscle)', value: '13' },
-                    { label: 'Intrabuccal (injection into gums)', value: '10' },
-                    { label: 'Subcutaneous (injection into fat)', value: '12' },
-                    { label: 'Sublabial (under the lip)', value: '6' },
-                    { label: 'Injection (other method)', value: '9' },
-                  ]"
-                  placeholder="How did you take the substance?"
-                  help="(optional)"
-              />
-              <FormKit
-                  type="select"
-                  label="Substance OTC / Prescription"
-                  name="prescribed"
-                  id="prescribed"
-                  :options="[
-                    { label: '', value: '0' },
-                    { label: 'It\'s over the counter', value: '1' },
-                    { label: 'It\'s prescribed by a doctor', value: '3' },
-                    { label: 'It\'s not prescribed by a doctor', value: '2' },
-                  ]"
-                  placeholder="Is this substance prescribed?"
-                  help="(optional)"
+              <FormKitDrug
+                  label-prefix="Substance"
+                  placeholder-name="LSD"
+                  placeholder-dosage="100μg"
+                  placeholder-roa="How did you take the substance?"
+                  placeholder-prescribed="Is this substance prescribed?"
               />
             </div>
           </FormKit>
@@ -225,6 +173,7 @@ import { useSessionStore } from '@/assets/lib/sessionstore'
 import NotFound from "@/views/NotFound.vue";
 import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import { getTextLength } from "@/assets/lib/form";
+import FormKitDrug from "@/components/FormKitDrug.vue";
 
 const router = inject('router')
 const axios = inject('axios')
