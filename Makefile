@@ -15,9 +15,7 @@ reuse-lint:
 # tests
 
 test-server:
-	@while read -r l; do \
-  		go test "$$l"; \
-	done < <(for f in $$(find . -name '*_test.go'); do dirname "$$f"; done | sort | uniq)
+	go test ./...
 
 ##########################################################
 # deps
