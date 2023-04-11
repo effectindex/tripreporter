@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 froggie <incoming@frogg.ie>
+# SPDX-FileCopyrightText: 2023 froggie <legal@frogg.ie>
 #
 # SPDX-License-Identifier: OSL-3.0
 
