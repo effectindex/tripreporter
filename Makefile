@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: OSL-3.0
 
-tripreporter: deps-ui build-ui deps-server build-server
+tripreporter: deps-ui build-ui deps-server build-server test-server
 
 ##########################################################
 # licensing
@@ -10,6 +10,14 @@ tripreporter: deps-ui build-ui deps-server build-server
 reuse-lint:
 	which reuse || { echo "`reuse` not found! see https://reuse.software/"; exit 1; }
 	reuse lint || exit 1
+
+##########################################################
+# tests
+
+test-server:
+	@while read -r l; do \
+  		go test "$$l"; \
+	done < <(for f in $$(find . -name '*_test.go'); do dirname "$$f"; done | sort | uniq)
 
 ##########################################################
 # deps
