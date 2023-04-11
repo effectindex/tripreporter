@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: OSL-3.0
 
-package util
+package crypto
 
 import (
 	"crypto/rand"

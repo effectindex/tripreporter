@@ -15,8 +15,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/effectindex/tripreporter/crypto"
 	"github.com/effectindex/tripreporter/types"
-	"github.com/effectindex/tripreporter/util"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
@@ -183,7 +183,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 	}
 
 	// Now we can generate the salt to use for the password
-	salt, err := util.GenerateSalt(12, 16, Wordlist.Random(1))
+	salt, err := crypto.GenerateSalt(12, 16, Wordlist.Random(1))
 
 	if err != nil {
 		a.Logger.Warnw("Failed to generate salt", "ID", a.ID, zap.Error(err))
@@ -192,7 +192,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 
 	// Set the account's salt and new hashed password properly
 	a.Salt = salt
-	a.Hash = util.GenerateSaltedPasswordHash([]byte(a.Password), a.Salt)
+	a.Hash = crypto.GenerateSaltedPasswordHash([]byte(a.Password), a.Salt)
 
 	if _, err := db.Exec(context.Background(),
 		`insert into accounts(
@@ -280,7 +280,7 @@ func (a *Account) Patch() (*Account, error) {
 			return a, err
 		}
 		if len(a.Salt) == 0 {
-			salt, err := util.GenerateSalt(12, 16, Wordlist.Random(1))
+			salt, err := crypto.GenerateSalt(12, 16, Wordlist.Random(1))
 			if err != nil {
 				a.Logger.Warnw("Failed to generate salt", "ID", a.ID, zap.Error(err))
 				return a, err
@@ -288,7 +288,7 @@ func (a *Account) Patch() (*Account, error) {
 
 			a.Salt = salt
 		}
-		a.Hash = util.GenerateSaltedPasswordHash([]byte(a.NewPass), a.Salt)
+		a.Hash = crypto.GenerateSaltedPasswordHash([]byte(a.NewPass), a.Salt)
 	}
 
 	if len(a.Salt) > 0 {
@@ -364,7 +364,7 @@ func (a *Account) FromRefreshToken(token *http.Cookie) (*Account, error) {
 	a.InitType(a)
 
 	if token == nil || len(token.Value) == 0 {
-		return a, types.ErrorStringEmpty.PrefixedError(util.CookieRefreshToken)
+		return a, types.ErrorStringEmpty.PrefixedError(types.CookieRefreshToken)
 	}
 
 	val, err := a.Cache.Get(context.Background(), token.Value).Result()
@@ -464,7 +464,7 @@ func (a *Account) VerifyPassword(password string) (*Account, error) {
 		return a, types.ErrorStringEmpty.PrefixedError("Password")
 	}
 
-	providedHash := util.GenerateSaltedPasswordHash([]byte(password), a.Salt)
+	providedHash := crypto.GenerateSaltedPasswordHash([]byte(password), a.Salt)
 	if subtle.ConstantTimeCompare(providedHash, a.Hash) != 1 {
 		return a, types.ErrorAccountPasswordMatch
 	}

@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/cristalhq/jwt/v4"
+	"github.com/effectindex/tripreporter/crypto"
 	"github.com/effectindex/tripreporter/types"
-	"github.com/effectindex/tripreporter/util"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -106,7 +106,7 @@ func (s *Session) Post() (*Session, error) {
 	}
 
 	// Now that we have a session in the database, lets make a refresh token for it.
-	b, err := util.GenerateRandomBytes(16)
+	b, err := crypto.GenerateRandomBytes(16)
 	if err != nil {
 		s.Logger.Warnw("Failed to create bytes for refresh token", zap.Error(err))
 		_ = db.Rollback(context.Background())

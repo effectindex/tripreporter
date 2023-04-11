@@ -12,9 +12,9 @@ import (
 	"os"
 
 	"github.com/cristalhq/jwt/v4"
+	"github.com/effectindex/tripreporter/crypto"
 	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
-	"github.com/effectindex/tripreporter/util"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -52,7 +52,7 @@ func SetupJwt() {
 	if len(decodedKey) != 512/8 || err != nil {
 		ctx.Logger.Warnw("JWT key in config/.jwt.env missing or not good, creating new one", zap.Error(err))
 
-		jwtKey, err := util.GenerateRandomBytes(512 / 8)
+		jwtKey, err := crypto.GenerateRandomBytes(512 / 8)
 		if err != nil {
 			ctx.Logger.Fatalw("Could not make JWT key bytes", zap.Error(err))
 		}
@@ -170,7 +170,7 @@ func (c *Context) GetCtxValOrHandle(w http.ResponseWriter, r *http.Request) (*mo
 // CreateLogger will create a new Zap logger from an http.ResponseWriter, to log to an http request directly.
 // You must defer logger.Sync() yourself.
 func CreateLogger(w http.ResponseWriter) *zap.SugaredLogger {
-	logger := util.CreateZapWriterLogger(
+	logger := types.CreateZapWriterLogger(
 		w, zap.NewProductionEncoderConfig(),
 		func(c zapcore.EncoderConfig) zapcore.Encoder {
 			return zapcore.NewJSONEncoder(c)

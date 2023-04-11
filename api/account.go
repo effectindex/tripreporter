@@ -10,7 +10,6 @@ import (
 
 	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
-	"github.com/effectindex/tripreporter/util"
 	"github.com/gorilla/mux"
 )
 
@@ -61,7 +60,7 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetAuthCookie(w, util.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
+	SetAuthCookie(w, types.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
 
 	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusCreated)
 }
@@ -93,7 +92,7 @@ func AccountPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetAuthCookie(w, util.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
+	SetAuthCookie(w, types.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
 
 	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusOK)
 }
@@ -151,7 +150,7 @@ func AccountDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DeleteAuthCookies(w, util.CookieRefreshToken, util.CookieJwtToken)
+	DeleteAuthCookies(w, types.CookieRefreshToken, types.CookieJwtToken)
 
 	ctx.HandleJson(w, r, account.ClearAll(), http.StatusOK)
 }

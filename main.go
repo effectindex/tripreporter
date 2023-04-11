@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/effectindex/tripreporter/api"
+	"github.com/effectindex/tripreporter/crypto"
 	"github.com/effectindex/tripreporter/db"
 	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
-	"github.com/effectindex/tripreporter/util"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
@@ -61,7 +61,7 @@ func main() {
 	}
 
 	// Setup NodeID for uuid generation
-	if randomID, err := util.GenerateRandomBytes(6); err != nil {
+	if randomID, err := crypto.GenerateRandomBytes(6); err != nil {
 		logger.Fatal("failed to initialize NodeID", zap.Error(err))
 	} else {
 		randomID[5] |= 0x01 // Set least significant bit of first true

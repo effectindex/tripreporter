@@ -13,7 +13,6 @@ import (
 	"github.com/cristalhq/jwt/v4"
 	"github.com/effectindex/tripreporter/models"
 	"github.com/effectindex/tripreporter/types"
-	"github.com/effectindex/tripreporter/util"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
@@ -21,14 +20,14 @@ import (
 func AuthMiddleware() func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			refreshToken, err := r.Cookie(util.CookieRefreshToken)
+			refreshToken, err := r.Cookie(types.CookieRefreshToken)
 			if err != nil {
 				ctx.Context.Logger.Debugw("Failed to get refresh token", zap.Error(err))
 				ctx.Handle(w, r, MsgForbidden)
 				return
 			}
 
-			jwtToken, _ := r.Cookie(util.CookieJwtToken)
+			jwtToken, _ := r.Cookie(types.CookieJwtToken)
 			sessionClaims, _ := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
 
 			// If we need to generate a new access token
@@ -62,7 +61,7 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 					ctx.Logger.Warnw("Failed to create access token", zap.Error(err))
 				}
 
-				SetAuthCookie(w, util.CookieJwtToken, token.String(), expiryTime)
+				SetAuthCookie(w, types.CookieJwtToken, token.String(), expiryTime)
 
 				ctx.Logger.Debugw("Successfully refreshed access token", "account", account.ID, "path", r.URL.Path)
 			}

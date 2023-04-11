@@ -9,11 +9,12 @@ import (
 	"io/fs"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"os"
 	"strings"
 
+	"github.com/effectindex/tripreporter/types"
 	"github.com/effectindex/tripreporter/ui"
-	"github.com/effectindex/tripreporter/util"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
@@ -31,8 +32,18 @@ var (
 
 // Setup manages functions that should be ready to use before
 func Setup(isDevelopment bool, logger *zap.SugaredLogger) {
-	proxy = util.NewProxy("http://localhost:"+os.Getenv("DEV_PORT"), logger)
+	proxy = NewProxy("http://localhost:"+os.Getenv("DEV_PORT"), logger)
 	dev = isDevelopment
+}
+
+// NewProxy takes target host and creates a reverse proxy
+func NewProxy(target string, logger *zap.SugaredLogger) *httputil.ReverseProxy {
+	u, err := url.Parse(target)
+	if err != nil {
+		logger.Panicf("failed to parse target: %v", err) // likely malformed addr
+	}
+
+	return httputil.NewSingleHostReverseProxy(u)
 }
 
 // CorsWrapper will wrap h in a CORS handler
@@ -60,7 +71,7 @@ func CorsWrapper(h http.Handler, logger *zap.SugaredLogger) http.Handler {
 	})
 
 	if corsLog {
-		c.Log = &util.StdLogWrapper{Prefix: "[cors] ", Level: zap.DebugLevel, Logger: logger.Desugar()}
+		c.Log = &types.StdLogWrapper{Prefix: "[cors] ", Level: zap.DebugLevel, Logger: logger.Desugar()}
 	}
 
 	logger.Debugw("Created CorsWrapper", "serveUrl", serveUrl)
