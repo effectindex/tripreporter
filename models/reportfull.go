@@ -29,9 +29,11 @@ type ReportFull struct {
 	//Source       URL       `json:"source_url" db:"source_url"` // TODO
 	//Effects      []Effect  // TODO
 	//Submitter    Submitter // TODO
-	Title   string       `json:"title" db:"title"`               // Required.
-	Setting string       `json:"setting,omitempty" db:"setting"` // Optional.
-	Events  ReportEvents `json:"report_events,omitempty"`        // Saved in report_events table and appended manually.
+	Title   string         `json:"title" db:"title"`               // Required.
+	Setting string         `json:"setting,omitempty" db:"setting"` // Optional.
+	Sources ReportSources  `json:"report_sources,omitempty"`       // Saved in the report_sources table and appended manually.
+	Subject *ReportSubject `json:"report_subject,omitempty"`       // Saved in the report_subjects table and appended manually.
+	Events  ReportEvents   `json:"report_events,omitempty"`        // Saved in the report_events table and appended manually.
 }
 
 func (r *ReportFull) Get() (*ReportFull, error) {
@@ -66,27 +68,28 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 
 	for n, i := range r2 {
 		if i.Type == ReportEventDrug && i.DrugID != uuid.Nil {
-			var d1 []*Drug
-			if err := pgxscan.Select(context.Background(), db, &d1,
-				`select * from drugs where id=$1`, i.DrugID,
-			); err != nil {
-				r.Logger.Warnw("Failed to get drug from DB", zap.Error(err))
-				return r, err // only return if we error here, as this one matters
-			} else if len(d1) == 0 {
-				r.Logger.Warnw("No drugs found for parameters", "report event", i)
-				continue
-			} else if len(d1) > 1 { // This shouldn't happen
-				r.Logger.Warnw("Multiple drugs found for parameters", "drugs", d1)
-				continue
+			if drug, err := (&Drug{Context: r.Context, Unique: Unique{ID: i.DrugID}}).Get(); err != nil {
+				return r, err
+			} else {
+				r2[n].Drug = *drug
 			}
-
-			r2[n].Drug = *d1[0]
-			r2[n].Drug.InitType(r2[n].Drug)
 		}
+	}
+
+	sources, err := (&ReportSource{Context: r.Context, Report: r.ID}).Get()
+	if err != nil {
+		return r, err
+	}
+
+	subject, err := (&ReportSubject{Context: r.Context, Report: r.ID}).Get()
+	if err != nil {
+		return r, err
 	}
 
 	r2.Sort()
 	r.FromData(r1[0])
+	r.Sources = sources
+	r.Subject = subject
 	r.Events = r2
 
 	return r, nil
@@ -124,22 +127,28 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 		return r, err
 	}
 
+	// Insert report sources
+	for _, s := range r.Sources {
+		if _, err := s.Post(); err != nil {
+			r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
+			_ = db.Rollback(context.Background())
+			return r, err
+		}
+	}
+
+	// Insert report subject
+	if r.Subject != nil {
+		if _, err := r.Subject.Post(); err != nil {
+			r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
+			_ = db.Rollback(context.Background())
+			return r, err
+		}
+	}
+
 	// Insert report drugs
 	for _, e := range r.Events {
 		if e.Type == ReportEventDrug {
-			if _, err := db.Exec(context.Background(),
-				`insert into drugs(
-						id,
-						account_id,
-						drug_name,
-						drug_dosage,
-						drug_dosage_unit,
-						drug_roa,
-						drug_frequency,
-						drug_prescribed
-					) values($1, $2, $3, $4, $5, $6, $7, $8);`,
-				e.Drug.ID, e.Drug.Account, e.Drug.Name, e.Drug.Dosage, e.Drug.DosageUnit, e.Drug.RoA, e.Drug.Frequency, e.Drug.Prescribed,
-			); err != nil {
+			if _, err := e.Drug.Post(); err != nil {
 				r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
 				_ = db.Rollback(context.Background())
 				return r, err
@@ -321,7 +330,6 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 				Prescribed: DrugPrescribed(s.Prescribed),
 			}
 			event.Drug.ParseDose(s.DrugDosage)
-			event.Drug.Unique.InitType(event.Drug)
 
 			err = event.Drug.Unique.InitUUID(r.Logger)
 			if err != nil {
