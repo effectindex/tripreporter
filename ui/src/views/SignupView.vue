@@ -15,7 +15,6 @@ SPDX-License-Identifier: OSL-3.0
     <div class="DefaultView__form">
       <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
         <!-- TODO: Make email optional. -->
-        <!-- TODO: Implement user signup (#77) -->
         <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true"
             :allow-incomplete="false">
           <FormKit type="step" name="account_info" v-model="store.createAccountForm">
@@ -149,7 +148,6 @@ const submitForm = async (fields, handlers) => {
 
     log("submitForm: got store", store.createAccountForm)
 
-    // TODO: Implement user signup (#77)
     axios.post('/account', store.createAccountForm).then(function (response) {
       success.value = response.status === 201;
       submitting.value = false;
