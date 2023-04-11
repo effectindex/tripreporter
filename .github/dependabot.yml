@@ -25,6 +25,7 @@ updates:
     labels:
       - "triage:pending"
       - "backend:deps"
+    milestone: 4
 
   - package-ecosystem: "gomod"
     directory: "/"
@@ -42,6 +43,7 @@ updates:
     labels:
       - "triage:pending"
       - "backend:deps"
+    milestone: 4
 
   - package-ecosystem: "npm"
     directory: "/ui"
@@ -59,3 +61,4 @@ updates:
     labels:
       - "triage:pending"
       - "web:deps"
+    milestone: 4
