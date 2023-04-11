@@ -56,9 +56,109 @@ SPDX-License-Identifier: OSL-3.0
           />
 
           <FormKit
-              id="repeater"
-              name="report_sections"
+              type="toggle"
+              name="has_subject"
+              label="Adding subject information?"
+              v-model="createStore.hasSubject"
+          />
+
+          <div v-show="createStore.hasSubject">
+            <FormKit
+                type="number"
+                id="subject_age"
+                name="subject_age"
+                label="Age"
+                help="(optional)"
+                v-model="createStore.subjectInfo.age"
+            />
+
+            <FormKit
+                type="taglist"
+                id="subject_gender"
+                name="subject_gender"
+                label="Gender"
+                :options="optionsGender"
+                :allow-new-values="true"
+                max="1"
+                help="(optional) Custom values are supported."
+                v-model="createStore.subjectInfo.gender"
+            />
+
+            <FormKit
+                type="toggle"
+                name="use_imperial"
+                label="Use imperial for units?"
+                v-model="createStore.useImperial"
+            />
+
+            <div v-show="!createStore.useImperial">
+              <FormKit
+                  type="number"
+                  id="subject_height_cm"
+                  name="subject_height_cm"
+                  label="Height (cm)"
+                  help="(optional)"
+                  v-model="createStore.subjectInfo.heightCm"
+              />
+              <FormKit
+                  type="number"
+                  id="subject_weight_kg"
+                  name="subject_weight_kg"
+                  label="Weight (kg)"
+                  help="(optional)"
+                  v-model="createStore.subjectInfo.weightKg"
+              />
+            </div>
+            <div v-show="createStore.useImperial">
+              <FormKit
+                  type="number"
+                  id="subject_height_ft"
+                  name="subject_height_ft"
+                  label="Height (ft)"
+                  help="(optional)"
+                  v-model="createStore.subjectInfo.heightFt"
+              />
+              <FormKit
+                  type="number"
+                  id="subject_height_in"
+                  name="subject_height_in"
+                  label="Height (in)"
+                  help="(optional)"
+                  v-model="createStore.subjectInfo.heightIn"
+              />
+              <FormKit
+                  type="number"
+                  id="subject_weight_lbs"
+                  name="subject_weight_lbs"
+                  label="Weight (lbs)"
+                  help="(optional)"
+                  v-model="createStore.subjectInfo.weightLbs"
+              />
+            </div>
+
+            <FormKit
+                type="repeater"
+                id="subject_medications"
+                name="subject_medications"
+                label="Medications"
+                :add-button="false"
+                :insert-control="true"
+            >
+              <FormKitDrug
+                  label-prefix="Medication"
+                  placeholder-name="Omeprazole"
+                  placeholder-dosage="10mg"
+                  placeholder-roa="How do you take this medication?"
+                  placeholder-prescribed="Is this medication prescribed?"
+              />
+            </FormKit>
+
+          </div>
+
+          <FormKit
               type="repeater"
+              id="report_sections"
+              name="report_sections"
               label="Report Content"
               :add-button="false"
               :insert-control="true"
@@ -169,8 +269,9 @@ export default {
 
 <script setup>
 import { inject } from "vue";
-import { useSessionStore } from '@/assets/lib/sessionstore'
 import NotFound from "@/views/NotFound.vue";
+import { useSessionStore } from '@/assets/lib/sessionstore'
+import { useCreateStore } from "@/assets/lib/createstore";
 import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import { getTextLength } from "@/assets/lib/form";
 import FormKitDrug from "@/components/FormKitDrug.vue";
@@ -178,6 +279,9 @@ import FormKitDrug from "@/components/FormKitDrug.vue";
 const router = inject('router')
 const axios = inject('axios')
 const store = useSessionStore();
+const createStore = useCreateStore();
+
+const optionsGender = ["Male", "Female", "Nonbinary"];
 
 const messageSuccess = "Successfully created report!";
 let success = false;
