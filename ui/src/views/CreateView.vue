@@ -351,6 +351,7 @@ const handleNext = async (fields, handlers) => {
 
 <style>
 @import url(@/assets/css/forms.css);
+@import url(@/assets/css/forms-repeater.css);
 @import url(@/assets/css/forms-multi-step.css);
 </style>
 
