@@ -19,7 +19,7 @@ SPDX-License-Identifier: OSL-3.0
       </div>
 
       <div class="DefaultView__form_wide">
-        <FormKit type="form" @submit="submitForm" #default="{ value, state: { errors } }" :actions="false">
+        <FormKit type="form" @submit="handleNext" #default="{ value, state: { errors } }" :actions="false">
           <FormKit type="multi-step" name="report_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false" :classes="{ wrapper: 'formkit-wrapper-wide' }">
             <FormKit type="step" name="report_info" v-model="createStore.reportInfo">
               <FormKit
@@ -215,6 +215,7 @@ SPDX-License-Identifier: OSL-3.0
                     type="submit"
                     @submit="submitForm"
                     label="Create Report!"
+                    data-next="true"
                     :disabled="errors && submitting"
                 />
               </template>
@@ -302,6 +303,46 @@ const submitForm = async (fields) => {
     submitting.value = false;
     setMessage(error.response.data.msg, messageSuccess, success.value, router, `/reports?id=${error.response.data.id}`);
     handleMessageError(error);
+  })
+}
+
+// TODO: Workaround for https://github.com/formkit/formkit/issues/641
+const handleNext = async (fields, handlers) => {
+  let incrementedStep = false;
+  let focusedStep = false;
+
+  const activateStep = async(child, step, nextStep) => {
+    if (child.name === step && child.context.isActiveStep && !incrementedStep) {
+      if (nextStep === "submit_form") {
+        return submitForm(fields)
+      }
+
+      incrementedStep = true
+      child.context.handlers.next()
+    }
+
+    if (child.name === nextStep && incrementedStep && !focusedStep) {
+      focusedStep = true
+
+      let elementId = child.context.node.children[0].props.id
+      if (child.context.node.children[0].children.length > 0 && child.context.node.children[0].children[0].children.length > 0) {
+        elementId = child.context.node.children[0].children[0].children[0].props.id
+      }
+
+      setTimeout(function () {
+        const el = document.getElementById(elementId)
+        el.focus()
+        el.click()
+      }, 20)
+    }
+  }
+
+  // report_info, subject_info, medication_info, report_events
+  handlers.children[0].walk(child => {
+    activateStep(child, "report_info", "subject_info")
+    activateStep(child, "subject_info", "medication_info")
+    activateStep(child, "medication_info", "report_events")
+    activateStep(child, "report_events", "submit_form")
   })
 }
 </script>
