@@ -46,6 +46,11 @@ func (t *Timestamp) Parse(s string) (*Timestamp, error) {
 	}
 }
 
+// ParseTime creates a Timestamp from a string and a T00:00:00Z formatted time.
+func (t *Timestamp) ParseTime(s string) (*Timestamp, error) {
+	return t.Parse(t.Time.Format("2006-01-02") + s)
+}
+
 // ParseDate creates a Timestamp from a string and a 2006-01-02 formatted date.
 func (t *Timestamp) ParseDate(s string) (*Timestamp, error) {
 	return t.Parse(s + "T00:00:00Z")
