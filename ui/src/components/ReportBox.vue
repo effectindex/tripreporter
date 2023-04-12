@@ -20,7 +20,7 @@ SPDX-License-Identifier: OSL-3.0
                 :columns="['Name', 'Date', 'Gender', 'Height', 'Weight']"
                 :rows="{
                   'Name': 'Josie Kins',
-                  'Date': new Timestamp({date: report.report_date, longFormat: true}).get(),
+                  'Date': getStore().reportDate.get(),
                   'Gender': 'Female',
                   'Height': '5\'9',
                   'Weight': '~150 lbs'
@@ -34,9 +34,9 @@ SPDX-License-Identifier: OSL-3.0
 
         <div class="LayoutReport__setting">
           <div :class="{'LayoutReportBox': true, 'LayoutReportBox_last': true}">
-            <div v-if="report.report_date">
+            <div v-if="getStore().reportDate.valid()">
               Experienced on
-              <timestamp-text :date="report.report_date" :long-format="true"/>
+              <timestamp-text :timestamp="getStore().reportDate"/>
             </div>
             <div v-else>
               Unknown report date.
@@ -103,7 +103,7 @@ export default {
       const boxClass = index % 2 === 0 ? 'LayoutReportBox' : 'LayoutReportBox_alt'
       const classes = {}
       classes[boxClass] = true
-      classes['LayoutReportBox_last'] = index === sections.length - 1
+      classes["LayoutReportBox_last"] = index === sections.length - 1
 
       return classes
     }
@@ -115,7 +115,6 @@ export default {
     ranSetup = true
 
     const axios = inject('axios')
-
     await axios.get('/report/' + props.id).then(function (response) {
       store.updateData(response.status, response.data)
       setMessage(response.data.msg, "", store.apiSuccess);
