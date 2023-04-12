@@ -53,7 +53,6 @@ SPDX-License-Identifier: OSL-3.0
                   id="date"
                   name="report_date"
                   label="Date"
-                  validation="required"
                   help="When did the experience occur?"
               />
             </FormKit>
