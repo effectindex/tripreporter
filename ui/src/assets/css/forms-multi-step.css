@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: OSL-3.0
  */
 
-.formkit-outer[data-type="multi-step"] > .formkit-wrapper > .formkit-steps {
+.formkit-outer[data-type="multi-step"] > .formkit-wrapper > .formkit-steps,
+.formkit-outer[data-type="multi-step"] > .formkit-wrapper-wide > .formkit-steps {
     border: unset;
     border-top: unset;
     border-radius: unset;
