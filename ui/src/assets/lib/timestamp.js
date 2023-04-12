@@ -5,7 +5,7 @@
 // A formatted Date with easy to use options.
 export default class Timestamp { // TODO: Rewrite in TS for #106
   constructor({ date, showTime, hideDate, longFormat }) {
-    this.date = new Date(date);
+    this.date = date ? new Date(date) : undefined;
     this.showTime = showTime;
     this.hideDate = hideDate;
     this.longFormat = longFormat;
@@ -22,12 +22,12 @@ export default class Timestamp { // TODO: Rewrite in TS for #106
 
   get() { // Return the formatted Timestamp based on the provided options
     if (this.date === undefined) {
-      return ""
+      return "Unknown"
     }
 
     // Golang zero time in Unix epoch milliseconds
     if (this.date.getTime() === this.epoch()) {
-      return ""
+      return "Unknown"
     }
 
     let options = this.longFormat ? { weekday: "long", year: "numeric", month: "long", day: "numeric" } : {
