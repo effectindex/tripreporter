@@ -21,7 +21,7 @@ SPDX-License-Identifier: OSL-3.0
       <div class="DefaultView__form_wide">
         <FormKit type="form" @submit="submitForm" #default="{ value, state: { errors } }" :actions="false">
           <FormKit type="multi-step" name="report_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false" :classes="{ wrapper: 'formkit-wrapper-wide' }">
-            <FormKit type="step" name="report_info_step" v-model="createStore.reportInfo">
+            <FormKit type="step" name="report_info" v-model="createStore.reportInfo">
               <FormKit
                   :classes="{ wrapper: 'formkit-wrapper-wide' }"
                   type="text"
@@ -56,110 +56,99 @@ SPDX-License-Identifier: OSL-3.0
                   help="When did the experience occur?"
               />
             </FormKit>
-            <FormKit type="step" name="subject_info_step" v-model="createStore.reportSubject">
+            <FormKit type="step" name="subject_info" v-model="createStore.reportSubject">
               <FormKit
-                  type="toggle"
-                  name="has_subject"
-                  label="Adding subject information?"
-                  v-model="createStore.hasSubject"
+                  type="number"
+                  id="subject_age"
+                  name="subject_age"
+                  label="Age"
+                  help="(optional)"
+                  v-model="createStore.subjectInfo.age"
               />
 
-              <div v-show="createStore.hasSubject">
+              <FormKit
+                  type="taglist"
+                  id="subject_gender"
+                  name="subject_gender"
+                  label="Gender"
+                  :options="optionsGender"
+                  :allow-new-values="true"
+                  max="1"
+                  help="(optional) Custom values are supported."
+                  v-model="createStore.subjectInfo.gender"
+              />
+
+              <FormKit
+                  type="toggle"
+                  name="use_imperial"
+                  label="Use imperial for units?"
+                  v-model="createStore.useImperial"
+              />
+
+              <div v-show="!createStore.useImperial">
                 <FormKit
                     type="number"
-                    id="subject_age"
-                    name="subject_age"
-                    label="Age"
+                    id="subject_height_cm"
+                    name="subject_height_cm"
+                    label="Height (cm)"
                     help="(optional)"
-                    v-model="createStore.subjectInfo.age"
+                    v-model="createStore.subjectInfo.heightCm"
                 />
-
                 <FormKit
-                    type="taglist"
-                    id="subject_gender"
-                    name="subject_gender"
-                    label="Gender"
-                    :options="optionsGender"
-                    :allow-new-values="true"
-                    max="1"
-                    help="(optional) Custom values are supported."
-                    v-model="createStore.subjectInfo.gender"
+                    type="number"
+                    id="subject_weight_kg"
+                    name="subject_weight_kg"
+                    label="Weight (kg)"
+                    help="(optional)"
+                    v-model="createStore.subjectInfo.weightKg"
                 />
-
+              </div>
+              <div v-show="createStore.useImperial">
                 <FormKit
-                    type="toggle"
-                    name="use_imperial"
-                    label="Use imperial for units?"
-                    v-model="createStore.useImperial"
+                    type="number"
+                    id="subject_height_ft"
+                    name="subject_height_ft"
+                    label="Height (ft)"
+                    help="(optional)"
+                    v-model="createStore.subjectInfo.heightFt"
                 />
-
-                <div v-show="!createStore.useImperial">
-                  <FormKit
-                      type="number"
-                      id="subject_height_cm"
-                      name="subject_height_cm"
-                      label="Height (cm)"
-                      help="(optional)"
-                      v-model="createStore.subjectInfo.heightCm"
-                  />
-                  <FormKit
-                      type="number"
-                      id="subject_weight_kg"
-                      name="subject_weight_kg"
-                      label="Weight (kg)"
-                      help="(optional)"
-                      v-model="createStore.subjectInfo.weightKg"
-                  />
-                </div>
-                <div v-show="createStore.useImperial">
-                  <FormKit
-                      type="number"
-                      id="subject_height_ft"
-                      name="subject_height_ft"
-                      label="Height (ft)"
-                      help="(optional)"
-                      v-model="createStore.subjectInfo.heightFt"
-                  />
-                  <FormKit
-                      type="number"
-                      id="subject_height_in"
-                      name="subject_height_in"
-                      label="Height (in)"
-                      help="(optional)"
-                      v-model="createStore.subjectInfo.heightIn"
-                  />
-                  <FormKit
-                      type="number"
-                      id="subject_weight_lbs"
-                      name="subject_weight_lbs"
-                      label="Weight (lbs)"
-                      help="(optional)"
-                      v-model="createStore.subjectInfo.weightLbs"
-                  />
-                </div>
-
                 <FormKit
-                    type="repeater"
-                    id="subject_medications"
-                    name="subject_medications"
-                    label="Medications"
-                    :add-button="false"
-                    :insert-control="true"
-                >
-                  <FormKitDrug
-                      label-prefix="Medication"
-                      placeholder-name="Omeprazole"
-                      placeholder-dosage="10mg"
-                      placeholder-roa="How do you take this medication?"
-                      placeholder-prescribed="Is this medication prescribed?"
-                  />
-                </FormKit>
-
+                    type="number"
+                    id="subject_height_in"
+                    name="subject_height_in"
+                    label="Height (in)"
+                    help="(optional)"
+                    v-model="createStore.subjectInfo.heightIn"
+                />
+                <FormKit
+                    type="number"
+                    id="subject_weight_lbs"
+                    name="subject_weight_lbs"
+                    label="Weight (lbs)"
+                    help="(optional)"
+                    v-model="createStore.subjectInfo.weightLbs"
+                />
               </div>
             </FormKit>
-            <FormKit type="step" name="report_sections_step" v-model="createStore.reportEvents">
-              <pre wrap> {{ createStore.reportEvents }}</pre>
-
+            <FormKit type="step" name="medication_info" v-model="createStore.reportMedication">
+              <FormKit
+                  type="repeater"
+                  id="subject_medications"
+                  name="subject_medications"
+                  label="Medications"
+                  :add-button="false"
+                  :insert-control="true"
+              >
+                <FormKitDrug
+                    label-prefix="Medication"
+                    placeholder-name="Omeprazole"
+                    placeholder-dosage="10mg"
+                    placeholder-roa="How do you take this medication?"
+                    placeholder-prescribed="Is this medication prescribed?"
+                />
+              </FormKit>
+            </FormKit>
+            <FormKit type="step" name="report_events" v-model="createStore.reportEvents">
               <FormKit
                   type="repeater"
                   id="report_sections"
@@ -274,6 +263,7 @@ import { useCreateStore } from "@/assets/lib/createstore";
 import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import { getTextLength } from "@/assets/lib/form";
 import FormKitDrug from "@/components/FormKitDrug.vue";
+import log from "@/assets/lib/logger";
 
 const router = inject('router')
 const axios = inject('axios')
@@ -289,6 +279,20 @@ let submitting = ref(false);
 const submitForm = async (fields) => {
   submitting.value = true;
 
+  // Transform form steps into a more sane data format, for the server to handle
+  fields = fields.report_form;
+  fields = {
+    ...fields.report_info,
+    ...fields.report_events,
+    "report_subject": {
+      ...fields.subject_info,
+      "medications": {
+        ...fields.medication_info.subject_medications
+      }
+    }
+  };
+
+  log("submitForm", fields)
   await axios.post('/report', fields).then(function (response) {
     success.value = response.status === 201;
     submitting.value = false;

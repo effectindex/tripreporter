@@ -8,7 +8,6 @@ import { ref } from "vue";
 export const useCreateStore = defineStore('create', {
   state: () => {
     return {
-      hasSubject: ref(false),
       useImperial: ref(false),
       subjectInfo: ref({
         age: Number,
@@ -21,6 +20,7 @@ export const useCreateStore = defineStore('create', {
       }),
       reportInfo: ref({}),
       reportSubject: ref({}),
+      reportMedication: ref({}),
       reportEvents: ref({})
     }
   }
