@@ -5,7 +5,7 @@ SPDX-License-Identifier: OSL-3.0
 -->
 
 <template>
-  <span>{{ new Timestamp({ date: date, showTime: showTime, hideDate: hideDate, longFormat: longFormat }).get() }}</span>
+  <span>{{ timestamp ? timestamp.get() : new Timestamp({ date: date, showTime: showTime, hideDate: hideDate, longFormat: longFormat }).get() }}</span>
 </template>
 
 <script>
@@ -19,6 +19,7 @@ export default {
     }
   },
   props: {
+    timestamp: Timestamp,
     date: String,
     showTime: Boolean,
     hideDate: Boolean,
