@@ -25,12 +25,12 @@ type ReportFull struct {
 	Account      uuid.UUID      `json:"account_id" db:"account_id"`       // References the account that created this report.
 	Created      Timestamp      `json:"creation_time" db:"creation_time"` // Required, set when creating a report.
 	LastModified Timestamp      `json:"modified_time" db:"modified_time"` // Required, defaults to Created and set when modifying a report.
-	Date         Timestamp      `json:"report_date" db:"report_date"`     // Optional.
 	Title        string         `json:"title" db:"title"`                 // Required.
+	Date         Timestamp      `json:"report_date" db:"report_date"`     // Optional.
 	Setting      string         `json:"setting,omitempty" db:"setting"`   // Optional.
-	Sources      ReportSources  `json:"report_sources,omitempty"`         // Saved in the report_sources table and appended manually.
-	Subject      *ReportSubject `json:"report_subject,omitempty"`         // Saved in the report_subjects table and appended manually.
-	Events       ReportEvents   `json:"report_events,omitempty"`          // Saved in the report_events table and appended manually.
+	Sources      ReportSources  `json:"report_sources,omitempty"`         // Optional. Saved in the report_sources table,  appended manually.
+	Subject      *ReportSubject `json:"report_subject,omitempty"`         // Optional. Saved in the report_subjects table, appended manually.
+	Events       ReportEvents   `json:"report_events,omitempty"`          // Optional. Saved in the report_events table, appended manually.
 	//Effects      []Effect  // TODO: #118
 }
 
@@ -243,6 +243,11 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 
 	//
 	// Now we should have all the data, we need to turn some types into Go types to make sense.
+
+	// First lets ensure we have a title, as they are required
+	if len(r.Title) == 0 {
+		return r, types.ErrorStringEmpty.PrefixedError("Report title")
+	}
 
 	// First lets fix the create and last modified timestamps, if they're not valid
 	if !r.Created.Valid() {
