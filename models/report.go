@@ -19,7 +19,7 @@ import (
 	"github.com/georgysavva/scany/v2/pgxscan"
 )
 
-type ReportFull struct {
+type Report struct {
 	types.Context
 	Unique
 	Account      uuid.UUID      `json:"account_id" db:"account_id"`       // References the account that created this report.
@@ -34,7 +34,7 @@ type ReportFull struct {
 	//Effects      []Effect  // TODO: #118
 }
 
-func (r *ReportFull) Get() (*ReportFull, error) {
+func (r *Report) Get() (*Report, error) {
 	r.InitType(r)
 	db := r.DB()
 
@@ -42,7 +42,7 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 		return r, types.ErrorReportNotSpecified
 	}
 
-	var r1 []*ReportFull
+	var r1 []*Report
 	if err := pgxscan.Select(context.Background(), db, &r1,
 		`select * from reports where id=$1`, r.ID,
 	); err != nil {
@@ -94,7 +94,7 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 	return r, nil
 }
 
-func (r *ReportFull) Post() (*ReportFull, error) {
+func (r *Report) Post() (*Report, error) {
 	r.InitType(r)
 	db := r.DB()
 	defer db.Commit(context.Background())
@@ -191,7 +191,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 	return r, nil
 }
 
-func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
+func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	r.InitType(r)
 
 	type ReportFormEvent struct {
@@ -352,11 +352,11 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 	r.Setting = rf.Setting
 	r.Events = sections
 
-	// We should have a completely parsed ReportFull now
+	// We should have a completely parsed Report now
 	return r, nil
 }
 
-func (r *ReportFull) FromData(r1 *ReportFull) {
+func (r *Report) FromData(r1 *Report) {
 	r.InitType(r)
 	r.ID = r1.ID
 	r.Account = r1.Account

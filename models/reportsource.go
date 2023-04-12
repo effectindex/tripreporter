@@ -19,10 +19,10 @@ type ReportSource struct {
 	types.Context
 	Report uuid.UUID        `json:"report_id" db:"report_id"`        // References the original report ID
 	Index  int64            `json:"index" db:"event_index"`          // Order of sources
-	Author bool             `json:"is_author" db:"source_is_author"` // If the ReportFull.Account is the author of this report
+	Author bool             `json:"is_author" db:"source_is_author"` // If the Report.Account is the author of this report
 	Name   string           `json:"name" db:"source_name"`           // Name given when selecting ReportSourceOther
 	URL    string           `json:"url" db:"source_url"`             // URL of original source
-	Type   ReportSourceType `json:"type" db:"source_type"`           // Type of report given by ReportFull.Account
+	Type   ReportSourceType `json:"type" db:"source_type"`           // Type of report given by Report.Account
 }
 
 type ReportSourceType int64

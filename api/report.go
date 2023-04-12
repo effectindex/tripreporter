@@ -29,7 +29,7 @@ func ReportPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	report, err := (&models.ReportFull{Context: ctx.Context, Account: ctxVal.Account}).FromBody(r)
+	report, err := (&models.Report{Context: ctx.Context, Account: ctxVal.Account}).FromBody(r)
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
@@ -54,7 +54,7 @@ func ReportGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	report, err := (&models.ReportFull{Context: ctx.Context, Unique: models.Unique{ID: id}}).Get()
+	report, err := (&models.Report{Context: ctx.Context, Unique: models.Unique{ID: id}}).Get()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
