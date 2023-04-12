@@ -25,7 +25,7 @@ type ReportFull struct {
 	Account      uuid.UUID      `json:"account_id" db:"account_id"`       // References the account that created this report.
 	Created      Timestamp      `json:"creation_time" db:"creation_time"` // Required, set when creating a report.
 	LastModified Timestamp      `json:"modified_time" db:"modified_time"` // Required, defaults to Created and set when modifying a report.
-	Date         Timestamp      `json:"report_date" db:"report_date"`     // Required.
+	Date         Timestamp      `json:"report_date" db:"report_date"`     // Optional.
 	Title        string         `json:"title" db:"title"`                 // Required.
 	Setting      string         `json:"setting,omitempty" db:"setting"`   // Optional.
 	Sources      ReportSources  `json:"report_sources,omitempty"`         // Saved in the report_sources table and appended manually.
