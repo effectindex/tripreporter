@@ -285,21 +285,23 @@ func (r *ReportFull) FromBody(r1 *http.Request) (*ReportFull, error) {
 		}
 	}
 
-	// Now lets parse the rf.ReportDate as an actual Timestamp
-	date, err := r.Date.Parse(rf.ReportDate + firstTimestamp)
-	if err != nil {
-		return r, err
-	}
+	// Now lets parse the rf.ReportDate as an actual Timestamp, if we have one
+	if len(rf.ReportDate) > 0 {
+		date, err := r.Date.Parse(rf.ReportDate + firstTimestamp)
+		if err != nil {
+			return r, err
+		}
 
-	r.Date = *date
+		r.Date = *date
+	}
 
 	// Now we can parse the sections properly
 	sections := make(ReportEvents, 0)
 
 	for n, s := range rf.ReportSections {
 		// First we parse each event's timestamp to add to the event
-		time := "T" + s.Timestamp + ":00Z"
-		timestamp, err := r.Date.Parse(rf.ReportDate + time)
+		// If the user didn't set a date, these each default to 0001-01-01, as r.Date is not set
+		timestamp, err := r.Date.ParseTime("T" + s.Timestamp + ":00Z")
 		if err != nil && len(s.Timestamp) > 0 {
 			return r, err
 		}
