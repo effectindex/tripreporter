@@ -15,8 +15,7 @@ SPDX-License-Identifier: OSL-3.0
     <div class="DefaultView__form">
       <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
         <!-- TODO: Make email optional. -->
-        <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true"
-            :allow-incomplete="false">
+        <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false">
           <FormKit type="step" name="account_info" v-model="store.createAccountForm">
             <FormKit
                 type="email"
