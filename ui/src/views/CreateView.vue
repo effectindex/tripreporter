@@ -172,11 +172,11 @@ SPDX-License-Identifier: OSL-3.0
                     id="section"
                     :value="getRadioDefault(createStore.reportEvents, index)"
                     :options="[
-                  { label: 'Other', value: '1', help: 'This description is not during the experience itself.' },
-                  { label: 'Onset', value: '2' },
-                  { label: 'Peak', value: '3' },
-                  { label: 'Offset', value: '4' }
-                ]"
+                      { label: 'Other', value: '1', help: 'This description is not during the experience itself.' },
+                      { label: 'Onset', value: '2' },
+                      { label: 'Peak', value: '3' },
+                      { label: 'Offset', value: '4' }
+                    ]"
                     help="(optional)"
                 />
 
