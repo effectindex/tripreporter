@@ -26,7 +26,7 @@ export default {
       this.events.forEach(e => {
         const drug = new DrugData({ obj: e.drug })
 
-        if (e['type'] === 2) {
+        if (e["type"] === 2) {
           rows.push({ 'Name': drug.name, 'Dosage': drug.getDose(), 'RoA': drug.getRoA() })
         }
       })
