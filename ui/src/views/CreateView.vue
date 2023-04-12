@@ -21,7 +21,7 @@ SPDX-License-Identifier: OSL-3.0
       <div class="DefaultView__form_wide">
         <FormKit type="form" @submit="submitForm" #default="{ value, state: { errors } }" :actions="false">
           <FormKit type="multi-step" name="report_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false" :classes="{ wrapper: 'formkit-wrapper-wide' }">
-            <FormKit type="step" name="report_info_step">
+            <FormKit type="step" name="report_info_step" v-model="createStore.reportInfo">
               <FormKit
                   :classes="{ wrapper: 'formkit-wrapper-wide' }"
                   type="text"
@@ -56,8 +56,7 @@ SPDX-License-Identifier: OSL-3.0
                   help="When did the experience occur?"
               />
             </FormKit>
-            <FormKit type="step" name="subject_info_step">
-
+            <FormKit type="step" name="subject_info_step" v-model="createStore.reportSubject">
               <FormKit
                   type="toggle"
                   name="has_subject"
@@ -158,7 +157,9 @@ SPDX-License-Identifier: OSL-3.0
 
               </div>
             </FormKit>
-            <FormKit type="step" name="report_sections_step">
+            <FormKit type="step" name="report_sections_step" v-model="createStore.reportEvents">
+              <pre wrap> {{ createStore.reportEvents }}</pre>
+
               <FormKit
                   type="repeater"
                   id="report_sections"
@@ -172,7 +173,7 @@ SPDX-License-Identifier: OSL-3.0
                     type="time"
                     name="timestamp"
                     label="Time"
-                    :help="'(optional) ' + getEventTimestampText(value, index)"
+                    :help="'(optional) ' + getEventTimestampText(value)"
                 />
 
                 <FormKit
@@ -180,7 +181,7 @@ SPDX-License-Identifier: OSL-3.0
                     label="During what part of the experience is this?"
                     name="section"
                     id="section"
-                    :value="getRadioDefault(value, index)"
+                    :value="getRadioDefault(createStore.reportEvents, index)"
                     :options="[
                   { label: 'Other', value: '1', help: 'This description is not during the experience itself.' },
                   { label: 'Onset', value: '2' },
@@ -197,7 +198,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
 
                 <FormKit
-                    v-show="!getEventType(value, index)"
+                    v-if="!getEventType(value)"
                     :classes="{ wrapper: 'formkit-wrapper-wide' }"
                     type="textarea"
                     id="content"
@@ -205,17 +206,18 @@ SPDX-License-Identifier: OSL-3.0
                     label="Description"
                     rows="5"
                     placeholder="Describe this part of the subjective experience."
-                    :help="'(optional) ' + getTextLength(value.report_sections ? value.report_sections[index] ? value.report_sections[index].content : '' : '', 10485760)"
+                    :help="'(optional) ' + getTextLength(value ? value.content : '', 10485760)"
                     :delay="60"
                 />
-                <FormKitDrug
-                    v-show="getEventType(value, index)"
-                    label-prefix="Substance"
-                    placeholder-name="LSD"
-                    placeholder-dosage="100μg"
-                    placeholder-roa="How did you take the substance?"
-                    placeholder-prescribed="Is this substance prescribed?"
-                />
+                <div v-else>
+                  <FormKitDrug
+                      label-prefix="Substance"
+                      placeholder-name="LSD"
+                      placeholder-dosage="100μg"
+                      placeholder-roa="How did you take the substance?"
+                      placeholder-prescribed="Is this substance prescribed?"
+                  />
+                </div>
               </FormKit>
 
               <!--suppress VueUnrecognizedSlot -->
@@ -244,20 +246,15 @@ export default {
     this.$emit('update:layout', LayoutDefault);
   },
   methods: {
-    getEventTimestampText(value, index) {
-      const event = this.getEventType(value, index)
-      if (event) {
+    getEventTimestampText(value) {
+      if (this.getEventType(value)) {
         return "What time was this substance dosed?"
       }
 
       return "What time did this description occur?"
     },
-    getEventType(value, index) {
-      if (!value.report_sections) {
-        return false
-      }
-      const event = value.report_sections[index] ? value.report_sections[index].is_drug : false
-      return event === true;
+    getEventType(value) {
+      return value.is_drug === true;
     },
     getRadioDefault(value, index) {
       if (!value.report_sections || index === 0) {
