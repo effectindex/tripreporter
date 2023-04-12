@@ -10,6 +10,7 @@ import (
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 )
 
@@ -25,9 +26,9 @@ type ReportSubject struct {
 	Medications   []Drug      `json:"medications,omitempty"`                             // Medications of subject, optional
 }
 
-// Get will get the ReportSubject without committing! You MUST commit this yourself.
 func (r *ReportSubject) Get() (*ReportSubject, error) {
 	db := r.DB()
+	defer db.Commit(context.Background())
 
 	if r.Report == uuid.Nil {
 		return r, types.ErrorReportNotSpecified
@@ -59,13 +60,11 @@ func (r *ReportSubject) Get() (*ReportSubject, error) {
 	return r, nil
 }
 
-// Post will post the ReportSubject without committing! You MUST commit this yourself.
-func (r *ReportSubject) Post() (*ReportSubject, error) {
-	db := r.DB()
-
+// Post will post the ReportSubject without finishing the tx! You MUST `db.Rollback` / `db.Commit` this yourself.
+func (r *ReportSubject) Post(db pgx.Tx) (*ReportSubject, error) {
 	r.MedicationIDs = make([]uuid.UUID, len(r.Medications))
 	for n, medication := range r.Medications {
-		if _, err := medication.Post(); err != nil {
+		if _, err := medication.Post(db); err != nil {
 			return r, err
 		}
 

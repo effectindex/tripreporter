@@ -13,6 +13,7 @@ import (
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 )
 
@@ -32,10 +33,10 @@ type Drug struct {
 	Prescribed DrugPrescribed        `json:"prescribed" db:"drug_prescribed"`   // Optional, uses DrugPrescribedUnknown if unset
 }
 
-// Get will get the Drug without committing! You MUST commit this yourself.
 func (d *Drug) Get() (*Drug, error) {
 	d.InitType(d)
 	db := d.DB()
+	defer db.Commit(context.Background())
 
 	if d.ID == uuid.Nil {
 		return d, types.ErrorDrugNotFound
@@ -59,10 +60,9 @@ func (d *Drug) Get() (*Drug, error) {
 	return d, nil
 }
 
-// Post will post the Drug without committing! You MUST commit this yourself.
-func (d *Drug) Post() (*Drug, error) {
+// Post will post the Drug without finishing the tx! You MUST `db.Rollback` / `db.Commit` this yourself.
+func (d *Drug) Post(db pgx.Tx) (*Drug, error) {
 	d.InitType(d)
-	db := d.DB()
 
 	if _, err := db.Exec(context.Background(),
 		`insert into drugs(

@@ -37,7 +37,6 @@ type ReportFull struct {
 func (r *ReportFull) Get() (*ReportFull, error) {
 	r.InitType(r)
 	db := r.DB()
-	defer db.Commit(context.Background())
 
 	if r.NilUUID() {
 		return r, types.ErrorReportNotSpecified
@@ -63,6 +62,8 @@ func (r *ReportFull) Get() (*ReportFull, error) {
 		r.Logger.Warnw("Failed to get report_events from DB", zap.Error(err))
 		return r, err
 	}
+
+	_ = db.Commit(context.Background()) // Finish tx
 
 	for n, i := range r2 {
 		if i.Type == ReportEventDrug && i.DrugID != uuid.Nil {
@@ -127,7 +128,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 
 	// Insert report sources
 	for _, s := range r.Sources {
-		if _, err := s.Post(); err != nil {
+		if _, err := s.Post(db); err != nil {
 			r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
 			_ = db.Rollback(context.Background())
 			return r, err
@@ -136,7 +137,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 
 	// Insert report subject
 	if r.Subject != nil {
-		if _, err := r.Subject.Post(); err != nil {
+		if _, err := r.Subject.Post(db); err != nil {
 			r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
 			_ = db.Rollback(context.Background())
 			return r, err
@@ -146,7 +147,7 @@ func (r *ReportFull) Post() (*ReportFull, error) {
 	// Insert report drugs
 	for _, e := range r.Events {
 		if e.Type == ReportEventDrug {
-			if _, err := e.Drug.Post(); err != nil {
+			if _, err := e.Drug.Post(db); err != nil {
 				r.Logger.Warnw("Failed to write report to DB", zap.Error(err))
 				_ = db.Rollback(context.Background())
 				return r, err

@@ -11,6 +11,7 @@ import (
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 )
 
@@ -45,9 +46,9 @@ func (r ReportSources) Sort() {
 	})
 }
 
-// Get will get the ReportSource without committing! You MUST commit this yourself.
 func (r *ReportSource) Get() ([]*ReportSource, error) {
 	db := r.DB()
+	defer db.Commit(context.Background())
 
 	if r.Report == uuid.Nil {
 		return nil, types.ErrorReportNotSpecified
@@ -68,10 +69,8 @@ func (r *ReportSource) Get() ([]*ReportSource, error) {
 	return r1, nil
 }
 
-// Post will post the ReportSource without committing! You MUST commit this yourself.
-func (r *ReportSource) Post() (*ReportSource, error) {
-	db := r.DB()
-
+// Post will post the ReportSource without finishing the tx! You MUST `db.Rollback` / `db.Commit` this yourself.
+func (r *ReportSource) Post(db pgx.Tx) (*ReportSource, error) {
 	if _, err := db.Exec(context.Background(),
 		`insert into report_sources(
 						report_id,
