@@ -69,6 +69,10 @@
     }
 }
 
+.formkit-outer-narrow {
+    max-width: 25em;
+}
+
 .formkit-outer-hidden {
     display: none;
 }
