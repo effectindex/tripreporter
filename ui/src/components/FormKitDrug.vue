@@ -47,7 +47,7 @@ SPDX-License-Identifier: OSL-3.0
 
 <script>
 export default {
-  name: "FormKitSubstance",
+  name: "FormKitDrug",
   props: {
     labelPrefix: String,
     placeholderName: String,
