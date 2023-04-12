@@ -18,7 +18,10 @@ export const useCreateStore = defineStore('create', {
         heightFt: Number,
         heightIn: Number,
         weightLbs: Number
-      })
+      }),
+      reportInfo: ref({}),
+      reportSubject: ref({}),
+      reportEvents: ref({})
     }
   }
 })
