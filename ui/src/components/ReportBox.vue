@@ -34,8 +34,13 @@ SPDX-License-Identifier: OSL-3.0
 
         <div class="LayoutReport__setting">
           <div :class="{'LayoutReportBox': true, 'LayoutReportBox_last': true}">
-            Experienced on
-            <timestamp-text :date="report.report_date" :long-format="true"/>
+            <div v-if="report.report_date">
+              Experienced on
+              <timestamp-text :date="report.report_date" :long-format="true"/>
+            </div>
+            <div v-else>
+              Unknown report date.
+            </div>
             <br>
             <div v-if="report.setting" class="LayoutReport__setting_text">
               {{ report.setting }}
