@@ -13,11 +13,15 @@ export default class Timestamp { // TODO: Rewrite in TS for #106
   }
 
   raw() { // Return the raw Timestamp data
-    return this.date.toJSON()
+    return this.date.toISOString()
   }
 
   epoch() {
     return -62135596800000
+  }
+
+  valid() {
+    return this.date && this.date.getTime() !== this.epoch()
   }
 
   get() { // Return the formatted Timestamp based on the provided options
