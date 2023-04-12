@@ -63,6 +63,7 @@
         text-align: left;
     }
 
+    .formkit-outer[data-type="multi-step"] > .formkit-wrapper-wide,
     .formkit-wrapper-wide {
         max-width: 75vw;
     }
