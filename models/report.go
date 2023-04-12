@@ -244,12 +244,12 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	//
 	// Now we should have all the data, we need to turn some types into Go types to make sense.
 
-	// First lets ensure we have a title, as they are required
-	if len(r.Title) == 0 {
+	// First lets ensure we have a title in the report form, as they are required
+	if len(rf.Title) == 0 {
 		return r, types.ErrorStringEmpty.PrefixedError("Report title")
 	}
 
-	// First lets fix the create and last modified timestamps, if they're not valid
+	// Next, lets fix the create and last modified timestamps, if they're not valid
 	if !r.Created.Valid() {
 		r.Created.Now()
 	}
