@@ -206,10 +206,10 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	}
 
 	type ReportForm struct {
-		Title          string            `json:"title"`
-		Setting        string            `json:"setting,omitempty"`
-		ReportDate     string            `json:"report_date"`
-		ReportSections []ReportFormEvent `json:"report_sections,omitempty"`
+		Title        string            `json:"title"`
+		Setting      string            `json:"setting,omitempty"`
+		ReportDate   string            `json:"report_date"`
+		ReportEvents []ReportFormEvent `json:"report_sections,omitempty"`
 	}
 
 	// We need a report ID in order to parse the report sections.
@@ -258,9 +258,12 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 		r.LastModified = r.Created
 	}
 
+	// TODO: Sources
+	// TODO: Subjects
+
 	// Now we want to trim empty sections from the array
-	formSections := rf.ReportSections[:0]
-	for _, s := range rf.ReportSections {
+	formEvents := rf.ReportEvents[:0]
+	for _, s := range rf.ReportEvents {
 		sectionEmpty := false
 
 		if s.IsDrug {
@@ -275,16 +278,16 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 
 		// Keep non-empty sections
 		if !sectionEmpty {
-			formSections = append(formSections, s)
+			formEvents = append(formEvents, s)
 		}
 	}
 
 	// Only keep non-empty sections
-	rf.ReportSections = formSections
+	rf.ReportEvents = formEvents
 
 	// Try to find if any of the timestamps have been set
 	firstTimestamp := "T00:00:00Z"
-	for _, s := range rf.ReportSections {
+	for _, s := range rf.ReportEvents {
 		if len(s.Timestamp) > 0 {
 			firstTimestamp = "T" + s.Timestamp + ":00Z"
 			break
@@ -304,7 +307,7 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	// Now we can parse the sections properly
 	sections := make(ReportEvents, 0)
 
-	for n, s := range rf.ReportSections {
+	for n, s := range rf.ReportEvents {
 		// First we parse each event's timestamp to add to the event
 		// If the user didn't set a date, these each default to 0001-01-01, as r.Date is not set
 		timestamp, err := r.Date.ParseTime("T" + s.Timestamp + ":00Z")
