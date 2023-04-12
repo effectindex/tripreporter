@@ -22,3 +22,7 @@
     margin-top: 0;
     margin-bottom: 0.5em;
 }
+
+[data-type="button"] .formkit-input, [data-type="submit"] .formkit-input {
+    margin: 0;
+}
