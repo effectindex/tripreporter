@@ -15,7 +15,7 @@ require (
 	github.com/jackc/pgtype v1.14.0
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/joho/godotenv v1.5.1
-	github.com/rs/cors v1.8.3
+	github.com/rs/cors v1.9.0
 	github.com/shopspring/decimal v1.3.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.8.0
