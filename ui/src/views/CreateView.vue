@@ -88,6 +88,7 @@ SPDX-License-Identifier: OSL-3.0
               <div v-show="!createStore.useImperial">
                 <FormKit
                     type="number"
+                    step="0.5"
                     id="subject_height_cm"
                     name="subject_height_cm"
                     label="Height (cm)"
@@ -96,6 +97,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
                 <FormKit
                     type="number"
+                    step="0.5"
                     id="subject_weight_kg"
                     name="subject_weight_kg"
                     label="Weight (kg)"
@@ -114,6 +116,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
                 <FormKit
                     type="number"
+                    step="0.5"
                     id="subject_height_in"
                     name="subject_height_in"
                     label="Height (in)"
@@ -122,6 +125,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
                 <FormKit
                     type="number"
+                    step="0.5"
                     id="subject_weight_lbs"
                     name="subject_weight_lbs"
                     label="Weight (lbs)"
