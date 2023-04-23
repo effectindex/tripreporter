@@ -14,6 +14,8 @@ import (
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -194,6 +196,25 @@ func (r *Report) Post() (*Report, error) {
 func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	r.InitType(r)
 
+	type ReportFormMedication struct {
+		DrugName   string `json:"drug_name,omitempty"`
+		DrugDosage string `json:"drug_dosage,omitempty"`
+		RoA        int64  `json:"roa,string,omitempty"`
+		Prescribed int64  `json:"prescribed,string,omitempty"`
+	}
+
+	type ReportFormSubject struct {
+		Age           int                             `json:"subject_age,string,omitempty"`
+		Gender        []string                        `json:"subject_gender,omitempty"`
+		ImperialUnits bool                            `json:"use_imperial,omitempty"`
+		HeightCm      Decimal                         `json:"subject_height_cm,omitempty"`
+		HeightFt      Decimal                         `json:"subject_height_ft,omitempty"`
+		HeightIn      Decimal                         `json:"subject_height_in,omitempty"`
+		WeightKg      Decimal                         `json:"subject_weight_kg,omitempty"`
+		WeightLbs     Decimal                         `json:"subject_weight_lbs,omitempty"`
+		Medications   map[string]ReportFormMedication `json:"medications,omitempty"`
+	}
+
 	type ReportFormEvent struct {
 		Timestamp  string `json:"timestamp,omitempty"`
 		IsDrug     bool   `json:"is_drug,omitempty"`
@@ -206,10 +227,11 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	}
 
 	type ReportForm struct {
-		Title        string            `json:"title"`
-		Setting      string            `json:"setting,omitempty"`
-		ReportDate   string            `json:"report_date"`
-		ReportEvents []ReportFormEvent `json:"report_sections,omitempty"`
+		Title      string            `json:"title"`
+		Setting    string            `json:"setting,omitempty"`
+		ReportDate string            `json:"report_date"`
+		Subject    ReportFormSubject `json:"report_subject,omitempty"`
+		Events     []ReportFormEvent `json:"report_sections,omitempty"`
 	}
 
 	// We need a report ID in order to parse the report sections.
@@ -259,11 +281,83 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	}
 
 	// TODO: Sources
-	// TODO: Subjects
+
+	//
+	// Parse report subject info
+
+	// Parse age
+	age := &Age{}
+	if rf.Subject.Age > 0 {
+		age.Now()
+		age.Timestamp.Time.AddDate(-rf.Subject.Age, 0, 0)
+	}
+
+	// Parse gender
+	gender := ""
+	if len(rf.Subject.Gender) > 0 {
+		caser := cases.Title(language.English)
+		gender = caser.String(rf.Subject.Gender[0])
+	}
+
+	// Parse unit, height and weight
+	displayUnit := UnitMetric
+	if rf.Subject.ImperialUnits {
+		displayUnit = UnitImperial
+	}
+
+	height := &Decimal{}
+	weight := &Decimal{}
+
+	if displayUnit == UnitMetric {
+		height = &rf.Subject.HeightCm
+		weight = &rf.Subject.WeightKg
+	} else {
+		height.Zero()
+		height.Add(rf.Subject.HeightFt.Mul(30.48)) // Convert Ft to Cm and add
+		height.Add(rf.Subject.HeightIn.Div(2.54))  // Convert In to Cm and add
+
+		weight.Zero()
+		weight.Add(rf.Subject.WeightLbs.Div(2.205)) // Convert Lbs to Kg and add
+	}
+
+	// Create report subject
+	r.Subject = &ReportSubject{
+		Context:     r.Context,
+		Report:      r.Unique.ID,
+		Age:         *age,
+		Gender:      gender,
+		DisplayUnit: displayUnit,
+		HeightCm:    *height,
+		WeightKg:    *weight,
+		Medications: make([]Drug, 0),
+	}
+
+	// Parse medications
+	for _, medication := range rf.Subject.Medications {
+		if len(medication.DrugName) == 0 && len(medication.DrugDosage) == 0 && medication.RoA == 0 && medication.Prescribed == 0 {
+			// Keep only non-empty medications
+			continue
+		}
+
+		drug := &Drug{ // TODO: Frequency is not parsed here
+			Account:    r.Account,
+			Name:       medication.DrugName,
+			RoA:        RouteOfAdministration(medication.RoA),
+			Prescribed: DrugPrescribed(medication.Prescribed),
+		}
+		drug.ParseDose(medication.DrugDosage)
+
+		err = drug.Unique.InitUUID(r.Logger)
+		if err != nil {
+			return r, err
+		}
+
+		r.Subject.Medications = append(r.Subject.Medications, *drug)
+	}
 
 	// Now we want to trim empty sections from the array
-	formEvents := rf.ReportEvents[:0]
-	for _, s := range rf.ReportEvents {
+	formEvents := rf.Events[:0]
+	for _, s := range rf.Events {
 		sectionEmpty := false
 
 		if s.IsDrug {
@@ -283,11 +377,11 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	}
 
 	// Only keep non-empty sections
-	rf.ReportEvents = formEvents
+	rf.Events = formEvents
 
 	// Try to find if any of the timestamps have been set
 	firstTimestamp := "T00:00:00Z"
-	for _, s := range rf.ReportEvents {
+	for _, s := range rf.Events {
 		if len(s.Timestamp) > 0 {
 			firstTimestamp = "T" + s.Timestamp + ":00Z"
 			break
@@ -307,7 +401,7 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	// Now we can parse the sections properly
 	sections := make(ReportEvents, 0)
 
-	for n, s := range rf.ReportEvents {
+	for n, s := range rf.Events {
 		// First we parse each event's timestamp to add to the event
 		// If the user didn't set a date, these each default to 0001-01-01, as r.Date is not set
 		timestamp, err := r.Date.ParseTime("T" + s.Timestamp + ":00Z")
