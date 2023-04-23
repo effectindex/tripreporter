@@ -4,9 +4,13 @@
  * SPDX-License-Identifier: OSL-3.0
  */
 
-[data-type="repeater"]>.formkit-fieldset {
+[data-type="repeater"] > .formkit-fieldset {
     max-width: none;
     padding: unset;
+}
+
+[data-type="repeater"] > .formkit-fieldset:focus-within {
+    border: none;
 }
 
 .formkit-fieldset {
