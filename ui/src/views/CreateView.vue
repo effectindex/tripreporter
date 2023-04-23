@@ -190,6 +190,7 @@ SPDX-License-Identifier: OSL-3.0
                     type="toggle"
                     name="is_drug"
                     label="Adding substance dose?"
+                    :value="index === 0"
                 />
 
                 <FormKit
