@@ -6,7 +6,7 @@ SPDX-License-Identifier: OSL-3.0
 
 <template>
   <header-column-box
-      header="Substances"
+      :header="header"
       icon="pills"
       :columns="['Name', 'Dosage', 'RoA']"
       :rows="getRows()"
@@ -36,6 +36,7 @@ export default {
     }
   },
   props: {
+    header: String,
     // TODO: Switch to proper shared type that reflects the Go variation / #106
     events: Array
   },

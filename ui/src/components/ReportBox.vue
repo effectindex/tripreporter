@@ -31,7 +31,10 @@ SPDX-License-Identifier: OSL-3.0
             />
           </div>
           <div class="LayoutReport__report_summary_entry">
-            <drug-summary-box style="margin-right: 0;" :events="report.report_events"/>
+            <drug-summary-box header="Substances" :events="report.report_events"/>
+          </div>
+          <div class="LayoutReport__report_summary_entry">
+            <drug-summary-box style="margin-right: 0;" header="Medication" :events="report.medications"/>
           </div>
         </div>
 
@@ -156,10 +159,11 @@ export default {
 
 .LayoutReport__report_summary_entry {
     flex-grow: 1;
+    margin-right: 1em;
 }
 
-.LayoutReport__report_summary_entry:first-child {
-    margin-right: 1em;
+.LayoutReport__report_summary_entry:last-child {
+    margin-right: 0;
 }
 
 .LayoutReport__setting, .LayoutReport__events {

@@ -21,7 +21,8 @@ export default class Report { // TODO: Rewrite in TS for #106
 
     if (report_subject && report_subject["medications"]) {
       for (const n in report_subject["medications"]) {
-        let event = new ReportEvent({ obj: report_subject["medications"][n] })
+        let event = new ReportEvent({ drug: report_subject["medications"][n] })
+        event["type"] = 2
         this.medications.push(event)
       }
     }
