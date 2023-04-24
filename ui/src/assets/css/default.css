@@ -19,7 +19,12 @@
 }
 
 .--tr-no-underline {
+    color: var(--tr-default-alt-darker-text);
     text-decoration: none;
+}
+
+.--tr-no-underline:visited {
+    color: var(--tr-default-alt-darker-text);
 }
 
 .--tr-header-h1 {
