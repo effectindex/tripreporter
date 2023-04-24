@@ -33,7 +33,7 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := (&models.User{Context: ctx.Context, Unique: models.Unique{ID: id}}).Get()
+	user, err := (&models.User{Context: ctx.Context, Unique: models.Unique{ID: id}}).GetWithReports()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
