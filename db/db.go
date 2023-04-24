@@ -73,7 +73,7 @@ var (
     	);`,
 		`create table if not exists report_subjects (
     		report_id uuid primary key references reports(id) on delete cascade,
-			subject_age timestamptz not null default to_timestamp('0'),
+			subject_age int default 0,
 			subject_gender varchar(256),
 			subject_display_unit int default 1,
 			subject_height_cm decimal default 0,

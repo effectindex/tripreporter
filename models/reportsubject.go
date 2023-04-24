@@ -17,7 +17,7 @@ import (
 type ReportSubject struct {
 	types.Context
 	Report        uuid.UUID   `json:"report_id" db:"report_id"`                          // References the original report ID
-	Age           Age         `json:"age" db:"subject_age"`                              // Age of the subject in years, optional
+	Age           int64       `json:"age" db:"subject_age"`                              // Age of the subject in years, optional // TODO: Implement dynamic age
 	Gender        string      `json:"gender" db:"subject_gender"`                        // Gender of the subject, optional
 	DisplayUnit   DisplayUnit `json:"display_unit" db:"subject_display_unit"`            // DisplayUnit of the HeightCm and WeightKg, default UnitMetric, optional
 	HeightCm      Decimal     `json:"height_cm" db:"subject_height_cm"`                  // HeightCm of the subject, optional
@@ -81,7 +81,7 @@ func (r *ReportSubject) Post(db pgx.Tx) (*ReportSubject, error) {
 						subject_weight_kg, 
 						subject_medications
 					) values($1, $2, $3, $4, $5, $6, $7);`,
-		r.Report, r.Age.String(), r.Gender, r.DisplayUnit, r.HeightCm, r.WeightKg, r.MedicationIDs,
+		r.Report, r.Age, r.Gender, r.DisplayUnit, r.HeightCm, r.WeightKg, r.MedicationIDs,
 	); err != nil {
 		r.Logger.Warnw("Failed to write report subject to DB", zap.Error(err))
 		return r, err

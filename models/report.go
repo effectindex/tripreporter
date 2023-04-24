@@ -204,7 +204,7 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	}
 
 	type ReportFormSubject struct {
-		Age           int                             `json:"subject_age,string,omitempty"`
+		Age           int64                           `json:"subject_age,string,omitempty"`
 		Gender        []string                        `json:"subject_gender,omitempty"`
 		ImperialUnits bool                            `json:"use_imperial,omitempty"`
 		HeightCm      Decimal                         `json:"subject_height_cm,omitempty"`
@@ -285,13 +285,6 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	//
 	// Parse report subject info
 
-	// Parse age
-	age := &Age{}
-	if rf.Subject.Age > 0 {
-		age.Now()
-		age.Timestamp.Time.AddDate(-rf.Subject.Age, 0, 0)
-	}
-
 	// Parse gender
 	gender := ""
 	if len(rf.Subject.Gender) > 0 {
@@ -324,7 +317,7 @@ func (r *Report) FromBody(r1 *http.Request) (*Report, error) {
 	r.Subject = &ReportSubject{
 		Context:     r.Context,
 		Report:      r.Unique.ID,
-		Age:         *age,
+		Age:         rf.Subject.Age,
 		Gender:      gender,
 		DisplayUnit: displayUnit,
 		HeightCm:    *height,
