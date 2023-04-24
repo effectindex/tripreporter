@@ -10,8 +10,8 @@ SPDX-License-Identifier: OSL-3.0
       <h1 class="--tr-header-h1">{{ user.display_name }}</h1>
 
       <div class="LayoutUser__user">
-        <div class="LayoutReport__report_summary">
-          <div class="LayoutReport__report_summary_entry">
+        <div class="LayoutUser__report_summary">
+          <div class="LayoutUser__report_summary_entry">
             <header-row-box
                 style="margin-left: 0;"
                 header="User"
@@ -24,8 +24,14 @@ SPDX-License-Identifier: OSL-3.0
             />
           </div>
         </div>
-        <pre wrap>{{ getStore().user }}</pre>
-
+        <header-column-box
+            v-if="user.reports && user.reports.length > 0"
+            header="Reports"
+            icon="pills"
+            :columns="['Title', 'Date', 'Substances']"
+            :rows="getRows(user.reports)"
+            :links="getLinks(user.reports)"
+        />
       </div>
     </div>
   </div>
@@ -37,13 +43,21 @@ import { inject } from "vue";
 import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import log from "@/assets/lib/logger";
 import HeaderRowBox from "@/components/HeaderRowBox.vue";
+import HeaderColumnBox from "@/components/HeaderColumnBox.vue";
+import Timestamp from "@/assets/lib/timestamp";
+import titleCase from "@/assets/lib/string_util";
 
 const store = useUserStore();
 let ranSetup = false
 
 export default {
   name: "UserBox",
-  components: { HeaderRowBox },
+  computed: {
+    Timestamp() {
+      return Timestamp
+    }
+  },
+  components: { HeaderColumnBox, HeaderRowBox },
   props: {
     id: String
   },
@@ -51,6 +65,23 @@ export default {
     getStore() {
       return store
     },
+    getRows(reports) {
+      let rows = []
+      reports.forEach(r => {
+        const substances = r.drugs.map(drug => titleCase(drug.name));
+        rows.push({ 'Title': r.title, 'Date': new Timestamp({date: r.report_date, longFormat: true}).get(), 'Substances': substances.join(", ") })
+      })
+      console.log("rows", rows)
+      return rows
+    },
+    getLinks(reports) {
+      let links = []
+      reports.forEach(r => {
+        links.push({ 'Title': `/reports?id=${r.id}` })
+      })
+      console.log("links", links)
+      return links
+    }
   },
   async setup(props) {
     if (ranSetup) {
@@ -86,5 +117,23 @@ export default {
 .LayoutUser__user {
     max-width: 75%;
     margin: auto;
+}
+
+
+.LayoutUser__report_summary {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+    margin-bottom: 1em;
+}
+
+.LayoutUser__report_summary_entry {
+    flex-grow: 1;
+    margin-right: 1em;
+}
+
+.LayoutUser__report_summary_entry:last-child {
+    margin-right: 0;
 }
 </style>
