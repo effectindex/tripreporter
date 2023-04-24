@@ -10,7 +10,7 @@ import Timestamp from "@/assets/lib/timestamp";
 import User from "@/assets/lib/user";
 import ReportSubject from "@/assets/lib/report-subject";
 
-export const useReportsStore = defineStore('reports', {
+export const useReportStore = defineStore('reports', {
   state: () => {
     return {
       reportJson: new Report({}),

@@ -65,14 +65,14 @@ SPDX-License-Identifier: OSL-3.0
 <script>
 import { inject } from "vue";
 import { handleMessageError, setMessage } from "@/assets/lib/message_util";
-import { useReportsStore } from "@/assets/lib/reportsstore";
+import { useReportStore } from "@/assets/lib/reportstore";
 import TimestampText from "@/components/TimestampText.vue";
 import ReportEventBox from "@/components/ReportEventBox.vue";
 import DrugSummaryBox from "@/components/DrugSummaryBox.vue";
 import HeaderRowBox from "@/components/HeaderRowBox.vue";
 import Timestamp from "@/assets/lib/timestamp";
 
-const store = useReportsStore();
+const store = useReportStore();
 let ranSetup = false
 
 export default {

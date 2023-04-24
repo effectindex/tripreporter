@@ -31,9 +31,9 @@ export default {
 </script>
 
 <script setup>
-import { useReportsStore } from "@/assets/lib/reportsstore";
+import { useReportStore } from "@/assets/lib/reportstore";
 
-const store = useReportsStore();
+const store = useReportStore();
 </script>
 
 <style scoped>
