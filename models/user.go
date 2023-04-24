@@ -18,20 +18,22 @@ import (
 type User struct {
 	types.Context
 	Unique
-	Account     uuid.UUID `json:"account_id" db:"account_id"`       // References the account that created this user.
-	Created     Timestamp `json:"created" db:"created"`             // Required, set by default.
-	DisplayName string    `json:"display_name" db:"display_name"`   // Optional, defaults to Account.Username if unset
-	Birth       Timestamp `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset
-	Age         Age       `json:"age"`                              // Optional, updated by Birth and unfavored if Age set
-	Height      Decimal   `json:"height" db:"height"`               // Optional // TODO: Encryption?
-	Weight      Decimal   `json:"weight" db:"weight"`               // Optional // TODO: Encryption?
+	Account     uuid.UUID       `json:"account_id" db:"account_id"`       // References the account that created this user.
+	Created     Timestamp       `json:"created" db:"created"`             // Required, set by default.
+	DisplayName string          `json:"display_name" db:"display_name"`   // Optional, defaults to Account.Username if unset
+	Birth       Timestamp       `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset // TODO: Impl encryption
+	Age         Age             `json:"age"`                              // Unused. Updated by Birth and unfavored if Age set // TODO: Impl encryption
+	Height      Decimal         `json:"height" db:"height"`               // Unused // TODO: Impl encryption
+	Weight      Decimal         `json:"weight" db:"weight"`               // Unused // TODO: Impl encryption
+	Reports     []ReportSummary `json:"reports,omitempty"`                // References all Reports that a user has created.
 }
 
 type UserPublic struct {
 	types.Context
 	Unique
-	Created     Timestamp `json:"created"`
-	DisplayName string    `json:"display_name"`
+	Created     Timestamp       `json:"created"`
+	DisplayName string          `json:"display_name"`
+	Reports     []ReportSummary `json:"reports,omitempty"`
 }
 
 func (u *User) Get() (*User, error) {
@@ -73,6 +75,67 @@ func (u *User) Get() (*User, error) {
 		} else {
 			u.DisplayName = a.Username
 		}
+	}
+
+	return u, nil
+}
+
+func (u *User) GetWithReports() (*User, error) {
+	u, err := u.Get()
+	if err != nil {
+		return u, err
+	}
+
+	db := u.DB()
+	defer db.Commit(context.Background())
+
+	u.Reports = make([]ReportSummary, 0)
+
+	var r1 []*ReportSummary
+	if err := pgxscan.Select(context.Background(), db, &r1,
+		`select id, account_id, title, report_date from reports where account_id=$1`, u.ID,
+	); err != nil {
+		u.Logger.Warnw("Failed to get reports from DB", zap.Error(err))
+		return u, err
+	} else if len(r1) == 0 { // We're allowed to have no reports
+		return u, nil
+	}
+
+	// Collect all reports this user has made, and get all the drugs for each report
+	for _, report := range r1 {
+		if report == nil {
+			continue
+		}
+
+		report.Drugs = make(map[string]Drug, 0)
+
+		// Collect events
+		var r2 ReportEvents
+		if err := pgxscan.Select(context.Background(), db, &r2,
+			`select * from report_events where report_id=$1`, report.ID,
+		); err != nil {
+			u.Logger.Warnw("Failed to get report_events from DB", zap.Error(err))
+			return u, err
+		}
+
+		// Collect event drugs
+		for n, i := range r2 {
+			if i.Type == ReportEventDrug && i.DrugID != uuid.Nil {
+				if drug, err := (&Drug{Context: u.Context, Unique: Unique{ID: i.DrugID}}).Get(); err != nil {
+					return u, err
+				} else {
+					// Add drug to report summary if not already in the list
+					if r2[n].Type == ReportEventDrug {
+						drugName := drug.Name
+						if _, ok := report.Drugs[drugName]; !ok {
+							report.Drugs[drugName] = *drug
+						}
+					}
+				}
+			}
+		}
+
+		u.Reports = append(u.Reports, *report)
 	}
 
 	return u, nil
@@ -196,7 +259,7 @@ func (u *User) Delete() (*User, error) {
 }
 
 func (u *User) CopyPublic() *UserPublic {
-	p := &UserPublic{Context: u.Context, Unique: u.Unique, Created: u.Created, DisplayName: u.DisplayName}
+	p := &UserPublic{Context: u.Context, Unique: u.Unique, Created: u.Created, DisplayName: u.DisplayName, Reports: u.Reports}
 	u.InitType(u)
 	return p
 }
