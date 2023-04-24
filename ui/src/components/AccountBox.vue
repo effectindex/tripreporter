@@ -36,7 +36,8 @@ SPDX-License-Identifier: OSL-3.0
                     type="button"
                     class="LayoutAccount__buttons_button"
                     label="Logout"
-                    @click="randomColor"
+                    @click="logOut"
+                    :disabled="getSession().activeSession === false"
                 />
                 <FormKit
                     type="button"
@@ -44,6 +45,7 @@ SPDX-License-Identifier: OSL-3.0
                     class="LayoutAccount__buttons_button"
                     label="Delete Account"
                     @click="showDeleteForm"
+                    :disabled="getSession().activeSession === false"
                 />
               </div>
             </div>
@@ -82,6 +84,7 @@ SPDX-License-Identifier: OSL-3.0
                 class="LayoutAccount__buttons_button"
                 label="Back"
                 @click="hideDeleteForm"
+                :disabled="getSession().activeSession === false"
             />
             <FormKit
                 type="submit"
@@ -89,7 +92,7 @@ SPDX-License-Identifier: OSL-3.0
                 class="LayoutAccount__buttons_button"
                 label="Delete Account"
                 data-next="true"
-                :disabled="!valid"
+                :disabled="!valid || getSession().activeSession === false"
             />
           </div>
         </FormKit>
@@ -101,8 +104,10 @@ SPDX-License-Identifier: OSL-3.0
 <script>
 import HeaderRowBox from "@/components/HeaderRowBox.vue";
 import { useAccountStore } from "@/assets/lib/accountstore";
+import { useSessionStore } from "@/assets/lib/sessionstore";
 
 const store = useAccountStore();
+const sessionStore = useSessionStore();
 
 export default {
   name: "AccountBox",
@@ -113,6 +118,9 @@ export default {
   methods: {
     getStore() {
       return store
+    },
+    getSession() {
+      return sessionStore
     },
     isLoaded() {
       return store.isLoaded()
@@ -130,7 +138,9 @@ const router = inject('router')
 const axios = inject('axios')
 
 const messageSuccess = "Account successfully deleted!<br>You will be redirected to the home page in 3 seconds.";
+const messageLoggedOut = "Logged out successfully!<br>You will be redirected to login in 3 seconds.";
 let success = ref(false);
+let loggedOut = ref(false);
 let submitting = ref(false);
 let ranSetup = false;
 
@@ -140,26 +150,21 @@ const submitForm = async (fields) => {
   submitting.value = true;
 
   axios.delete('/account', { data: fields }).then(function (response) {
-    success.value = response.status === 201;
+    success.value = response.status === 200;
     submitting.value = false;
+    if (success.value === true) {
+      sessionStore.invalidateSession();
+    }
     setMessage(response.data.msg, messageSuccess, success.value, router, '/', 3000);
   }).catch(function (error) {
-    success.value = error.response.status === 201;
+    success.value = error.response.status === 200;
     submitting.value = false;
+    if (success.value === true) {
+      sessionStore.invalidateSession();
+    }
     setMessage(error.response.data.msg, messageSuccess, success.value, router, '/', 3000);
     handleMessageError(error);
   })
-}
-
-const randomColor = (e) => {
-  log("randomColor", e)
-  // const hex = Math
-  //     .floor(Math.random() * 16777215)
-  //     .toString(16)
-  // e.target.setAttribute(
-  //     'style',
-  //     'background-color: #' + hex
-  // )
 }
 
 const showDeleteForm = (e) => {
@@ -170,12 +175,30 @@ const hideDeleteForm = (e) => {
   store.showDeleteForm = false
 }
 
-if (ranSetup !== true) {
+const logOut = (e) => {
+  submitting.value = true
 
+  axios.delete('/session').then(function (response) {
+    loggedOut.value = response.status === 200;
+    submitting.value = false;
+    if (loggedOut.value === true) {
+      sessionStore.invalidateSession();
+    }
+    setMessage(response.data.msg, messageLoggedOut, loggedOut.value, router, '/login', 3000);
+  }).catch(function (error) {
+    loggedOut.value = error.response.status === 200;
+    submitting.value = false;
+    if (loggedOut.value === true) {
+      sessionStore.invalidateSession();
+    }
+    setMessage(error.response.data.msg, messageLoggedOut, loggedOut.value, router, '/login', 3000);
+    handleMessageError(error);
+  })
+}
+
+if (ranSetup !== true) {
   ranSetup = true
 
-  console.log("here")
-  const axios = inject('axios')
   await axios.get('/account').then(function (response) {
     store.updateData(response.status, response.data)
     setMessage(response.data.msg, "", store.apiSuccess);
