@@ -1,0 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2023 froggie <legal@frogg.ie>
+ *
+ * SPDX-License-Identifier: OSL-3.0
+ */
+
+[data-type="button"] .formkit-input, [data-type="submit"] .formkit-input {
+    margin: var(--fk-margin-button);
+}
