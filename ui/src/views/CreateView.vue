@@ -59,6 +59,7 @@ SPDX-License-Identifier: OSL-3.0
             <FormKit type="step" name="subject_info" v-model="createStore.reportSubject">
               <FormKit
                   type="number"
+                  min="0"
                   id="subject_age"
                   name="subject_age"
                   label="Age"
@@ -88,6 +89,7 @@ SPDX-License-Identifier: OSL-3.0
               <div v-show="!createStore.useImperial">
                 <FormKit
                     type="number"
+                    min="0"
                     step="0.5"
                     id="subject_height_cm"
                     name="subject_height_cm"
@@ -97,6 +99,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
                 <FormKit
                     type="number"
+                    min="0"
                     step="0.5"
                     id="subject_weight_kg"
                     name="subject_weight_kg"
@@ -108,6 +111,7 @@ SPDX-License-Identifier: OSL-3.0
               <div v-show="createStore.useImperial">
                 <FormKit
                     type="number"
+                    min="0"
                     id="subject_height_ft"
                     name="subject_height_ft"
                     label="Height (ft)"
@@ -116,6 +120,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
                 <FormKit
                     type="number"
+                    min="0"
                     step="0.5"
                     id="subject_height_in"
                     name="subject_height_in"
@@ -125,6 +130,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
                 <FormKit
                     type="number"
+                    min="0"
                     step="0.5"
                     id="subject_weight_lbs"
                     name="subject_weight_lbs"
