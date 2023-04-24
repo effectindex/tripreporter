@@ -25,6 +25,7 @@ type Report struct {
 	types.Context
 	Unique
 	Account      uuid.UUID      `json:"account_id" db:"account_id"`       // References the account that created this report.
+	User         UserPublic     `json:"user"`                             // References the user belonging to Account.
 	Created      Timestamp      `json:"creation_time" db:"creation_time"` // Required, set when creating a report.
 	LastModified Timestamp      `json:"modified_time" db:"modified_time"` // Required, defaults to Created and set when modifying a report.
 	Title        string         `json:"title" db:"title"`                 // Required.
@@ -87,11 +88,18 @@ func (r *Report) Get() (*Report, error) {
 		return r, err
 	}
 
+	user, err := (&User{Context: r.Context, Unique: Unique{ID: r1[0].Account}}).Get()
+	if err != nil {
+		r.Logger.Infow("Failed to get user", "report", r1[0].Account, "user", user)
+		return r, err
+	}
+
 	r2.Sort()
 	r.FromData(r1[0])
 	r.Sources = sources
 	r.Subject = subject
 	r.Events = r2
+	r.User = *user.CopyPublic()
 
 	return r, nil
 }

@@ -11,18 +11,27 @@ import (
 
 	"github.com/effectindex/tripreporter/types"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
 type User struct {
 	types.Context
 	Unique
+	Account     uuid.UUID `json:"account_id" db:"account_id"`       // References the account that created this user.
 	Created     Timestamp `json:"created" db:"created"`             // Required, set by default.
-	DisplayName string    `json:"display_name" db:"display_name"`   // Optional
+	DisplayName string    `json:"display_name" db:"display_name"`   // Optional, defaults to Account.Username if unset
 	Birth       Timestamp `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset
 	Age         Age       `json:"age"`                              // Optional, updated by Birth and unfavored if Age set
 	Height      Decimal   `json:"height" db:"height"`               // Optional // TODO: Encryption?
 	Weight      Decimal   `json:"weight" db:"weight"`               // Optional // TODO: Encryption?
+}
+
+type UserPublic struct {
+	types.Context
+	Unique
+	Created     Timestamp `json:"created"`
+	DisplayName string    `json:"display_name"`
 }
 
 func (u *User) Get() (*User, error) {
@@ -54,6 +63,15 @@ func (u *User) Get() (*User, error) {
 
 		if u.Birth.Valid() {
 			u.Age.Update(u.Birth)
+		}
+	}
+
+	// Default User.DisplayName to Account.Username
+	if len(u.DisplayName) == 0 {
+		if a, err := (&Account{Context: u.Context, Unique: u.Unique}).Get(); err != nil {
+			return u, err
+		} else {
+			u.DisplayName = a.Username
 		}
 	}
 
@@ -175,4 +193,10 @@ func (u *User) Delete() (*User, error) {
 	}
 
 	return nil, nil
+}
+
+func (u *User) CopyPublic() *UserPublic {
+	p := &UserPublic{Context: u.Context, Unique: u.Unique, Created: u.Created, DisplayName: u.DisplayName}
+	u.InitType(u)
+	return p
 }
