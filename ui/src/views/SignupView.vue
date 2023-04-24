@@ -6,73 +6,78 @@ SPDX-License-Identifier: OSL-3.0
 
 <template>
   <div class="signup">
-    <h1 class="--tr-header-h1">Create a <span class="--tr-muted-text">subjective.report</span> account 🚀</h1>
+    <div v-if="!store.activeSession" class="no-session">
+      <h1 class="--tr-header-h1">Create a <span class="--tr-muted-text">subjective.report</span> account 🚀</h1>
 
-    <div class="DefaultView__message" id="DefaultView__message">
-      <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
-    </div>
+      <div class="DefaultView__message" id="DefaultView__message">
+        <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
+      </div>
 
-    <div class="DefaultView__form">
-      <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
-        <!-- TODO: Make email optional. -->
-        <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false">
-          <FormKit type="step" name="account_info" v-model="store.createAccountForm">
-            <FormKit
-                type="email"
-                name="email"
-                id="email"
-                label="Email address"
-                help="Used for password recovery."
-                preserve-errors="true"
-                validation="required|email|validateAccount"
-                validation-visibility="dirty"
-                :validation-rules="{ validateAccount }"
-                placeholder="lyv@effectindex.com"
-            />
+      <div class="DefaultView__form">
+        <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
+          <!-- TODO: Make email optional. -->
+          <FormKit type="multi-step" name="account_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false">
+            <FormKit type="step" name="account_info" v-model="store.createAccountForm">
+              <FormKit
+                  type="email"
+                  name="email"
+                  id="email"
+                  label="Email address"
+                  help="Used for password recovery."
+                  preserve-errors="true"
+                  validation="required|email|validateAccount"
+                  validation-visibility="dirty"
+                  :validation-rules="{ validateAccount }"
+                  placeholder="lyv@effectindex.com"
+              />
 
-            <FormKit
-                type="text"
-                name="username"
-                id="username"
-                label="Username"
-                help="Used to login. You can use letters, numbers and symbols."
-                preserve-errors="true"
-                validation="required|length:3,32|validateAccount"
-                validation-visibility="dirty"
-                :validation-rules="{ validateAccount }"
-                placeholder="lyv76"
-            />
+              <FormKit
+                  type="text"
+                  name="username"
+                  id="username"
+                  label="Username"
+                  help="Used to login. You can use letters, numbers and symbols."
+                  preserve-errors="true"
+                  validation="required|length:3,32|validateAccount"
+                  validation-visibility="dirty"
+                  :validation-rules="{ validateAccount }"
+                  placeholder="lyv76"
+              />
 
-            <FormKit
-                type="password"
-                name="password"
-                id="password"
-                label="Password"
-                help="Used to login. Must contain at least 2 symbols."
-                preserve-errors="true"
-                validation="required|length:8,32|validateAccount"
-                validation-visibility="dirty"
-                :validation-rules="{ validateAccount }"
-                placeholder="----------"
-            />
-          </FormKit>
-          <FormKit type="step" name="user_info" v-model="store.createUserForm">
-            <FormKit
-                type="text"
-                name="display_name"
-                id="display_name"
-                label="Display Name"
-                placeholder="Lyvergic Acid"
-                help="(optional) Shown to other users when viewing your profile."
-            />
+              <FormKit
+                  type="password"
+                  name="password"
+                  id="password"
+                  label="Password"
+                  help="Used to login. Must contain at least 2 symbols."
+                  preserve-errors="true"
+                  validation="required|length:8,32|validateAccount"
+                  validation-visibility="dirty"
+                  :validation-rules="{ validateAccount }"
+                  placeholder="----------"
+              />
+            </FormKit>
+            <FormKit type="step" name="user_info" v-model="store.createUserForm">
+              <FormKit
+                  type="text"
+                  name="display_name"
+                  id="display_name"
+                  label="Display Name"
+                  placeholder="Lyvergic Acid"
+                  help="(optional) Shown to other users when viewing your profile."
+              />
 
-            <!--suppress VueUnrecognizedSlot -->
-            <template #stepNext>
-              <FormKit type="submit" data-next="true" :disabled="errors && submitting"/>
-            </template>
+              <!--suppress VueUnrecognizedSlot -->
+              <template #stepNext>
+                <FormKit type="submit" data-next="true" :disabled="errors && submitting"/>
+              </template>
+            </FormKit>
           </FormKit>
         </FormKit>
-      </FormKit>
+      </div>
+    </div>
+    <div v-else>
+      <already-logged-in />
     </div>
   </div>
 </template>
@@ -100,6 +105,7 @@ import { inject, ref } from "vue"
 import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import log from "@/assets/lib/logger";
 import { useSessionStore } from "@/assets/lib/sessionstore";
+import AlreadyLoggedIn from "@/components/AlreadyLoggedIn.vue";
 
 const router = inject('router')
 const axios = inject('axios')
