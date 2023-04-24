@@ -163,7 +163,7 @@ export default {
 /* override LayoutReport__report for desktop browsers */
 @media only screen and (min-width: 680px) {
     .LayoutReport__report {
-        max-width: 75%;
+        max-width: 75vw;
     }
 }
 

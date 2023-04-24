@@ -131,7 +131,7 @@ export default {
 /* override LayoutUser__user for desktop browsers */
 @media only screen and (min-width: 680px) {
     .LayoutUser__user {
-        max-width: 75%;
+        max-width: 75vw;
     }
 }
 
