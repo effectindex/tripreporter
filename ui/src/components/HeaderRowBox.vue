@@ -11,7 +11,9 @@ SPDX-License-Identifier: OSL-3.0
         <!-- TODO: Make icon dynamic -->
         <img v-if="icon === 'pills'" class="HeaderRowBox__header_icon" src="../assets/svg/pills.svg" alt="Pills icon"
             width="20" height="20">
-        <img v-else class="HeaderRowBox__header_icon" src="../assets/svg/user.svg" alt="User icon"
+        <img v-else-if="icon === 'user'" class="HeaderRowBox__header_icon" src="../assets/svg/user.svg" alt="User icon"
+            width="20" height="20">
+        <img v-else class="HeaderRowBox__header_icon" src="../assets/svg/report.svg" alt="Report icon"
             width="20" height="20">
         <span class="HeaderRowBox__header_text">
         {{ header }}
@@ -21,13 +23,13 @@ SPDX-License-Identifier: OSL-3.0
     <div v-if="columns" class="HeaderRowBox__row_wrapper">
       <!--suppress JSUnusedLocalSymbols -->
       <div v-for="(label, index) in columns.filter((label) => rows[label])" :key="index" class="HeaderRowBox__row">
-          <div class="HeaderRowBox__row_label">
-            {{ label }}
-          </div>
-          <div class="HeaderRowBox__row_entry">
-            <router-link v-if="links && links[label]" :to="links[label]" class="--tr-no-underline">{{ rows[label] }}</router-link>
-            <div v-else>{{ rows[label] }}</div>
-          </div>
+        <div class="HeaderRowBox__row_label">
+          {{ label }}
+        </div>
+        <div class="HeaderRowBox__row_entry">
+          <router-link v-if="links && links[label]" :to="links[label]" class="--tr-no-underline">{{ rows[label] }}</router-link>
+          <div v-else>{{ rows[label] }}</div>
+        </div>
       </div>
     </div>
   </div>

@@ -11,7 +11,9 @@ SPDX-License-Identifier: OSL-3.0
         <!-- TODO: Make icon dynamic -->
         <img v-if="icon === 'pills'" class="HeaderColumnBox__header_icon" src="../assets/svg/pills.svg" alt="Pills icon"
             width="20" height="20">
-        <img v-else class="HeaderColumnBox__header_icon" src="../assets/svg/user.svg" alt="User icon"
+        <img v-else-if="icon === 'user'" class="HeaderRowBox__header_icon" src="../assets/svg/user.svg" alt="User icon"
+            width="20" height="20">
+        <img v-else class="HeaderRowBox__header_icon" src="../assets/svg/report.svg" alt="Report icon"
             width="20" height="20">
         <span class="HeaderColumnBox__header_text">
         {{ header }}
