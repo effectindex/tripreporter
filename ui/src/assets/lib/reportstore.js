@@ -43,6 +43,9 @@ export const useReportStore = defineStore('report', {
         log("Loaded report store", typeof r.reportJson)
       }
     },
+    hideMessage(id) {
+      return this.m !== undefined && this.m.get(id) && this.m.get(id).hideMessage === true;
+    },
     isLoaded(id) {
       const r = this.m.get(id);
       return r.apiSuccess && r.reportJson && r.reportJson !== {} && r.reportUser !== null // subject can be null?
