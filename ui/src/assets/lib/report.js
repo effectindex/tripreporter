@@ -4,9 +4,10 @@
 
 import ReportEvent from "@/assets/lib/report-event";
 import log from "@/assets/lib/logger";
+import DrugData from "@/assets/lib/drug-data";
 
 export default class Report { // TODO: Rewrite in TS for #106
-  constructor({ id, user, account_id, creation_time, modified_time, report_date, title, setting, report_subject, report_events }) {
+  constructor({ id, user, account_id, creation_time, modified_time, report_date, title, setting, report_subject, report_events, drugs }) {
     this.id = id;
     this.user = user;
     this.account_id = account_id;
@@ -18,6 +19,7 @@ export default class Report { // TODO: Rewrite in TS for #106
     this.medications = [];
     this.report_subject = report_subject;
     this.report_events = [];
+    this.drugs = [];
 
     if (report_subject && report_subject["medications"]) {
       for (const n in report_subject["medications"]) {
@@ -30,6 +32,11 @@ export default class Report { // TODO: Rewrite in TS for #106
     for (const n in report_events) {
       let event = new ReportEvent({ obj: report_events[n] })
       this.report_events.push(event)
+    }
+
+    for (const n in drugs) {
+      let drug = new DrugData({ obj: drugs[n] })
+      this.drugs.push(drug)
     }
 
     log("report.js", this)
