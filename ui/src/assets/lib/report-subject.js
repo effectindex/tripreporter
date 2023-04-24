@@ -14,6 +14,10 @@ export default class ReportSubject { // TODO: Rewrite in TS for #106
   }
 
   height() {
+    if (this.height_cm === "0") {
+      return ""
+    }
+
     if (this.display_unit !== 2) {
       return `${this.display_unit.toFixed(1)}cm`
     }
@@ -26,6 +30,10 @@ export default class ReportSubject { // TODO: Rewrite in TS for #106
   }
 
   weight() {
+    if (this.weight_kg === "0") {
+      return ""
+    }
+
     if (this.display_unit !== 2) {
       return `${this.weight_kg}kg`
     }
