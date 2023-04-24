@@ -51,9 +51,9 @@ export default {
 <style scoped>
 .HeaderRowBox {
     flex: 1;
-    background-color: #fbfbfb;
+    background-color: var(--tr-default-raised-background);
     border-radius: 10px;
-    border: 1px solid hsla(0, 0%, 66.7%, .35);
+    border: 1px solid var(--tr-default-border);
 }
 
 .HeaderRowBox__header_wrapper h3 {
@@ -63,7 +63,7 @@ export default {
 .HeaderRowBox__header {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    background-color: #eee;
+    background-color: var(--tr-default-light-background);
     padding: 0.25em 0.5em 0.5em;
 }
 
@@ -89,7 +89,7 @@ export default {
 
 .HeaderRowBox__row_label {
     flex: 2;
-    color: #333;
+    color: var(--tr-default-alt-darker-text);
     font-weight: 700;
 }
 

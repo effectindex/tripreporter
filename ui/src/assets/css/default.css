@@ -6,25 +6,41 @@
 
 :root {
     --tr-default-primary: #3d9991;
-    --tr-default-primary-text: #ffffff;
+    --tr-default-primary-text: #fff;
     --tr-default-primary-shadow: 0 0 2px #96dbfc;
     --tr-default-primary-background: #1f1f1f;
-    --tr-default-alt-text: #ccc;
-    --tr-default-alt-darker-text: #666;
-    --tr-default-message-error: #a83232;
+    --tr-default-raised-background: #fbfbfb;
+    --tr-default-raised-darker-background: #f6f6f6;
+    --tr-default-light-background: #eee;
+    --tr-default-border: hsla(0, 0%, 66.7%, .35);
+    --tr-default-alt-lighter-text: #ccc;
+    --tr-default-alt-text: #666;
+    --tr-default-alt-darker-text: #333;
+    --tr-default-accent-text: #8a8a8a;
+    --tr-default-error: #a83232;
+    --tr-default-error-lighter: #c74343;
 }
 
 .--tr-muted-text {
-    color: var(--tr-default-alt-darker-text);
+    color: var(--tr-default-alt-text);
 }
 
 .--tr-no-underline {
-    color: var(--tr-default-alt-darker-text);
+    color: var(--tr-default-alt-text);
     text-decoration: none;
 }
 
 .--tr-no-underline:visited {
-    color: var(--tr-default-alt-darker-text);
+    color: var(--tr-default-alt-text);
+}
+
+.--tr-no-underline-red {
+    color: var(--tr-default-error-lighter);
+    text-decoration: none;
+}
+
+.--tr-no-underline-red:visited {
+    color: var(--tr-default-error-lighter);
 }
 
 .--tr-header-h1 {

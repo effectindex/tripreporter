@@ -103,7 +103,7 @@ store.updateSession(axios);
 }
 
 .LayoutDefault__nav a {
-    color: var(--tr-default-alt-text);
+    color: var(--tr-default-alt-lighter-text);
     text-decoration: none;
     text-transform: uppercase;
     font-weight: 300;
@@ -140,7 +140,7 @@ store.updateSession(axios);
 
 /* pin footer to bottom */
 .LayoutDefault__footer {
-    color: var(--tr-default-alt-darker-text);
+    color: var(--tr-default-alt-text);
     background-color: var(--tr-default-primary-background);
     position: fixed;
     bottom: 0;
