@@ -22,7 +22,7 @@ export function setMessage(message, messageSuccess, status, router, location, ro
   elem.style.display = 'block';
 
   if (status === true) {
-    elem.style.background = 'var(--tr-accent)'
+    elemText.style.background = 'var(--tr-accent)'
     elemText.innerHTML = messageSuccess;
 
     if (router && location) {
@@ -32,7 +32,7 @@ export function setMessage(message, messageSuccess, status, router, location, ro
       }, timeout);
     }
   } else {
-    elem.style.background = 'var(--tr-error)'
+    elemText.style.background = 'var(--tr-error)'
   }
 }
 
