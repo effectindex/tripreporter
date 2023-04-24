@@ -40,14 +40,12 @@ SPDX-License-Identifier: OSL-3.0
 
         <div class="LayoutReport__setting">
           <div :class="{'LayoutReportBox': true, 'LayoutReportBox_last': true}">
-            <div v-if="getStore().reportDate.valid()">
-              Experienced on
-              <timestamp-text :timestamp="getStore().reportDate"/>
+            <div v-if="getStore().reportDate.valid()" class="LayoutReport__setting_date">
+              Experienced on <timestamp-text :timestamp="getStore().reportDate"/>
             </div>
             <div v-else>
               Unknown report date.
             </div>
-            <br>
             <div v-if="report.setting" class="LayoutReport__setting_text">
               {{ report.setting }}
             </div>
@@ -187,12 +185,16 @@ export default {
     margin-bottom: 1em;
 }
 
+.LayoutReport__setting_date {
+    font-weight: bold;
+}
+
 .LayoutReport__setting_text {
     margin: 0.5em;
 }
 
 .LayoutReportBox, .LayoutReportBox_alt {
-    padding: 10px;
+    padding: 5px 10px;
     border-bottom: 1px solid var(--tr-border);
 }
 
