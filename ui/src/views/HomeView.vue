@@ -8,16 +8,18 @@ SPDX-License-Identifier: OSL-3.0
   <div class="Home">
     <h1 class="--tr-header-h1">Home</h1>
     <p>
-      Welcome to the <router-link to="/" class="--tr-link">subjective.report</router-link> home page.
+      Welcome to the <subjective-report-link /> home page.
     </p>
   </div>
 </template>
 
 <script>
 import LayoutDefault from "@/layouts/LayoutDefault.vue";
+import SubjectiveReportLink from "@/components/SubjectiveReportLink.vue";
 
 export default {
   name: 'HomeView',
+  components: { SubjectiveReportLink },
   created() {
     this.$emit('update:layout', LayoutDefault);
   }

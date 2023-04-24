@@ -7,7 +7,7 @@ SPDX-License-Identifier: OSL-3.0
 <template>
   <div class="signup">
     <div v-if="!store.activeSession" class="no-session">
-      <h1 class="--tr-header-h1">Create a <span class="--tr-muted-text">subjective.report</span> account 🚀</h1>
+      <h1 class="--tr-header-h1">Create a <subjective-report-link /> account 🚀</h1>
 
       <div class="DefaultView__message" id="DefaultView__message">
         <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
@@ -106,6 +106,7 @@ import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import log from "@/assets/lib/logger";
 import { useSessionStore } from "@/assets/lib/sessionstore";
 import AlreadyLoggedIn from "@/components/AlreadyLoggedIn.vue";
+import SubjectiveReportLink from "@/components/SubjectiveReportLink.vue";
 
 const router = inject('router')
 const axios = inject('axios')
