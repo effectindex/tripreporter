@@ -8,7 +8,7 @@ SPDX-License-Identifier: OSL-3.0
   <div class="Home">
     <h1 class="--tr-header-h1">Home</h1>
     <p>
-      Welcome to the <span class="--tr-muted-text">subjective.report</span> home page.
+      Welcome to the <router-link to="/" class="--tr-link">subjective.report</router-link> home page.
     </p>
   </div>
 </template>
