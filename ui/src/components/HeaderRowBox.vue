@@ -19,14 +19,15 @@ SPDX-License-Identifier: OSL-3.0
       </h3>
     </section>
     <div v-if="columns" class="HeaderRowBox__row_wrapper">
-      <div v-for="(label, index) in columns" :key="index" class="HeaderRowBox__row">
-        <div class="HeaderRowBox__row_label">
-          {{ label }}
-        </div>
-        <div class="HeaderRowBox__row_entry">
-          <router-link v-if="links[label]" :to="links[label]" class="--tr-no-underline">{{ rows[label] }}</router-link>
-          <div v-else>{{ rows[label] }}</div>
-        </div>
+      <!--suppress JSUnusedLocalSymbols -->
+      <div v-for="(label, index) in columns.filter((label) => rows[label])" :key="index" class="HeaderRowBox__row">
+          <div class="HeaderRowBox__row_label">
+            {{ label }}
+          </div>
+          <div class="HeaderRowBox__row_entry">
+            <router-link v-if="links[label]" :to="links[label]" class="--tr-no-underline">{{ rows[label] }}</router-link>
+            <div v-else>{{ rows[label] }}</div>
+          </div>
       </div>
     </div>
   </div>
