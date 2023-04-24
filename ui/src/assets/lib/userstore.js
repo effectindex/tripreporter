@@ -40,6 +40,9 @@ export const useUserStore = defineStore('user', {
         log("Loaded user store", typeof u.user, u.user)
       }
     },
+    hideMessage(id) {
+      return this.m !== undefined && this.m.get(id) && this.m.get(id).hideMessage === true;
+    },
     isLoaded(id) {
       const u = this.m.get(id)
       return u.apiSuccess && u.user !== null
