@@ -38,7 +38,7 @@ SPDX-License-Identifier: OSL-3.0
       </div>
     </div>
     <div v-else>
-      <h1 class="--tr-header-h1">You're logged in! 🎉</h1>
+      <already-logged-in />
     </div>
   </div>
 </template>
@@ -58,6 +58,7 @@ export default {
 import { inject, ref } from 'vue'
 import { handleMessageError, setMessage } from '@/assets/lib/message_util';
 import { useSessionStore } from '@/assets/lib/sessionstore'
+import AlreadyLoggedIn from "@/components/AlreadyLoggedIn.vue";
 
 const axios = inject('axios')
 const store = useSessionStore();
