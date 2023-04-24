@@ -223,15 +223,8 @@ if (ranSetup !== true) {
 }
 
 .LayoutAccount__account {
-    max-width: 90%;
+    max-width: 25em;
     margin: auto;
-}
-
-/* override LayoutAccount__account for desktop browsers */
-@media only screen and (min-width: 680px) {
-    .LayoutAccount__account {
-        max-width: 25em;
-    }
 }
 
 .LayoutAccount__info_entry_box {
