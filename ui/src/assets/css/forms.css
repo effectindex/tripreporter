@@ -38,13 +38,21 @@
     filter: brightness(75%);
 }
 
-.formkit-label, .formkit-help {
-    text-align: left;
-}
-
 .formkit-input#password::placeholder {
     font-family: text-security-disc, sans-serif !important;
     -webkit-text-security: disc !important;
+}
+
+[data-type="button"] .formkit-input-no-margin, [data-type="submit"] .formkit-input-no-margin {
+    margin: 0;
+}
+
+.formkit-justify-right {
+    justify-content: right;
+}
+
+.formkit-label, .formkit-help {
+    text-align: left;
 }
 
 .DefaultView__form, .DefaultView__form_wide {

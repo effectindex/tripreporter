@@ -21,7 +21,7 @@ SPDX-License-Identifier: OSL-3.0
       <div class="DefaultView__form_wide">
         <FormKit type="form" @submit="handleNext" #default="{ value, state: { errors } }" :actions="false">
           <FormKit type="multi-step" name="report_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false" :classes="{ wrapper: 'formkit-wrapper-wide' }">
-            <FormKit type="step" name="report_info" v-model="createStore.reportInfo">
+            <FormKit type="step" name="report_info" v-model="createStore.reportInfo" :stepActions-class="{ 'formkit-justify-right': true }">
               <FormKit
                   :classes="{ wrapper: 'formkit-wrapper-wide' }"
                   type="text"
@@ -55,6 +55,16 @@ SPDX-License-Identifier: OSL-3.0
                   label="Date"
                   help="When did the experience occur?"
               />
+              <!--suppress VueUnrecognizedSlot -->
+              <template #stepNext="{ handlers, node }">
+                <FormKit
+                    :classes="{ input: { 'formkit-input-no-margin': true } }"
+                    type="button"
+                    @click="handlers.incrementStep(1, node.context)()"
+                    label="Next"
+                    data-next="true"
+                />
+              </template>
             </FormKit>
             <FormKit type="step" name="subject_info" v-model="createStore.reportSubject">
               <FormKit
@@ -139,6 +149,16 @@ SPDX-License-Identifier: OSL-3.0
                     v-model="createStore.subjectInfo.weightLbs"
                 />
               </div>
+              <!--suppress VueUnrecognizedSlot -->
+              <template #stepNext="{ handlers, node }">
+                <FormKit
+                    :classes="{ input: { 'formkit-input-no-margin': true, 'formkit-input-justify-right': false } }"
+                    type="button"
+                    @click="handlers.incrementStep(1, node.context)()"
+                    label="Next"
+                    data-next="true"
+                />
+              </template>
             </FormKit>
             <FormKit type="step" name="medication_info" v-model="createStore.reportMedication">
               <FormKit
@@ -158,6 +178,16 @@ SPDX-License-Identifier: OSL-3.0
                     placeholder-prescribed="Is this medication prescribed?"
                 />
               </FormKit>
+              <!--suppress VueUnrecognizedSlot -->
+              <template #stepNext="{ handlers, node }">
+                <FormKit
+                    :classes="{ input: { 'formkit-input-no-margin': true } }"
+                    type="button"
+                    @click="handlers.incrementStep(1, node.context)()"
+                    label="Next"
+                    data-next="true"
+                />
+              </template>
             </FormKit>
             <FormKit type="step" name="report_events" v-model="createStore.reportEvents">
               <FormKit
@@ -225,6 +255,7 @@ SPDX-License-Identifier: OSL-3.0
               <!--suppress VueUnrecognizedSlot -->
               <template #stepNext>
                 <FormKit
+                    :classes="{ input: { 'formkit-input-no-margin': true } }"
                     type="submit"
                     @submit="submitForm"
                     label="Create Report!"
