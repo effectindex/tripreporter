@@ -180,9 +180,9 @@ export default {
 }
 
 .LayoutReport__setting, .LayoutReport__events {
-    background-color: var(--tr-default-raised-background);
+    background-color: var(--tr-background-raised-light);
     border-radius: 10px;
-    border: 1px solid var(--tr-default-border);
+    border: 1px solid var(--tr-border);
     position: relative;
     margin-bottom: 1em;
 }
@@ -193,11 +193,11 @@ export default {
 
 .LayoutReportBox, .LayoutReportBox_alt {
     padding: 10px;
-    border-bottom: 1px solid var(--tr-default-border);
+    border-bottom: 1px solid var(--tr-border);
 }
 
 .LayoutReportBox_alt {
-    background-color: var(--tr-default-raised-darker-background);
+    background-color: var(--tr-background-raised);
 }
 
 .LayoutReportBox_last {

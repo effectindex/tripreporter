@@ -71,9 +71,9 @@ export default {
 <style scoped>
 .HeaderColumnBox {
     flex: 1;
-    background-color: var(--tr-default-raised-background);
+    background-color: var(--tr-background-raised-light);
     border-radius: 10px;
-    border: 1px solid var(--tr-default-border);
+    border: 1px solid var(--tr-border);
 }
 
 .HeaderColumnBox__header_wrapper h3 {
@@ -83,7 +83,7 @@ export default {
 .HeaderColumnBox__header {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    background-color: var(--tr-default-light-background);
+    background-color: var(--tr-background-raised-dark);
     padding: 0.25em 0.5em 0.5em;
 }
 

@@ -30,11 +30,11 @@
 }
 
 [data-type="submit"] .formkit-input {
-    background: var(--tr-default-primary);
+    background: var(--tr-accent);
 }
 
 [data-type="submit"] .formkit-input:hover {
-    background: var(--tr-default-primary);
+    background: var(--tr-accent);
     filter: brightness(75%);
 }
 

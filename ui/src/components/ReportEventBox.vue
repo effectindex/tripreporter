@@ -84,7 +84,7 @@ export default {
 }
 
 .ReportEventBoxSection {
-    color: var(--tr-default-alt-lighter-text);
+    color: var(--tr-text-alt-light);
     transform: translateX(-0.5em) translateY(-0.75em);
     /*TODO: transform: rotate(90deg);*/
     text-transform: uppercase;
@@ -92,7 +92,7 @@ export default {
 }
 
 .ReportEventBoxTime {
-    color: var(--tr-default-accent-text);
+    color: var(--tr-text-accent);
     font-size: 12px;
     margin-bottom: 2px;
 }

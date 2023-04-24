@@ -94,7 +94,7 @@ store.updateSession(axios);
 
 .LayoutDefault__nav {
     font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--tr-default-primary-background);
+    background-color: var(--tr-background);
     height: 87px;
     padding: 20px;
     display: flex;
@@ -103,7 +103,7 @@ store.updateSession(axios);
 }
 
 .LayoutDefault__nav a {
-    color: var(--tr-default-alt-lighter-text);
+    color: var(--tr-text-alt-light);
     text-decoration: none;
     text-transform: uppercase;
     font-weight: 300;
@@ -116,12 +116,12 @@ store.updateSession(axios);
 }
 
 .LayoutDefault__nav a.router-link-exact-active {
-    color: var(--tr-default-primary);
+    color: var(--tr-accent);
 }
 
 .LayoutDefault__nav > a:hover {
-    color: var(--tr-default-primary-text);
-    text-shadow: var(--tr-default-primary-shadow);
+    color: var(--tr-text);
+    text-shadow: var(--tr-text-shadow);
 }
 
 /* fix positioning and alignment of nav items */
@@ -140,8 +140,8 @@ store.updateSession(axios);
 
 /* pin footer to bottom */
 .LayoutDefault__footer {
-    color: var(--tr-default-alt-text);
-    background-color: var(--tr-default-primary-background);
+    color: var(--tr-text-alt);
+    background-color: var(--tr-background);
     position: fixed;
     bottom: 0;
     width: 100%;
