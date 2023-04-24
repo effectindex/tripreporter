@@ -28,11 +28,7 @@ export const useReportStore = defineStore('report', {
       if (this.apiSuccess) {
         log("Loading report data", typeof this.reportJson, typeof data)
         this.reportJson = new Report(data);
-        this.reportUser = new User({
-          id: this.reportJson.user.id,
-          display_name: this.reportJson.user.display_name,
-          created: this.reportJson.user.created
-        });
+        this.reportUser = new User(this.reportJson.user);
         this.reportDate = new Timestamp({ date: this.reportJson.report_date, longFormat: true });
         this.reportSubject = new ReportSubject({ obj: this.reportJson.report_subject })
         this.hideMessage = true;

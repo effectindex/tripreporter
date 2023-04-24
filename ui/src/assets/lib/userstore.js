@@ -23,11 +23,7 @@ export const useUserStore = defineStore('user', {
 
       if (this.apiSuccess) {
         log("Loading user data", typeof this.user, typeof data)
-        this.user = new User({
-          id: data.id,
-          display_name: data.display_name,
-          created: data.created
-        });
+        this.user = new User(data);
         this.createdDate = new Timestamp({ date: data.created, showTime: true, longFormat: true });
         this.hideMessage = true;
         log("Loaded user store", typeof this.user, this.user)
