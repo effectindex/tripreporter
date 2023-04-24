@@ -430,11 +430,12 @@ func (a *Account) FromData(a1 *Account) {
 	a.ID = a1.ID
 	a.Email = a1.Email
 	a.Username = a1.Username
-	a.Password = a1.Password
-	a.NewPass = a1.NewPass
 	a.Salt = a1.Salt
 	a.Hash = a1.Hash
 	a.Verified = a1.Verified
+	a.Password = a1.Password
+	a.NewPass = a1.NewPass
+	a.NewUser = a1.NewUser
 }
 
 func (a *Account) ClearAll() *AccountPublic {
@@ -444,7 +445,7 @@ func (a *Account) ClearAll() *AccountPublic {
 
 func (a *Account) ClearImmutable() *Account {
 	a.InitType(a)
-	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Password: a.Password, NewPass: a.NewPass}
+	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Password: a.Password, NewPass: a.NewPass, NewUser: a.NewUser}
 }
 
 func (a *Account) CopyPublic() *AccountPublic {
