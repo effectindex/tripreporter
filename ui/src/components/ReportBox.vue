@@ -207,19 +207,31 @@ export default {
     border-bottom: none;
 }
 
+@media only screen and (min-width: 450px) {
+    .LayoutReport__report_summary_entry:first-child {
+        margin-right: 1em;
+    }
+}
+
 /* override LayoutReport__report and LayoutReport__report_summary_entry for desktop browsers */
 @media only screen and (min-width: 680px) {
     .LayoutReport__report {
         max-width: 75vw;
     }
 
-    .LayoutReport__report_summary_entry {
+    .LayoutReport__report_summary {
         margin-bottom: 0;
-        margin-right: 1em;
     }
 
     .LayoutReport__report_summary_entry:last-child {
+        margin-bottom: 1em;
         margin-right: 0;
+    }
+}
+
+@media only screen and (min-width: 900px) {
+    .LayoutReport__report_summary_entry {
+        margin-right: 1em;
     }
 }
 </style>
