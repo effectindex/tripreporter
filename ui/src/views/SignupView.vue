@@ -94,7 +94,10 @@ export default {
   mounted() {
     // Ensure username is lowercase when entering it
     getNode('username').hook.commit((payload, next) => {
-      return next(payload.toLowerCase());
+      if (payload !== undefined) {
+        return next(payload.toLowerCase());
+      }
+      return next(payload);
     });
   }
 }
