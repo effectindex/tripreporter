@@ -73,6 +73,8 @@ export default {
 </script>
 
 <style scoped>
+@import url(@/assets/css/message_util.css);
+
 .LayoutUser__main {
     text-align: left;
 }
