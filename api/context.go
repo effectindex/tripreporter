@@ -99,11 +99,11 @@ func (c *Context) HandleStatus(w http.ResponseWriter, r *http.Request, msg strin
 	// Here we log messages and errors, depending on the severity of the status
 	if status >= 500 {
 		// Log errors that our fault as warnings, and tell the client we had an error.
-		c.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "message", msg)
+		c.Logger.Warnw("API Internal Error", "status", status, "method", r.Method, "path", r.URL.Path, "message", msg)
 		logger.Errorw(msg, "status", status)
 	} else {
 		// If the message isn't an error on our end, only log in debug
-		c.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "message", msg)
+		c.Logger.Debugw("API Response", "status", status, "method", r.Method, "path", r.URL.Path, "message", msg)
 
 		// If the message is a client error, warn them, otherwise it's an info
 		if status >= 400 {
@@ -124,10 +124,10 @@ func (c *Context) HandleJson(w http.ResponseWriter, r *http.Request, i interface
 	if j, err := json.Marshal(i); err != nil {
 		status = http.StatusInternalServerError
 
-		c.Logger.Warnw("API Internal Error", "status", status, "path", r.URL.Path, "i", i, zap.Error(err))
+		c.Logger.Warnw("API Internal Error", "status", status, "method", r.Method, "path", r.URL.Path, "i", i, zap.Error(err))
 		logger.Errorw(err.Error(), "status", status)
 	} else {
-		c.Logger.Debugw("API Response", "status", status, "path", r.URL.Path, "json", string(j))
+		c.Logger.Debugw("API Response", "status", status, "method", r.Method, "path", r.URL.Path, "json", string(j))
 		_, _ = fmt.Fprintf(w, "%s\n", j)
 	}
 }
@@ -150,7 +150,7 @@ func (c *Context) HandleFunc(fn func(http.ResponseWriter, *http.Request), handle
 // HandleRedirect is a wrapper to redirect to a destination and set the status code.
 // TODO: This is not functional on frontend pages, see #90.
 func (c *Context) HandleRedirect(w http.ResponseWriter, r *http.Request, url string, status int) {
-	c.Logger.Debugw("API Redirect", "status", status, "path", r.URL.Path, "destination", url)
+	c.Logger.Debugw("API Redirect", "status", status, "method", r.Method, "path", r.URL.Path, "destination", url)
 	http.Redirect(w, r, url, status)
 }
 
