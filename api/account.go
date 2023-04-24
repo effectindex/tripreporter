@@ -139,12 +139,19 @@ func AccountPatch(w http.ResponseWriter, r *http.Request) {
 
 // AccountDelete path is /api/v1/account
 func AccountDelete(w http.ResponseWriter, r *http.Request) {
+	ctxVal, ok := ctx.GetCtxValOrHandle(w, r)
+	if !ok {
+		return
+	}
+
 	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	// Set account ID from session context
+	account.Unique = models.Unique{ID: ctxVal.Account}
 	account, err = account.Delete()
 	if err != nil {
 		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
