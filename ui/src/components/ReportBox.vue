@@ -156,9 +156,17 @@ export default {
 }
 
 .LayoutReport__report {
-    max-width: 75%;
+    max-width: 90%;
     margin: auto;
 }
+
+/* override LayoutReport__report for desktop browsers */
+@media only screen and (min-width: 680px) {
+    .LayoutReport__report {
+        max-width: 75%;
+    }
+}
+
 
 .LayoutReport__report_summary {
     display: flex;
@@ -194,7 +202,7 @@ export default {
 }
 
 .LayoutReportBox, .LayoutReportBox_alt {
-    padding: 5px 10px;
+    padding: 10px;
     border-bottom: 1px solid var(--tr-border);
 }
 

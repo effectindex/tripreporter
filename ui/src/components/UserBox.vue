@@ -124,10 +124,16 @@ export default {
 }
 
 .LayoutUser__user {
-    max-width: 75%;
+    max-width: 90%;
     margin: auto;
 }
 
+/* override LayoutUser__user for desktop browsers */
+@media only screen and (min-width: 680px) {
+    .LayoutUser__user {
+        max-width: 75%;
+    }
+}
 
 .LayoutUser__report_summary {
     display: flex;
