@@ -78,7 +78,6 @@ SPDX-License-Identifier: OSL-3.0
           />
 
           <div class="LayoutAccount_buttons">
-
             <FormKit
                 type="button"
                 class="LayoutAccount__buttons_button"
@@ -153,6 +152,7 @@ const submitForm = async (fields) => {
     success.value = response.status === 200;
     submitting.value = false;
     if (success.value === true) {
+      store.showDeleteForm = false;
       sessionStore.invalidateSession();
     }
     setMessage(response.data.msg, messageSuccess, success.value, router, '/', 3000);
@@ -160,6 +160,7 @@ const submitForm = async (fields) => {
     success.value = error.response.status === 200;
     submitting.value = false;
     if (success.value === true) {
+      store.showDeleteForm = false;
       sessionStore.invalidateSession();
     }
     setMessage(error.response.data.msg, messageSuccess, success.value, router, '/', 3000);
@@ -182,6 +183,7 @@ const logOut = (e) => {
     loggedOut.value = response.status === 200;
     submitting.value = false;
     if (loggedOut.value === true) {
+      store.showDeleteForm = false;
       sessionStore.invalidateSession();
     }
     setMessage(response.data.msg, messageLoggedOut, loggedOut.value, router, '/login', 3000);
@@ -189,6 +191,7 @@ const logOut = (e) => {
     loggedOut.value = error.response.status === 200;
     submitting.value = false;
     if (loggedOut.value === true) {
+      store.showDeleteForm = false;
       sessionStore.invalidateSession();
     }
     setMessage(error.response.data.msg, messageLoggedOut, loggedOut.value, router, '/login', 3000);
