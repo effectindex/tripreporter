@@ -11,6 +11,7 @@ SPDX-License-Identifier: OSL-3.0
         <router-link class="LayoutDefault__item" to="/">Home</router-link>
         <router-link v-if="!store.activeSession" class="LayoutDefault__item" to="/signup">Signup</router-link>
         <router-link v-if="!store.activeSession" class="LayoutDefault__item" to="/login">Login</router-link>
+        <router-link v-if="store.activeSession" class="LayoutDefault__item" to="/account">Account</router-link>
         <router-link v-if="store.activeSession" class="LayoutDefault__item" to="/create">Create Report</router-link>
       </nav>
     </div>
