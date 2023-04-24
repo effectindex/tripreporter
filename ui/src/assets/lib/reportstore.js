@@ -13,30 +13,39 @@ import ReportSubject from "@/assets/lib/report-subject";
 export const useReportStore = defineStore('report', {
   state: () => {
     return {
-      reportJson: new Report({}),
-      reportUser: ref(null),
-      reportDate: ref(null),
-      reportSubject: ref(null),
-      hideMessage: false,
-      apiSuccess: false
+      m: new Map(),
     }
   },
   actions: {
-    updateData(status, data) {
-      this.apiSuccess = status === 200;
+    updateData(id, status, data) {
+      let r = this.m.get(id)
+      if (r === undefined) {
+        r = {
+          reportJson: new Report({}),
+          reportUser: ref(null),
+          reportDate: ref(null),
+          reportSubject: ref(null),
+          hideMessage: false,
+          apiSuccess: false,
+        }
+      }
 
-      if (this.apiSuccess) {
-        log("Loading report data", typeof this.reportJson, typeof data)
-        this.reportJson = new Report(data);
-        this.reportUser = new User(this.reportJson.user);
-        this.reportDate = new Timestamp({ date: this.reportJson.report_date, longFormat: true });
-        this.reportSubject = new ReportSubject({ obj: this.reportJson.report_subject })
-        this.hideMessage = true;
-        log("Loaded report store", typeof this.reportJson)
+      r.apiSuccess = status === 200;
+
+      if (r.apiSuccess) {
+        log("Loading report data", typeof r.reportJson, typeof data)
+        r.reportJson = new Report(data);
+        r.reportUser = new User(r.reportJson.user);
+        r.reportDate = new Timestamp({ date: r.reportJson.report_date, longFormat: true });
+        r.reportSubject = new ReportSubject({ obj: r.reportJson.report_subject })
+        r.hideMessage = true;
+        this.m.set(id, r);
+        log("Loaded report store", typeof r.reportJson)
       }
     },
-    isLoaded() {
-      return this.apiSuccess && this.reportJson && this.reportJson !== {} && this.reportUser !== null // subject can be null?
+    isLoaded(id) {
+      const r = this.m.get(id);
+      return r.apiSuccess && r.reportJson && r.reportJson !== {} && r.reportUser !== null // subject can be null?
     }
   },
 })

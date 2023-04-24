@@ -5,7 +5,7 @@ SPDX-License-Identifier: OSL-3.0
 -->
 
 <template>
-  <div class="LayoutReport__main" v-if="getStore().isLoaded()">
+  <div class="LayoutReport__main" v-if="isLoaded()">
     <div v-for="(report, index) in [getStore().reportJson]" :key="index">
       <h1 class="--tr-header-h1">{{ report.title }}</h1>
 
@@ -74,9 +74,10 @@ import ReportEventBox from "@/components/ReportEventBox.vue";
 import DrugSummaryBox from "@/components/DrugSummaryBox.vue";
 import HeaderRowBox from "@/components/HeaderRowBox.vue";
 import Timestamp from "@/assets/lib/timestamp";
+import log from "@/assets/lib/logger";
 
 const store = useReportStore();
-let ranSetup = false
+let state = new Map();
 
 export default {
   name: "ReportBox",
@@ -96,7 +97,10 @@ export default {
   },
   methods: {
     getStore() {
-      return store
+      return store.m.get(this.id)
+    },
+    isLoaded() {
+      return this.getStore() !== undefined && store.isLoaded(this.id);
     },
     showCurrentSection(index, events) {
       if (index === 0) {
@@ -115,18 +119,27 @@ export default {
     }
   },
   async setup(props) {
-    if (ranSetup) {
+    let report = state.get(props.id)
+    if (report === undefined) {
+      report = {
+        ranSetup: Boolean
+      }
+    }
+
+    if (report.ranSetup === true) {
       return
     }
-    ranSetup = true
+    report.ranSetup = true
+    state.set(props.id, report)
 
     const axios = inject('axios')
     await axios.get('/report/' + props.id).then(function (response) {
-      store.updateData(response.status, response.data)
-      setMessage(response.data.msg, "", store.apiSuccess);
+      log("axios updateData", store)
+      store.updateData(props.id, response.status, response.data)
+      setMessage(response.data.msg, "", store.m.get(props.id) ? store.m.get(props.id).apiSuccess : false);
     }).catch(function (error) {
-      store.updateData(error.response.status, error.response.data)
-      setMessage(error.response.data.msg, "", store.apiSuccess);
+      store.updateData(props.id, error.response.status, error.response.data)
+      setMessage(error.response.data.msg, "", store.m.get(props.id) ? store.m.get(props.id).apiSuccess : false);
       handleMessageError(error);
     })
   }
