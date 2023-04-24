@@ -16,6 +16,8 @@ SPDX-License-Identifier: OSL-3.0
 <script>
 import HeaderColumnBox from "@/components/HeaderColumnBox.vue";
 import DrugData from "@/assets/lib/drug-data";
+import log from "@/assets/lib/logger";
+import titleCase from "@/assets/lib/string_util";
 
 export default {
   name: "DrugSummaryBox",
@@ -27,7 +29,7 @@ export default {
         const drug = new DrugData({ obj: e.drug })
 
         if (e["type"] === 2) {
-          rows.push({ 'Name': drug.name, 'Dosage': drug.getDose(), 'RoA': drug.getRoA() })
+          rows.push({ 'Name': titleCase(drug.name), 'Dosage': drug.getDose(), 'RoA': drug.getRoA() })
         }
       })
       return rows
