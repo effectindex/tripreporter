@@ -31,7 +31,8 @@ SPDX-License-Identifier: OSL-3.0
         <tr v-for="(row, index) in rows" :key="index"
             :class="index % 2 === 0 ? 'HeaderColumnBox__table_row' : 'HeaderColumnBox__table_row_alt'">
           <td v-for="(column, index) in columns" :key="index">
-            {{ row[column] }}
+            <router-link v-if="links && links[index] && links[index][column]" :to="links[index][column]" class="--tr-no-underline">{{ row[column] }}</router-link>
+            <div v-else>{{ row[column] }}</div>
           </td>
         </tr>
         </tbody>
@@ -47,7 +48,8 @@ export default {
     icon: String,
     header: String,
     columns: Array,
-    rows: undefined
+    rows: undefined,
+    links: undefined
   },
   data() {
     return {
