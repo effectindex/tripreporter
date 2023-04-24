@@ -88,7 +88,7 @@ export default {
 }
 
 .HeaderRowBox__row_label {
-    flex: 1em;
+    flex: 2;
     color: var(--tr-text-alt-dark);
     font-weight: 700;
 }
