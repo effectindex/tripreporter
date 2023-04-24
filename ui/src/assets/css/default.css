@@ -18,6 +18,10 @@
     color: var(--tr-default-alt-darker-text);
 }
 
+.--tr-no-underline {
+    text-decoration: none;
+}
+
 .--tr-header-h1 {
     font-weight: normal;
     padding-left: 1em;
