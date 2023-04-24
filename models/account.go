@@ -375,7 +375,7 @@ func (a *Account) FromRefreshToken(token *http.Cookie) (*Account, error) {
 		return a, err
 	}
 
-	id, err := uuid.Parse(val)
+	id, err := uuid.FromBytes([]byte(val))
 	if err != nil { // this means an invalid UUID got put into Redis somehow
 		a.Logger.Warnw("Failed to parse valid account UUID from refresh token", zap.Error(err))
 		return a, types.ErrorAccountNotFound

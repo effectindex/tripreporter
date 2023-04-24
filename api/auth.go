@@ -27,6 +27,13 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 				return
 			}
 
+			// Ensure refresh token exists in Redis, and that we haven't revoked it
+			if err := ctx.Cache.Get(context.Background(), refreshToken.Value).Err(); err != nil {
+				ctx.Context.Logger.Debugw("Failed to find refresh token in Redis", zap.Error(err))
+				ctx.Handle(w, r, MsgForbidden)
+				return
+			}
+
 			jwtToken, _ := r.Cookie(types.CookieJwtToken)
 			sessionClaims, _ := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
 
@@ -40,7 +47,22 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 					return
 				}
 
-				// Refresh token is okay, build the access token
+				// Now we get the session UUID
+				session, err := r.Cookie(types.CookieSessionID)
+				if err != nil {
+					ctx.Context.Logger.Debugw("Failed to get session UUID", zap.Error(err))
+					ctx.Handle(w, r, MsgForbidden)
+					return
+				}
+
+				sessionID, err := uuid.Parse(session.Value)
+				if err != nil {
+					ctx.Context.Logger.Debugw("Failed to parse session UUID", zap.Error(err))
+					ctx.Handle(w, r, MsgForbidden)
+					return
+				}
+
+				// Refresh token and session UUID are okay, build the access token
 				expiryTime := time.Now().Add(time.Minute * 15) // TODO: Change this once we've implemented refreshing
 				claims := &models.SessionClaims{
 					RegisteredClaims: jwt.RegisteredClaims{
@@ -50,6 +72,10 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 					},
 					Account: uuid.NullUUID{
 						UUID:  account.ID,
+						Valid: true,
+					},
+					Session: uuid.NullUUID{
+						UUID:  sessionID,
 						Valid: true,
 					},
 				}
@@ -68,7 +94,15 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 
 			// Set SessionClaims as the context value
 			rCtx := r.Context()
-			rCtx = context.WithValue(rCtx, models.ContextValuesKey, &models.ContextValues{Account: sessionClaims.Account.UUID, SessionClaims: sessionClaims})
+			rCtx = context.WithValue(
+				rCtx,
+				models.ContextValuesKey,
+				&models.ContextValues{
+					Account:       sessionClaims.Account.UUID,
+					SessionClaims: sessionClaims,
+					RefreshToken:  refreshToken.Value,
+				},
+			)
 			r = r.WithContext(rCtx)
 
 			ctx.Logger.Debugw("Successfully authenticated user", "account", sessionClaims.Account.UUID, "path", r.URL.Path)

@@ -5,6 +5,7 @@
 package types
 
 const (
+	CookieSessionID    = "session-uuid"
 	CookieRefreshToken = "refresh-token"
 	CookieJwtToken     = "access-token"
 )

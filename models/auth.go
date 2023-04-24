@@ -11,6 +11,7 @@ import (
 type ContextValues struct {
 	Account       uuid.UUID
 	SessionClaims *SessionClaims
+	RefreshToken  string
 }
 
 type ContextKey string

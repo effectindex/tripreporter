@@ -22,7 +22,7 @@ type Session struct { // TODO: Really, this should be keeping track of IP and us
 	Unique
 	Index   int    `json:"-" db:"session_index"`
 	Key     Unique `json:"-" db:"session_key"`
-	Refresh string `json:"-" db:"-"` // Stored in Redis only (s.Cache).
+	Refresh string `json:"-" db:"-"` // Stored in Redis only (s.Cache), user has types.CookieRefreshToken and types.CookieJwtToken in their browser.
 }
 
 type SessionClaims struct {
@@ -113,9 +113,19 @@ func (s *Session) Post() (*Session, error) {
 		return s, err
 	}
 
-	// Encode the refresh token to a b64 string, and set it to expire from Redis a week from now, with the refresh as the key and the account ID as the value
+	// Encode the refresh token to a b64 string
 	s.Refresh = base64.StdEncoding.EncodeToString(b)
-	err = s.Cache.Set(context.Background(), s.Refresh, s.ID.String(), time.Hour*24*7).Err()
+
+	// Keep an index cache of all tokens to invalidate, for when we want to do this later
+	err = s.Cache.SAdd(context.Background(), string(s.ID[:]), s.Refresh).Err()
+	if err != nil {
+		s.Logger.Warnw("Failed to set refresh token index cache")
+		_ = db.Rollback(context.Background())
+		return s, err
+	}
+
+	// Set it to expire from Redis a week from now, with the refresh as the key and the account ID as the value
+	err = s.Cache.Set(context.Background(), s.Refresh, s.ID[:], time.Hour*24*7).Err()
 	if err != nil {
 		s.Logger.Warnw("Failed to set cache for refresh token", zap.Error(err))
 		_ = db.Rollback(context.Background())
@@ -143,6 +153,29 @@ func (s *Session) Delete() (*Session, error) {
 		return s, err
 	}
 
+	// Scan all sessions from our set cache to delete from Redis
+	var cursor uint64 = 0
+	for {
+		result, newCursor, err := s.Cache.SScan(context.Background(), string(s.ID[:]), cursor, "", 0).Result()
+		if err != nil {
+			return s, err
+		}
+
+		for _, session := range result {
+			err := s.Cache.Del(context.Background(), session).Err()
+			if err != nil {
+				s.Logger.Debugw("Session.Delete() encountered error when deleting sessions", zap.Error(err))
+			}
+		}
+
+		cursor = newCursor
+
+		// We have run out of sessions to scan
+		if cursor == 0 {
+			break
+		}
+	}
+
 	// TODO: Part of refactoring to pointer-based model
 	return s.ClearAll(), nil
 }
@@ -162,10 +195,19 @@ func (s *Session) DeleteByKey() (*Session, error) {
 		return s, types.ErrorSessionKeyNotFound
 	}
 
+	if len(s.Refresh) == 0 { // you need to specify refresh cookie
+		return s, types.ErrorSessionRefreshNotFound
+	}
+
 	// Now delete the matching session from the account
 	if _, err := db.Exec(context.Background(), `delete from sessions where account_id=$1 and session_key=$2;`, s.ID, s.Key.ID); err != nil {
 		s.Logger.Warnw("Failed to delete individual session from DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
+		return s, err
+	}
+
+	// Now delete the refresh cookie from Redis
+	if err := s.Cache.Del(context.Background(), s.Refresh).Err(); err != nil {
 		return s, err
 	}
 
