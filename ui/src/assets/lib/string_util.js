@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 froggie <legal@frogg.ie>
+
+SPDX-License-Identifier: OSL-3.0
+-->
+
 export default function titleCase(str) {
   if (str === str.toUpperCase()) {
     return str
