@@ -62,7 +62,9 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetAuthCookie(w, types.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
+	expiry := time.Now().Add(time.Hour * 15) // TODO: Change this once we've implemented refreshing
+	SetAuthCookie(w, types.CookieSessionID, session.Key.ID.String(), expiry)
+	SetAuthCookie(w, types.CookieRefreshToken, session.Refresh, expiry)
 
 	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusCreated)
 }
@@ -94,7 +96,9 @@ func AccountPostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetAuthCookie(w, types.CookieRefreshToken, session.Refresh, time.Now().Add(time.Hour*15)) // TODO: Change this once we've implemented refreshing
+	expiry := time.Now().Add(time.Hour * 15) // TODO: Change this once we've implemented refreshing
+	SetAuthCookie(w, types.CookieSessionID, session.Key.ID.String(), expiry)
+	SetAuthCookie(w, types.CookieRefreshToken, session.Refresh, expiry)
 
 	ctx.HandleJson(w, r, account.CopyPublic(), http.StatusOK)
 }
@@ -158,7 +162,7 @@ func AccountDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DeleteAuthCookies(w, types.CookieRefreshToken, types.CookieJwtToken)
+	DeleteAuthCookies(w, types.CookieSessionID, types.CookieRefreshToken, types.CookieJwtToken)
 
 	ctx.HandleJson(w, r, account.ClearAll(), http.StatusOK)
 }
