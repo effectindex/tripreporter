@@ -35,3 +35,11 @@ import { useAccountStore } from "@/assets/lib/accountstore";
 
 const store = useAccountStore();
 </script>
+
+<style>
+@import url(@/assets/css/forms.css);
+</style>
+
+<style scoped>
+@import url(@/assets/css/message_util.css);
+</style>
