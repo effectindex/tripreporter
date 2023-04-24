@@ -8,7 +8,7 @@
     max-width: 25em;
     margin: auto;
     color: var(--tr-text);
-    background: var(--tr-error);
+    background: var(--tr-error-darker);
     border-radius: 0.5em;
     display: none;
 }

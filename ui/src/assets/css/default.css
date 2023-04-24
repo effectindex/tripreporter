@@ -5,7 +5,9 @@
  */
 
 :root {
+    --tr-accent-lighter: #60d0c6;
     --tr-accent: #3d9991;
+    --tr-accent-darker: #33847b;
     --tr-text: #fff;
     --tr-text-shadow: 0 0 2px #96dbfc;
     --tr-background: #1f1f1f;
@@ -17,8 +19,9 @@
     --tr-text-alt: #666;
     --tr-text-alt-dark: #333;
     --tr-text-accent: #8a8a8a;
-    --tr-error: #a83232;
-    --tr-error-lighter: #c74343;
+    --tr-error-lighter: #fda5a5;
+    --tr-error: #c74343;
+    --tr-error-darker: #a83232;
 }
 
 .--tr-muted-text {
@@ -26,20 +29,41 @@
 }
 
 .--tr-link {
-    color: var(--tr-text-alt);
+    color: var(--tr-accent-darker);
     text-decoration: none;
 }
 
 .--tr-link:visited {
+    color: var(--tr-accent-darker);
+}
+
+.--tr-link:hover {
+    color: var(--tr-accent-lighter)
+}
+
+.--tr-link-muted {
+    color: var(--tr-text-alt);
+    text-decoration: none;
+}
+
+.--tr-link-muted:visited {
     color: var(--tr-text-alt);
 }
 
+.--tr-link-muted:hover {
+    color: var(--tr-text-alt-dark);
+}
+
 .--tr-link-red {
-    color: var(--tr-error-lighter);
+    color: var(--tr-error);
     text-decoration: none;
 }
 
 .--tr-link-red:visited {
+    color: var(--tr-error);
+}
+
+.--tr-link-red:hover {
     color: var(--tr-error-lighter);
 }
 
