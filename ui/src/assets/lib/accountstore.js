@@ -12,7 +12,8 @@ export const useAccountStore = defineStore('account', {
     return {
       accountJson: ref(null),
       hideMessage: false,
-      apiSuccess: false
+      apiSuccess: false,
+      showDeleteForm: false
     }
   },
   actions: {
