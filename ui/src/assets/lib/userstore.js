@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user', {
       if (u.apiSuccess) {
         log("Loading user data", typeof u.user, typeof data)
         u.user = new User(data);
-        u.createdDate = new Timestamp({ date: data.created, showTime: true, longFormat: true });
+        u.createdDate = new Timestamp({ date: data.created, longFormat: true });
         u.hideMessage = true;
         this.m.set(id, u);
         log("Loaded user store", typeof u.user, u.user)
