@@ -160,16 +160,9 @@ export default {
     margin: auto;
 }
 
-/* override LayoutReport__report for desktop browsers */
-@media only screen and (min-width: 680px) {
-    .LayoutReport__report {
-        max-width: 75vw;
-    }
-}
-
-
 .LayoutReport__report_summary {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: baseline;
     justify-content: center;
@@ -178,11 +171,11 @@ export default {
 
 .LayoutReport__report_summary_entry {
     flex-grow: 1;
-    margin-right: 1em;
+    margin-bottom: 1em;
 }
 
 .LayoutReport__report_summary_entry:last-child {
-    margin-right: 0;
+    margin-bottom: 0;
 }
 
 .LayoutReport__setting, .LayoutReport__events {
@@ -212,5 +205,21 @@ export default {
 
 .LayoutReportBox_last {
     border-bottom: none;
+}
+
+/* override LayoutReport__report and LayoutReport__report_summary_entry for desktop browsers */
+@media only screen and (min-width: 680px) {
+    .LayoutReport__report {
+        max-width: 75vw;
+    }
+
+    .LayoutReport__report_summary_entry {
+        margin-bottom: 0;
+        margin-right: 1em;
+    }
+
+    .LayoutReport__report_summary_entry:last-child {
+        margin-right: 0;
+    }
 }
 </style>
