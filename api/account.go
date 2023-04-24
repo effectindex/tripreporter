@@ -44,6 +44,8 @@ func AccountPost(w http.ResponseWriter, r *http.Request) {
 	// If a new user is not provided when making an account, we default to making a blank one
 	if account.NewUser == nil {
 		account.NewUser = &models.User{Context: ctx.Context, Unique: account.Unique}
+	} else {
+		account.NewUser.Unique = account.Unique
 	}
 
 	// Create the associated user for the account.
