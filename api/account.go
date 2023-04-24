@@ -99,13 +99,12 @@ func AccountPostLogin(w http.ResponseWriter, r *http.Request) {
 
 // AccountGet path is /api/v1/account
 func AccountGet(w http.ResponseWriter, r *http.Request) {
-	account, err := (&models.Account{Context: ctx.Context}).FromBody(r)
-	if err != nil {
-		ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
+	ctxVal, ok := ctx.GetCtxValOrHandle(w, r)
+	if !ok {
 		return
 	}
 
-	account, err = account.Get()
+	account, err := (&models.Account{Context: ctx.Context, Unique: models.Unique{ID: ctxVal.Account}}).Get()
 	if err != nil {
 		if err == types.ErrorAccountNotSpecified || err == types.ErrorAccountNotFound {
 			ctx.HandleStatus(w, r, err.Error(), http.StatusBadRequest)
