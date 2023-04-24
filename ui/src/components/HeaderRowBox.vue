@@ -88,12 +88,19 @@ export default {
 }
 
 .HeaderRowBox__row_label {
-    flex: 2;
+    flex: 1em;
     color: var(--tr-text-alt-dark);
     font-weight: 700;
 }
 
 .HeaderRowBox__row_entry {
     flex: 5;
+}
+
+/* override HeaderRowBox__row_label for desktop browsers */
+@media only screen and (min-width: 680px) {
+    .HeaderRowBox__row_label {
+        flex: 2;
+    }
 }
 </style>
