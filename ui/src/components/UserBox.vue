@@ -5,7 +5,7 @@ SPDX-License-Identifier: OSL-3.0
 -->
 
 <template>
-  <div class="LayoutUser__main" v-if="getStore().isLoaded()">
+  <div class="LayoutUser__main" v-if="isLoaded()">
     <div v-for="(user, index) in [getStore().user]" :key="index">
       <h1 class="--tr-header-h1">{{ user.display_name }}</h1>
 
@@ -48,7 +48,7 @@ import Timestamp from "@/assets/lib/timestamp";
 import titleCase from "@/assets/lib/string_util";
 
 const store = useUserStore();
-let ranSetup = false
+let state = new Map();
 
 export default {
   name: "UserBox",
@@ -63,7 +63,10 @@ export default {
   },
   methods: {
     getStore() {
-      return store
+      return store ? store.m.get(this.id) : undefined
+    },
+    isLoaded() {
+      return this.getStore() !== undefined && store.isLoaded(this.id);
     },
     getRows(reports) {
       let rows = []
@@ -84,19 +87,27 @@ export default {
     }
   },
   async setup(props) {
-    if (ranSetup) {
+    let user = state.get(props.id)
+    if (user === undefined) {
+      user = {
+        ranSetup: Boolean
+      }
+    }
+
+    if (user.ranSetup === true) {
       return
     }
-    ranSetup = true
+    user.ranSetup = true
+    state.set(props.id, user)
 
     const axios = inject('axios')
     await axios.get('/user/' + props.id).then(function (response) {
-      store.updateData(response.status, response.data)
-      setMessage(response.data.msg, "", store.apiSuccess);
+      store.updateData(props.id, response.status, response.data)
+      setMessage(response.data.msg, "", store.m.get(props.id) ? store.m.get(props.id).apiSuccess : false);
     }).catch(function (error) {
       log("error", error)
-      store.updateData(error.response.status, error.response.data)
-      setMessage(error.response.data.msg, "", store.apiSuccess);
+      store.updateData(props.id, error.response.status, error.response.data)
+      setMessage(error.response.data.msg, "", store.m.get(props.id) ? store.m.get(props.id).apiSuccess : false);
       handleMessageError(error);
     })
   }

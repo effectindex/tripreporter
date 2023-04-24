@@ -11,26 +11,38 @@ import User from "@/assets/lib/user";
 export const useUserStore = defineStore('user', {
   state: () => {
     return {
-      user: new User({}),
-      createdDate: ref(null),
-      hideMessage: false,
-      apiSuccess: false
+      m: new Map(),
     }
   },
   actions: {
-    updateData(status, data) {
-      this.apiSuccess = status === 200;
+    updateData(id, status, data) {
+      log("userstore", "here1")
+      let u = this.m.get(id)
+      if (u === undefined) {
+       u = {
+         user: new User({}),
+         createdDate: ref(null),
+         hideMessage: false,
+         apiSuccess: false,
+       }
+      }
+      log("userstore", "here2")
 
-      if (this.apiSuccess) {
-        log("Loading user data", typeof this.user, typeof data)
-        this.user = new User(data);
-        this.createdDate = new Timestamp({ date: data.created, showTime: true, longFormat: true });
-        this.hideMessage = true;
-        log("Loaded user store", typeof this.user, this.user)
+      u.apiSuccess = status === 200;
+      log("userstore", "here3")
+
+      if (u.apiSuccess) {
+        log("Loading user data", typeof u.user, typeof data)
+        u.user = new User(data);
+        u.createdDate = new Timestamp({ date: data.created, showTime: true, longFormat: true });
+        u.hideMessage = true;
+        this.m.set(id, u);
+        log("Loaded user store", typeof u.user, u.user)
       }
     },
-    isLoaded() {
-      return this.apiSuccess && this.user !== null
+    isLoaded(id) {
+      const u = this.m.get(id)
+      return u.apiSuccess && u.user !== null
     }
   },
 })
