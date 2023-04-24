@@ -27,7 +27,7 @@ SPDX-License-Identifier: OSL-3.0
         <header-column-box
             v-if="user.reports && user.reports.length > 0"
             header="Reports"
-            icon="pills"
+            icon="report"
             :columns="['Title', 'Date', 'Substances']"
             :rows="getRows(user.reports)"
             :links="getLinks(user.reports)"
