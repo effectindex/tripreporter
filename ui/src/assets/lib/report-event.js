@@ -12,7 +12,12 @@ export default class ReportEvent { // TODO: Rewrite in TS for #106
     this.section = section;
     this.content = content;
     this.drug = new DrugData({ obj: drug });
-    obj && Object.assign(this, obj);
+
+    if (obj) {
+      Object.assign(this, obj);
+      this.drug = new DrugData({ obj: obj.drug });
+    }
+
     return this;
   }
 }
