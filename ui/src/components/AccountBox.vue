@@ -33,15 +33,15 @@ SPDX-License-Identifier: OSL-3.0
 
               <div class="LayoutAccount_buttons">
                 <FormKit
-                    class="LayoutAccount__buttons_button"
                     type="button"
+                    class="LayoutAccount__buttons_button"
                     label="Logout"
                     @click="randomColor"
                 />
                 <FormKit
+                    type="button"
                     style="background-color: var(--tr-error)"
                     class="LayoutAccount__buttons_button"
-                    type="button"
                     label="Delete Account"
                     @click="showDeleteForm"
                 />
@@ -75,7 +75,23 @@ SPDX-License-Identifier: OSL-3.0
               placeholder="----------"
           />
 
-          <FormKit type="submit" style="background-color: var(--tr-error)" label="Delete Account" data-next="true" :disabled="!valid"/>
+          <div class="LayoutAccount_buttons">
+
+            <FormKit
+                type="button"
+                class="LayoutAccount__buttons_button"
+                label="Back"
+                @click="hideDeleteForm"
+            />
+            <FormKit
+                type="submit"
+                style="background-color: var(--tr-error)"
+                class="LayoutAccount__buttons_button"
+                label="Delete Account"
+                data-next="true"
+                :disabled="!valid"
+            />
+          </div>
         </FormKit>
       </div>
     </div>
@@ -150,6 +166,10 @@ const showDeleteForm = (e) => {
   store.showDeleteForm = true
 }
 
+const hideDeleteForm = (e) => {
+  store.showDeleteForm = false
+}
+
 if (ranSetup !== true) {
 
   ranSetup = true
@@ -184,7 +204,7 @@ if (ranSetup !== true) {
 /* override LayoutAccount__account for desktop browsers */
 @media only screen and (min-width: 680px) {
     .LayoutAccount__account {
-        max-width: 75vw;
+        max-width: 25em;
     }
 }
 
@@ -196,17 +216,10 @@ if (ranSetup !== true) {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    align-items: baseline;
     justify-content: left;
-    margin-bottom: 1em;
 }
 
 .LayoutAccount__buttons_button {
     flex-grow: 1;
-    margin-bottom: 1em;
-}
-
-.LayoutAccount__buttons_button:last-child {
-    margin-bottom: 0;
 }
 </style>
