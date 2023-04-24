@@ -74,7 +74,6 @@ export default {
         const substances = r.drugs.map(drug => titleCase(drug.name));
         rows.push({ 'Title': r.title, 'Date': new Timestamp({date: r.report_date, longFormat: true}).get(), 'Substances': substances.join(", ") })
       })
-      console.log("rows", rows)
       return rows
     },
     getLinks(reports) {
@@ -82,7 +81,6 @@ export default {
       reports.forEach(r => {
         links.push({ 'Title': `/reports?id=${r.id}` })
       })
-      console.log("links", links)
       return links
     }
   },
