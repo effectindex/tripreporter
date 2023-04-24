@@ -25,21 +25,21 @@
     color: var(--tr-default-alt-text);
 }
 
-.--tr-no-underline {
+.--tr-link {
     color: var(--tr-default-alt-text);
     text-decoration: none;
 }
 
-.--tr-no-underline:visited {
+.--tr-link:visited {
     color: var(--tr-default-alt-text);
 }
 
-.--tr-no-underline-red {
+.--tr-link-red {
     color: var(--tr-default-error-lighter);
     text-decoration: none;
 }
 
-.--tr-no-underline-red:visited {
+.--tr-link-red:visited {
     color: var(--tr-default-error-lighter);
 }
 

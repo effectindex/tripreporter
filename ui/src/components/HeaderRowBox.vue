@@ -27,7 +27,7 @@ SPDX-License-Identifier: OSL-3.0
           {{ label }}
         </div>
         <div class="HeaderRowBox__row_entry">
-          <router-link v-if="links && links[label]" :to="links[label]" class="--tr-no-underline">{{ rows[label] }}</router-link>
+          <router-link v-if="links && links[label]" :to="links[label]" class="--tr-link">{{ rows[label] }}</router-link>
           <div v-else>{{ rows[label] }}</div>
         </div>
       </div>
