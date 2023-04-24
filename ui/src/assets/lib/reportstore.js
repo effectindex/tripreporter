@@ -10,7 +10,7 @@ import Timestamp from "@/assets/lib/timestamp";
 import User from "@/assets/lib/user";
 import ReportSubject from "@/assets/lib/report-subject";
 
-export const useReportStore = defineStore('reports', {
+export const useReportStore = defineStore('report', {
   state: () => {
     return {
       reportJson: new Report({}),
@@ -36,7 +36,7 @@ export const useReportStore = defineStore('reports', {
         this.reportDate = new Timestamp({ date: this.reportJson.report_date, longFormat: true });
         this.reportSubject = new ReportSubject({ obj: this.reportJson.report_subject })
         this.hideMessage = true;
-        log("Loaded reports store", typeof this.reportJson)
+        log("Loaded report store", typeof this.reportJson)
       }
     },
     isLoaded() {
