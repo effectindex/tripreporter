@@ -20,10 +20,14 @@ export const useSessionStore = defineStore('session', {
   actions: {
     updateSession(axios) {
       validateSession(axios).then((res) => {
-        this.activeSession = res;
         this.updatedPreviously = true;
+        this.activeSession = res;
         log(`Loaded store session: ${this.activeSession ? "active session" : "no session"}`)
       })
     },
+    invalidateSession() {
+      this.updatedPreviously = false;
+      this.activeSession = false;
+    }
   },
 })
