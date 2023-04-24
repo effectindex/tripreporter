@@ -24,7 +24,8 @@ SPDX-License-Identifier: OSL-3.0
           {{ label }}
         </div>
         <div class="HeaderRowBox__row_entry">
-          {{ rows[label] }}
+          <router-link v-if="links[label]" :to="links[label]" class="--tr-no-underline">{{ rows[label] }}</router-link>
+          <div v-else>{{ rows[label] }}</div>
         </div>
       </div>
     </div>
@@ -38,7 +39,8 @@ export default {
     icon: String,
     header: String,
     columns: Array,
-    rows: undefined
+    rows: undefined,
+    links: undefined
   },
 }
 </script>
