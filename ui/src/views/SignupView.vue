@@ -115,7 +115,7 @@ const router = inject('router')
 const axios = inject('axios')
 const store = useSessionStore();
 
-const messageSuccess = "Account successfully created!<br>You will be redirected to login in 3 seconds.";
+const messageSuccess = "Account successfully created!";
 let success = ref(false);
 let submitting = ref(false);
 
@@ -161,12 +161,17 @@ const submitForm = async (fields, handlers) => {
       success.value = response.status === 201;
       submitting.value = false;
       validationCache.value = {};
-      setMessage(response.data.msg, messageSuccess, success.value, router, '/login', 3000);
+      if (success.value === true) {
+        store.updateSession(axios);
+      }      setMessage(response.data.msg, messageSuccess, success.value, router);
     }).catch(function (error) {
       success.value = error.response.status === 201;
       submitting.value = false;
       validationCache.value = {};
-      setMessage(error.response.data.msg, messageSuccess, success.value, router, '/login', 3000);
+      if (success.value === true) {
+        store.updateSession(axios);
+      }
+      setMessage(error.response.data.msg, messageSuccess, success.value, router);
       handleMessageError(error);
     })
   }
