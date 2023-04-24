@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: OSL-3.0
 
 export default function titleCase(str) {
-  if (str === str.toUpperCase()) {
+  if (str === str.toUpperCase() || !isNaN(str.charAt(0))) {
     return str
   }
 
