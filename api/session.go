@@ -51,11 +51,6 @@ func SessionDelete(w http.ResponseWriter, r *http.Request) {
 
 // SessionGetValidate path is /api/v1/session/validate
 func SessionGetValidate(w http.ResponseWriter, r *http.Request) {
-	ctxVals, ok := ctx.GetCtxValOrHandle(w, r)
-	if !ok {
-		return
-	}
-
 	// This might look like it does nothing, but it is called with the AuthMiddleware, which means if you don't have
 	// a valid session it will return a 403 from there, instead.
 	ctx.Handle(w, r, MsgOk)
