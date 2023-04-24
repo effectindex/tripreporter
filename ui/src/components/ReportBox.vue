@@ -19,12 +19,15 @@ SPDX-License-Identifier: OSL-3.0
                 icon="user"
                 :columns="['Name', 'Date', 'Gender', 'Height', 'Weight']"
                 :rows="{
-                  'Name': 'Josie Kins',
+                  'Name': getStore().reportUser.display_name,
                   'Date': getStore().reportDate.get(),
-                  'Gender': 'Female',
-                  'Height': '5\'9',
-                  'Weight': '~150 lbs'
-              }"
+                  'Gender': getStore().reportSubject.gender,
+                  'Height': getStore().reportSubject.height(),
+                  'Weight': getStore().reportSubject.weight(),
+                }"
+                :links="{
+                  'Name': `/profile?id=${getStore().reportUser.id}`
+                }"
             />
           </div>
           <div class="LayoutReport__report_summary_entry">
