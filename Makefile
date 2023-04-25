@@ -12,9 +12,10 @@ reuse-lint:
 	reuse lint || exit 1
 
 ##########################################################
-# tests
+# tests (gcc workaround added for Docker, see https://github.com/golang/go/issues/56755)
 
 test-server:
+	@which gcc || { echo "gcc not found! running tests without gcc"; CGO_ENABLED=0 go vet ./...; go test -vet=off ./...; }
 	go test ./...
 
 ##########################################################
