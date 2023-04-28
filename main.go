@@ -94,6 +94,9 @@ func main() {
 	api.SetupContext(ctx)
 	api.SetupJwt()
 
+	// Setup database patches right before server, now that everything else is ready
+	db.SetupPatches(ctx)
+
 	// Setup http server
 	s := &http.Server{
 		Addr:        os.Getenv("SRV_ADDR") + ":" + os.Getenv("SRV_PORT"),
