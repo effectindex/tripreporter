@@ -8,8 +8,7 @@ SPDX-License-Identifier: OSL-3.0
   <div>
     <h1 class="--tr-header-h1">Not Found</h1>
     <p>
-      Oops, we couldn't find that page. Try going
-      <router-link to="/">home</router-link>
+      Oops, we couldn't find that page. Try going <router-link to="/" class="--tr-link">home</router-link>.
     </p>
   </div>
 </template>
