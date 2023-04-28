@@ -17,13 +17,15 @@ import (
 
 type ReportSource struct {
 	types.Context
-	Report   uuid.UUID        `json:"report_id" db:"report_id"`         // References the original report ID
-	Index    int64            `json:"index" db:"event_index"`           // Order of sources
-	Author   bool             `json:"is_author" db:"source_is_author"`  // If the Report.Account is the author of this report
-	Imported bool             `json:"imported" db:"source_is_imported"` // If the source was automatically Imported
-	Name     string           `json:"name" db:"source_name"`            // Name given when selecting ReportSourceOther
-	URL      string           `json:"url" db:"source_url"`              // URL of original source
-	Type     ReportSourceType `json:"type" db:"source_type"`            // Type of report given by Report.Account
+	Report   uuid.UUID        `json:"report_id" db:"report_id"`            // References the original report ID
+	Index    int64            `json:"index" db:"event_index"`              // Order of sources
+	IsAuthor bool             `json:"is_author" db:"source_is_author"`     // If the Report.Account is the author of this report
+	Imported bool             `json:"is_imported" db:"source_is_imported"` // If the source was automatically Imported
+	Author   string           `json:"author" db:"source_author"`           // Author of original report
+	Profile  string           `json:"profile" db:"source_author_profile"`  // Profile of original author on original ReportSourceType
+	URL      string           `json:"url" db:"source_url"`                 // URL of original source
+	TypeName string           `json:"type_name" db:"source_type_name"`     // TypeName given when selecting ReportSourceOther
+	Type     ReportSourceType `json:"type" db:"source_type"`               // Type of report given by Report.Account
 }
 
 type ReportSourceType int64
@@ -78,11 +80,12 @@ func (r *ReportSource) Post(db pgx.Tx) (*ReportSource, error) {
 					    source_index,
 						source_is_author,
 						source_is_imported,
-						source_name,
+						source_author,
 						source_url,
+						source_type_name,
 						source_type
-					) values($1, $2, $3, $4, $5, $6, $7);`,
-		r.Report, r.Index, r.Author, r.Imported, r.Name, r.URL, r.Type,
+					) values($1, $2, $3, $4, $5, $6, $7, $8);`,
+		r.Report, r.Index, r.IsAuthor, r.Imported, r.Author, r.URL, r.TypeName, r.Type,
 	); err != nil {
 		r.Logger.Warnw("Failed to write report subject to DB", zap.Error(err))
 		return r, err
@@ -93,9 +96,11 @@ func (r *ReportSource) Post(db pgx.Tx) (*ReportSource, error) {
 
 func (r *ReportSource) FromData(r1 *ReportSource) {
 	r.Report = r1.Report
-	r.Author = r1.Author
-	r.Name = r1.Name
+	r.Index = r1.Index
+	r.IsAuthor = r1.IsAuthor
 	r.Imported = r1.Imported
+	r.Author = r1.Author
 	r.URL = r1.URL
+	r.TypeName = r1.TypeName
 	r.Type = r1.Type
 }

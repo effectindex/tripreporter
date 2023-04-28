@@ -70,8 +70,9 @@ var (
     		source_index int not null,
     		source_is_author bool not null,
     		source_is_imported bool not null,
-    		source_name varchar(256) not null,
+    		source_author varchar(256) not null,
     		source_url varchar(4096) not null,
+    		source_type_name varchar(256) not null,
     		source_type int default 0,
     		primary key(report_id, source_index)
     	);`,
