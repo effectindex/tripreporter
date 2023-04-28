@@ -125,7 +125,7 @@ export default {
 
 .LayoutUser__user {
     max-width: 90%;
-    margin: auto;
+    margin: auto auto 1em auto;
 }
 
 /* override LayoutUser__user for desktop browsers */
@@ -140,7 +140,6 @@ export default {
     flex-direction: row;
     align-items: baseline;
     justify-content: center;
-    margin-bottom: 1em;
 }
 
 .LayoutUser__report_summary_entry {
