@@ -61,3 +61,11 @@ func (d *Decimal) Default() {
 		*x = nil
 	}(&d)
 }
+
+func (d *Decimal) UnmarshalJSON(b []byte) error {
+	if string(b) == `""` {
+		return nil
+	}
+
+	return d.Decimal.UnmarshalJSON(b)
+}
