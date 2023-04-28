@@ -16,6 +16,10 @@ import (
 
 var (
 	schemaDefs = []string{
+		`create table if not exists db_patches (
+    		index int not null primary key,
+    		patched bool default false
+    	);`,
 		`create table if not exists accounts (
 			id uuid primary key,
 			email varchar(255) not null unique,
