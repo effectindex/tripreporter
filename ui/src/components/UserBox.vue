@@ -140,6 +140,7 @@ export default {
     flex-direction: row;
     align-items: baseline;
     justify-content: center;
+    margin-bottom: 1em;
 }
 
 .LayoutUser__report_summary_entry {
