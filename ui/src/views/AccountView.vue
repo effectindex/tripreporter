@@ -8,7 +8,7 @@ SPDX-License-Identifier: OSL-3.0
   <AuthWrapper>
     <div class="about">
       <Suspense>
-        <account-box :id="$route.query.id"/>
+        <account-box />
       </Suspense>
       <div v-if="!store.hideMessage" class="DefaultView__message" id="DefaultView__message">
         <div class="DefaultView__message_text" id="DefaultView__message_text"></div>

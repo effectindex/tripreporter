@@ -111,9 +111,6 @@ const sessionStore = useSessionStore();
 export default {
   name: "AccountBox",
   components: { HeaderRowBox },
-  props: {
-    id: String
-  },
   methods: {
     getStore() {
       return store
