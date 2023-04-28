@@ -334,11 +334,11 @@ const submitForm = async (fields) => {
   await axios.post('/report', fields).then(function (response) {
     success.value = response.status === 201;
     submitting.value = false;
-    setMessage(response.data.msg, messageSuccess, success.value, router, `/reports?id=${response.data.id}`);
+    setMessage(response.data.msg, messageSuccess, success.value, router, `/report/${response.data.id}`);
   }).catch(function (error) {
     success.value = error.response.status === 201;
     submitting.value = false;
-    setMessage(error.response.data.msg, messageSuccess, success.value, router, `/reports?id=${error.response.data.id}`);
+    setMessage(error.response.data.msg, messageSuccess, success.value, router, `/report/${error.response.data.id}`);
     handleMessageError(error);
   })
 }

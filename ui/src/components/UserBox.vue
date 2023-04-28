@@ -79,7 +79,7 @@ export default {
     getLinks(reports) {
       let links = []
       reports.forEach(r => {
-        links.push({ 'Title': `/reports?id=${r.id}` })
+        links.push({ 'Title': `/report/${r.id}` })
       })
       return links
     }

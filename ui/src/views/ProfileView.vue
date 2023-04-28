@@ -8,9 +8,9 @@ SPDX-License-Identifier: OSL-3.0
   <AuthWrapper>
     <div class="reports">
       <Suspense>
-        <user-box :id="$route.query.id"/>
+        <user-box :id="$route.params.id"/>
       </Suspense>
-      <div v-if="!store.hideMessage($route.query.id)" class="DefaultView__message" id="DefaultView__message">
+      <div v-if="!store.hideMessage($route.params.id)" class="DefaultView__message" id="DefaultView__message">
         <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
       </div>
     </div>

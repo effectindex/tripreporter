@@ -26,7 +26,7 @@ SPDX-License-Identifier: OSL-3.0
                   'Weight': getStore().reportSubject.weight(),
                 }"
                 :links="{
-                  'Name': `/profile?id=${getStore().reportUser.id}`
+                  'Name': `/profile/${getStore().reportUser.id}`
                 }"
             />
           </div>
