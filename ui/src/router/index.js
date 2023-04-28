@@ -7,44 +7,44 @@ import HomeView from '../views/HomeView.vue'
 
 const routes = [
   {
-    path: '/',
     name: 'home',
+    path: '/',
     alias: ['/index.html'],
     component: HomeView
   },
   {
-    path: '/account',
     name: 'account',
+    path: '/account',
     component: () => import(/* webpackChunkName: "account" */ '../views/AccountView.vue')
   },
   {
-    path: '/signup',
     name: 'signup',
+    path: '/signup',
     component: () => import(/* webpackChunkName: "signup" */ '../views/SignupView.vue')
   },
   {
-    path: '/login',
     name: 'login',
+    path: '/login',
     component: () => import(/* webpackChunkName: "login" */ '../views/LoginView.vue')
   },
   {
-    path: '/create',
     name: 'create',
+    path: '/create',
     component: () => import(/* webpackChunkName: "create" */ '../views/CreateView.vue')
   },
   {
-    path: '/reports',
     name: 'reports',
+    path: '/reports',
     component: () => import(/* webpackChunkName: "reports" */ '../views/ReportsView.vue')
   },
   {
-    path: '/profile',
     name: 'profile',
+    path: '/profile',
     component: () => import(/* webpackChunkName: "profile" */ '../views/ProfileView.vue')
   },
   {
-    path: '/:pathMatch(.*)*',
     name: 'NotFound',
+    path: '/:pathMatch(.*)*',
     component: () => import('@/views/NotFound.vue')
   }
 ]
