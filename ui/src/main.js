@@ -23,4 +23,6 @@ const app = createApp(App)
     .provide('axios', apiClient)
     .provide('router', router)
 
-app.mount('#app')
+router.isReady().then(() => {
+  app.mount('#app')
+})
