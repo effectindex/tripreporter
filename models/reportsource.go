@@ -34,12 +34,30 @@ const (
 	ReportSourceUnknown = iota
 	ReportSourceOther
 	ReportSourceSelf
-	ReportSourceErowid
-	ReportSourceBluelight
-	ReportSourcePsychonautWiki
-	ReportSourceTripSit
 	ReportSourceReddit
+	ReportSourceErowid
+	ReportSourceTripSit
+	ReportSourceBluelight
+	ReportSourceEffectIndex
+	ReportSourcePsychonautWiki
 )
+
+func (t ReportSourceType) ProfileBaseURL() string {
+	switch t {
+	case ReportSourceReddit:
+		return "https://www.reddit.com/user/"
+	case ReportSourceErowid:
+		return "https://erowid.org/experiences/exp.cgi?A=Search&Exact=1&AuthorSearch="
+	case ReportSourceBluelight:
+		return "https://bluelight.org/xf/members/"
+	case ReportSourceEffectIndex:
+		return "https://effectindex.com/profiles/"
+	case ReportSourcePsychonautWiki:
+		return "https://psychonautwiki.org/wiki/User:"
+	default:
+		return ""
+	}
+}
 
 type ReportSources []*ReportSource
 
