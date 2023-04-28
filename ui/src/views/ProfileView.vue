@@ -5,14 +5,16 @@ SPDX-License-Identifier: OSL-3.0
 -->
 
 <template>
-  <div class="reports">
-    <Suspense>
-      <user-box :id="$route.query.id"/>
-    </Suspense>
-    <div v-if="!store.hideMessage($route.query.id)" class="DefaultView__message" id="DefaultView__message">
-      <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
+  <AuthWrapper>
+    <div class="reports">
+      <Suspense>
+        <user-box :id="$route.query.id"/>
+      </Suspense>
+      <div v-if="!store.hideMessage($route.query.id)" class="DefaultView__message" id="DefaultView__message">
+        <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
+      </div>
     </div>
-  </div>
+  </AuthWrapper>
 </template>
 
 <script>
@@ -32,6 +34,7 @@ export default {
 
 <script setup>
 import { useUserStore } from "@/assets/lib/userstore";
+import AuthWrapper from "@/components/AuthWrapper.vue";
 
 const store = useUserStore();
 </script>

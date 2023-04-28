@@ -5,13 +5,8 @@ SPDX-License-Identifier: OSL-3.0
 -->
 
 <template>
+  <AuthWrapper>
   <div class="create">
-    <div v-if="!store.activeSession" class="no-session">
-      <div v-if="store.updatedPreviously">
-        <not-found/>
-      </div>
-    </div>
-    <div v-else>
       <h1 class="--tr-header-h1">Create a Subjective Experience Report</h1>
 
       <div class="DefaultView__message" id="DefaultView__message">
@@ -268,7 +263,7 @@ SPDX-License-Identifier: OSL-3.0
         </FormKit>
       </div>
     </div>
-  </div>
+  </AuthWrapper>
 </template>
 
 <script>
@@ -302,17 +297,15 @@ export default {
 
 <script setup>
 import { inject, ref } from "vue";
-import NotFound from "@/views/NotFound.vue";
-import { useSessionStore } from '@/assets/lib/sessionstore'
 import { useCreateStore } from "@/assets/lib/createstore";
 import { handleMessageError, setMessage } from "@/assets/lib/message_util";
 import { getTextLength } from "@/assets/lib/form";
-import FormKitDrug from "@/components/FormKitDrug.vue";
 import log from "@/assets/lib/logger";
+import FormKitDrug from "@/components/FormKitDrug.vue";
+import AuthWrapper from "@/components/AuthWrapper.vue";
 
 const router = inject('router')
 const axios = inject('axios')
-const store = useSessionStore();
 const createStore = useCreateStore();
 
 const optionsGender = ["Male", "Female", "Nonbinary"];
