@@ -7,8 +7,7 @@
 .DefaultView__message {
     max-width: 25em;
     margin: auto;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding: 1em 1em 0 1em;
     display: none;
 }
 
