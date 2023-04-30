@@ -152,7 +152,11 @@ const submitForm = async (fields, handlers) => {
   if (lastPage) {
     if (store.createAccountForm) {
       store.lastUsername = store.createAccountForm["username"];
-      store.createAccountForm.new_user = store.createUserForm
+      store.createAccountForm.new_user = store.createUserForm;
+    }
+
+    if (store.createUserForm) {
+      store.createAccountForm.display_name = store.createUserForm["display_name"];
     }
 
     log("submitForm: got store", store.createAccountForm)
