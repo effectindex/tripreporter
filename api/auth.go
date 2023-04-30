@@ -20,11 +20,14 @@ import (
 func AuthMiddleware() func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Get refresh token from cookie
 			refreshToken, err := r.Cookie(types.CookieRefreshToken)
 			if err != nil {
 				ctx.Context.Logger.Debugw("Failed to get refresh token", zap.Error(err))
 				ctx.Handle(w, r, MsgForbidden)
 				return
+			} else if len(refreshToken.Value) == 0 {
+				ctx.Context.Logger.Debugw("Failed to get refresh token", "error", "refreshToken.Value is empty")
 			}
 
 			// Ensure refresh token exists in Redis, and that we haven't revoked it
@@ -34,8 +37,14 @@ func AuthMiddleware() func(next http.Handler) http.Handler {
 				return
 			}
 
+			// This will actually verify that our jwtToken cookie is valid and not expired
 			jwtToken, _ := r.Cookie(types.CookieJwtToken)
-			sessionClaims, _ := AccountIDFromToken(jwtToken) // This will actually verify that our jwtToken cookie is valid and not expired
+			sessionClaims, err := AccountIDFromToken(jwtToken)
+			if err != nil {
+				ctx.Context.Logger.Debugw("Failed to get session claims from JWT token", err)
+				ctx.Handle(w, r, MsgForbidden)
+				return
+			}
 
 			// If we need to generate a new access token
 			if sessionClaims == nil || sessionClaims.Account.UUID == uuid.Nil {
