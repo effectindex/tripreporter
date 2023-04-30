@@ -20,10 +20,14 @@ SPDX-License-Identifier: OSL-3.0
                   style="margin-left: 0;"
                   header="Account"
                   icon="user"
-                  :columns="['Username', 'Email']"
+                  :columns="['Profile', 'Username', 'Email']"
                   :rows="{
+                    'Profile': getStore().accountJson.default_name,
                     'Username': getStore().accountJson.username,
                     'Email': getStore().accountJson.email,
+                  }"
+                  :links="{
+                    'Profile': `/profile/${getStore().accountJson.id}`
                   }"
               />
 
