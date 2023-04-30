@@ -35,12 +35,12 @@ var (
 						confirm = false
 						c.Logger.Warnw("Patch: Failed to create user for account", "user", u, zap.Error(err))
 					} else {
-						c.Logger.Debugw("Patch: Created missing user for account", "user", u)
+						c.Logger.Infow("Patch: Created missing user for account", "user", u)
 					}
 				}
 			}
 
-			c.Logger.Debugw("Patch: Finished patching for missing users")
+			c.Logger.Infow("Patch: Finished patching for missing users")
 			return confirm
 		},
 		func(c types.Context) bool {
@@ -53,7 +53,7 @@ var (
 				return false
 			}
 
-			c.Logger.Debugw("Patch: Finished patching accounts_display_name")
+			c.Logger.Infow("Patch: Finished patching accounts_display_name")
 			return true
 		},
 		func(c types.Context) bool {
@@ -67,7 +67,7 @@ var (
 				return false
 			}
 
-			c.Logger.Debugw("Patch: Finished patching copy users.display_name to accounts.display_name")
+			c.Logger.Infow("Patch: Finished patching copy users.display_name to accounts.display_name")
 			return true
 		},
 		func(c types.Context) bool {
@@ -81,7 +81,7 @@ var (
 				return false
 			}
 
-			c.Logger.Debugw("Patch: Finished patching drop column display_name")
+			c.Logger.Infow("Patch: Finished patching drop column display_name")
 			return true
 		},
 	}
