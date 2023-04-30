@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: OSL-3.0
 
-export default function titleCase(str) {
+export function titleCase(str) {
   if (str === str.toUpperCase() || !isNaN(str.charAt(0))) {
     return str
   }
@@ -13,4 +13,12 @@ export default function titleCase(str) {
   }
 
   return str.join(' ');
+}
+
+export function getOrDefault(s1, s2) {
+  if (!s1 || s1 === "") {
+    return s2
+  }
+
+  return s1
 }
