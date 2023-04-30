@@ -24,6 +24,7 @@ var (
 			id uuid primary key,
 			email varchar(255) not null unique,
 			username varchar(255) not null unique,
+			display_name varchar(255) not null default '',
 			password_salt bytea not null unique,
 			password_hash bytea not null,
 			email_verified bool default false,
@@ -35,7 +36,6 @@ var (
 		`create table if not exists users (
 			account_id uuid primary key references accounts(id) on delete cascade,
 			created timestamptz not null default to_timestamp('0'),
-			display_name varchar(255) not null,
 			date_of_birth timestamptz not null,
 			height decimal default 0,
 			weight decimal default 0

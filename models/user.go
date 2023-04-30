@@ -19,10 +19,11 @@ type User struct {
 	types.Context
 	Unique
 	Account     uuid.UUID       `json:"account_id" db:"account_id"`       // References the account that created this user.
+	Username    string          `json:"username" db:"username"`           // References Account.Username.
+	DisplayName string          `json:"display_name" db:"display_name"`   // References Account.DisplayName.
 	Created     Timestamp       `json:"created" db:"created"`             // Required, set by default.
-	DisplayName string          `json:"display_name" db:"display_name"`   // Optional, defaults to Account.Username if unset
-	Birth       Timestamp       `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset // TODO: Impl encryption
-	Age         Age             `json:"age"`                              // Unused. Updated by Birth and unfavored if Age set // TODO: Impl encryption
+	Birth       Timestamp       `json:"date_of_birth" db:"date_of_birth"` // Optional, use Age if unset. // TODO: Impl encryption
+	Age         Age             `json:"age"`                              // Unused. Updated by Birth and unfavored if Age set. // TODO: Impl encryption
 	Height      Decimal         `json:"height" db:"height"`               // Unused // TODO: Impl encryption
 	Weight      Decimal         `json:"weight" db:"weight"`               // Unused // TODO: Impl encryption
 	Reports     []ReportSummary `json:"reports,omitempty"`                // References all Reports that a user has created.
@@ -32,6 +33,7 @@ type UserPublic struct {
 	types.Context
 	Unique
 	Created     Timestamp       `json:"created"`
+	Username    string          `json:"username"`
 	DisplayName string          `json:"display_name"`
 	Reports     []ReportSummary `json:"reports,omitempty"`
 }
@@ -47,7 +49,7 @@ func (u *User) Get() (*User, error) {
 
 	var u1 []*User
 	if err := pgxscan.Select(context.Background(), db, &u1,
-		`select * from users where account_id = $1;`, u.ID,
+		`SELECT users.*, accounts.username, accounts.display_name FROM users LEFT JOIN accounts ON users.account_id = accounts.id WHERE account_id = $1;`, u.ID,
 	); err != nil {
 		u.Logger.Warnw("Failed to get user from DB", zap.Error(err))
 		return u, err
@@ -58,6 +60,7 @@ func (u *User) Get() (*User, error) {
 		return u, types.ErrorUserNotSpecified
 	} else {
 		u.Created = u1[0].Created
+		u.Username = u1[0].Username
 		u.DisplayName = u1[0].DisplayName
 		u.Birth = u1[0].Birth
 		u.Height = u1[0].Height
@@ -65,15 +68,6 @@ func (u *User) Get() (*User, error) {
 
 		if u.Birth.Valid() {
 			u.Age.Update(u.Birth)
-		}
-	}
-
-	// Default User.DisplayName to Account.Username
-	if len(u.DisplayName) == 0 {
-		if a, err := (&Account{Context: u.Context, Unique: u.Unique}).Get(); err != nil {
-			return u, err
-		} else {
-			u.DisplayName = a.Username
 		}
 	}
 
@@ -93,7 +87,7 @@ func (u *User) GetWithReports() (*User, error) {
 
 	var r1 []*ReportSummary
 	if err := pgxscan.Select(context.Background(), db, &r1,
-		`select id, account_id, title, report_date from reports where account_id=$1`, u.ID,
+		`SELECT id, account_id, title, report_date FROM reports WHERE account_id=$1`, u.ID,
 	); err != nil {
 		u.Logger.Warnw("Failed to get reports from DB", zap.Error(err))
 		return u, err
@@ -112,7 +106,7 @@ func (u *User) GetWithReports() (*User, error) {
 		// Collect events
 		var r2 ReportEvents
 		if err := pgxscan.Select(context.Background(), db, &r2,
-			`select * from report_events where report_id=$1`, report.ID,
+			`SELECT * FROM report_events WHERE report_id=$1`, report.ID,
 		); err != nil {
 			u.Logger.Warnw("Failed to get report_events from DB", zap.Error(err))
 			return u, err
@@ -159,9 +153,8 @@ func (u *User) Post() (*User, error) {
 	}
 
 	if _, err := db.Exec(context.Background(),
-		`insert into users(account_id, created, display_name, date_of_birth, height, weight)
-		values($1, $2, $3, $4, $5, $6);`,
-		u.ID, u.Created.String(), u.DisplayName, u.Birth.String(), u.Height.String(), u.Weight.String(), // TODO: Medication / preferences in DB?
+		`INSERT INTO users(account_id, created, date_of_birth, height, weight) VALUES($1, $2, $3, $4, $5);`,
+		u.ID, u.Created.String(), u.Birth.String(), u.Height.String(), u.Weight.String(), // TODO: Medication / preferences in DB?
 	); err != nil {
 		u.Logger.Warnw("Failed to write account to DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
@@ -180,7 +173,7 @@ func (u *User) Patch() (*User, error) {
 	}
 
 	fields := make([]interface{}, 0)
-	query := "update users set"
+	query := "UPDATE USERS SET"
 	qNum := 0
 
 	addQuery := func(s string, i interface{}) {
@@ -191,10 +184,6 @@ func (u *User) Patch() (*User, error) {
 
 	if u.Created.Valid() {
 		addQuery("created", u.Created)
-	}
-
-	if u.DisplayName != "" { // TODO: Validate display names
-		addQuery("display_name", u.DisplayName)
 	}
 
 	if u.Birth.Valid() { // TODO: Validate DOB
@@ -215,12 +204,13 @@ func (u *User) Patch() (*User, error) {
 		addQuery("height", u.Height)
 	}
 
+	// TODO: u.Username and u.DisplayName support
 	// TODO: Impl medication
 	// TODO: Impl preferences
 
 	query = strings.TrimSuffix(query, ",")
 	qNum++
-	query += " where id=$;" + strconv.Itoa(qNum)
+	query += " WHERE id=$;" + strconv.Itoa(qNum)
 	fields = append(fields, u.ID)
 
 	_, err := db.Exec(context.Background(), query, fields...)
@@ -249,7 +239,7 @@ func (u *User) Delete() (*User, error) {
 
 	// This should not be possible with a proper DB setup, this is only here for cleanup reasons
 	// Normally, a user row will be deleted when an account row is deleted.
-	if _, err := db.Exec(context.Background(), `delete from users where account_id=$1;`, u.ID); err != nil {
+	if _, err := db.Exec(context.Background(), `DELETE FROM users WHERE account_id=$1;`, u.ID); err != nil {
 		u.Logger.Warnw("Failed to delete user from DB", zap.Error(err))
 		_ = db.Rollback(context.Background())
 		return u, err
@@ -259,7 +249,7 @@ func (u *User) Delete() (*User, error) {
 }
 
 func (u *User) CopyPublic() *UserPublic {
-	p := &UserPublic{Context: u.Context, Unique: u.Unique, Created: u.Created, DisplayName: u.DisplayName, Reports: u.Reports}
+	p := &UserPublic{Context: u.Context, Unique: u.Unique, Created: u.Created, Username: u.Username, DisplayName: u.DisplayName, Reports: u.Reports}
 	u.InitType(u)
 	return p
 }

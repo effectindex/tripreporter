@@ -31,11 +31,12 @@ var (
 type Account struct { // todo: this should be oauth / credentials. allow changing email or logging in with google
 	types.Context
 	Unique
-	Email    string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
-	Username string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
-	Salt     []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
-	Hash     []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
-	Verified bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
+	Email       string `json:"email" db:"email"`                   // Optional. Make clear that password reset isn't possible if not set.
+	Username    string `json:"username" db:"username"`             // Required. Generate from wordlist + 3 numbers if left blank.
+	DisplayName string `json:"display_name" db:"display_name"`     // Optional.
+	Salt        []byte `json:"password_salt" db:"password_salt"`   // Required. Generated from random []byte(16), + wordlist(1) + []byte(32-16-len(word)).
+	Hash        []byte `json:"password_hash" db:"password_hash"`   // Required. Generated from Salt using Argon2ID and is 32 bits long.
+	Verified    bool   `json:"email_verified" db:"email_verified"` // Optional. Whether email has been verified or not.
 
 	Password string `json:"password"`           // Optional. Only used in API requests, is here to so API users aren't confused by `password_hash` when making a new account.
 	NewPass  string `json:"new_password"`       // Optional. Only used in PATCH API requests, when changing the password.
@@ -45,9 +46,10 @@ type Account struct { // todo: this should be oauth / credentials. allow changin
 type AccountPublic struct {
 	types.Context
 	Unique
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Verified bool   `json:"email_verified"`
+	Email       string `json:"email"`
+	Username    string `json:"username"`
+	DisplayName string `json:"display_name"`
+	Verified    bool   `json:"email_verified"`
 }
 
 type AccountConfig struct {
@@ -199,6 +201,7 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 			id,
 			email,
 			username,
+			display_name,
 			password_salt,
 			password_hash,
 			email_verified
@@ -209,11 +212,13 @@ func (a *Account) Post() (*Account, error) { // TODO: Email verification? / post
 			$3,
 			$4,
 		    $5,
-		    $6
+		    $6,
+		    $7
 		);`,
 		a.ID,
 		a.Email,
 		a.Username,
+		a.DisplayName,
 		a.Salt,
 		a.Hash,
 		a.Verified,
@@ -273,6 +278,10 @@ func (a *Account) Patch() (*Account, error) {
 			return a, err
 		}
 		addQuery("username", a.Username)
+	}
+
+	if a.DisplayName != "" { // TODO: Validate display names
+		addQuery("display_name", a.DisplayName)
 	}
 
 	if len(a.NewPass) > 0 {
@@ -430,6 +439,7 @@ func (a *Account) FromData(a1 *Account) {
 	a.ID = a1.ID
 	a.Email = a1.Email
 	a.Username = a1.Username
+	a.DisplayName = a1.DisplayName
 	a.Salt = a1.Salt
 	a.Hash = a1.Hash
 	a.Verified = a1.Verified
@@ -445,11 +455,11 @@ func (a *Account) ClearAll() *AccountPublic {
 
 func (a *Account) ClearImmutable() *Account {
 	a.InitType(a)
-	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Password: a.Password, NewPass: a.NewPass, NewUser: a.NewUser}
+	return &Account{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, DisplayName: a.DisplayName, Password: a.Password, NewPass: a.NewPass, NewUser: a.NewUser}
 }
 
 func (a *Account) CopyPublic() *AccountPublic {
-	p := &AccountPublic{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, Verified: a.Verified}
+	p := &AccountPublic{Context: a.Context, Unique: a.Unique, Email: a.Email, Username: a.Username, DisplayName: a.DisplayName, Verified: a.Verified}
 	p.InitType(p)
 	return p
 }
