@@ -40,8 +40,9 @@ SPDX-License-Identifier: OSL-3.0
         </div>
       </div>
       <div class="LayoutDefault__footer_box">
+        <!--suppress JSUnresolvedReference, HtmlUnknownAttribute -->
         <div class="LayoutDefault__footer_text" :set="year = getYear()">
-          &copy; {{ year }}, Subjective Effect Documentation, 5HT2 and contributors.
+          <a href="mailto:legal@frogg.ie" class="--tr-link-muted">&copy; {{ year }} froggie &lt;legal@frogg.ie&gt;</a>
         </div>
       </div>
     </footer>
