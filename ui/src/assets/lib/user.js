@@ -7,8 +7,9 @@ import Report from "@/assets/lib/report";
 import log from "@/assets/lib/logger";
 
 export default class User { // TODO: Rewrite in TS for #106
-  constructor({ id, display_name, created, reports }) {
+  constructor({ id, username, display_name, created, reports }) {
     this.id = id;
+    this.username = username;
     this.display_name = display_name;
     this.reports = [];
     this.created = new Timestamp({ date: created, longFormat: true });
