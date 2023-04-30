@@ -19,7 +19,7 @@ SPDX-License-Identifier: OSL-3.0
                 icon="user"
                 :columns="['Name', 'Date', 'Gender', 'Height', 'Weight']"
                 :rows="{
-                  'Name': getStore().reportUser.display_name,
+                  'Name': getStore().reportUser.default_name,
                   'Date': getStore().reportDate.get(),
                   'Gender': getStore().reportSubject.gender,
                   'Height': getStore().reportSubject.height(),

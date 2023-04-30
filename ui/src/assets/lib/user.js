@@ -13,6 +13,7 @@ export default class User { // TODO: Rewrite in TS for #106
     this.display_name = display_name;
     this.reports = [];
     this.created = new Timestamp({ date: created, longFormat: true });
+    this.default_name = display_name ? display_name : username;
 
     for (const n in reports) {
       let report = new Report(reports[n]);

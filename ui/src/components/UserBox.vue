@@ -7,7 +7,7 @@ SPDX-License-Identifier: OSL-3.0
 <template>
   <div class="LayoutUser__main" v-if="isLoaded()">
     <div v-for="(user, index) in [getStore().user]" :key="index">
-      <h1 class="--tr-header-h1">{{ user.display_name }}</h1>
+      <h1 class="--tr-header-h1">{{ user.default_name }}</h1>
 
       <div class="LayoutUser__user">
         <div class="LayoutUser__report_summary">
@@ -18,7 +18,7 @@ SPDX-License-Identifier: OSL-3.0
                 icon="user"
                 :columns="['Name', 'Created']"
                 :rows="{
-                  'Name': getStore().user.display_name,
+                  'Name': getStore().user.default_name,
                   'Created': getStore().createdDate.get()
                 }"
             />
@@ -45,7 +45,7 @@ import log from "@/assets/lib/logger";
 import HeaderRowBox from "@/components/HeaderRowBox.vue";
 import HeaderColumnBox from "@/components/HeaderColumnBox.vue";
 import Timestamp from "@/assets/lib/timestamp";
-import titleCase from "@/assets/lib/string_util";
+import { titleCase } from "@/assets/lib/string_util";
 
 const store = useUserStore();
 let state = new Map();

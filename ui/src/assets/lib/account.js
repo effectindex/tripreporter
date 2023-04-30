@@ -10,6 +10,7 @@ export default class Account { // TODO: Rewrite in TS for #106
     this.email = email;
     this.username = username;
     this.display_name = display_name;
+    this.default_name = display_name ? display_name : username;
 
     log("account.js", this)
     return this;

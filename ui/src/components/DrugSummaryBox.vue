@@ -16,7 +16,7 @@ SPDX-License-Identifier: OSL-3.0
 <script>
 import HeaderColumnBox from "@/components/HeaderColumnBox.vue";
 import DrugData from "@/assets/lib/drug-data";
-import titleCase from "@/assets/lib/string_util";
+import { titleCase } from "@/assets/lib/string_util";
 
 export default {
   name: "DrugSummaryBox",
