@@ -9,10 +9,6 @@ SPDX-License-Identifier: OSL-3.0
   <div class="create">
       <h1 class="--tr-header-h1">Create a Subjective Experience Report</h1>
 
-      <div class="DefaultView__message" id="DefaultView__message">
-        <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
-      </div>
-
       <div class="DefaultView__form_wide">
         <FormKit type="form" @submit="handleNext" #default="{ value, state: { errors } }" :actions="false">
           <FormKit type="multi-step" name="report_form" tab-style="progress" :hide-progress-labels="true" :allow-incomplete="false" :classes="{ wrapper: 'formkit-wrapper-wide' }">

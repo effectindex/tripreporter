@@ -10,6 +10,7 @@ export function setMessage(message, messageSuccess, status, router, location, ro
     return
   }
 
+  const timeout = routerTimeout ? routerTimeout : 0
   const elemText = document.getElementById("DefaultView__message_text");
   if (elemText === null) {
     log("message_util: elemText is null!", arguments)
@@ -19,17 +20,21 @@ export function setMessage(message, messageSuccess, status, router, location, ro
   elemText.textContent = message;
 
   const elem = document.getElementById("DefaultView__message")
-  elem.style.display = 'block';
+  // Show message if it's an error, or a success that won't redirect or redirect immediately
+  if (status !== true || (!location || (location && timeout !== 0))) {
+    elem.style.display = 'block';
+  }
 
   if (status === true) {
     elemText.style.background = 'var(--tr-accent)'
     elemText.innerHTML = messageSuccess;
 
-    if (router && location) {
-      const timeout = routerTimeout ? routerTimeout : 0
+    if (router && location) { // Message is cleared by the router on redirect
       window.setTimeout(function () {
         router.push(location)
       }, timeout);
+    } else { // Clear message if we're not redirecting elsewhere
+      elem.style.display = 'none';
     }
   } else {
     elemText.style.background = 'var(--tr-error)'

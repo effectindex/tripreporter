@@ -16,6 +16,10 @@ SPDX-License-Identifier: OSL-3.0
       </nav>
     </div>
     <main class="LayoutDefault__main">
+      <div class="DefaultView__message" id="DefaultView__message">
+        <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
+      </div>
+
       <slot/>
     </main>
     <footer class="LayoutDefault__footer">

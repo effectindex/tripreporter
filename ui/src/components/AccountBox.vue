@@ -8,10 +8,6 @@ SPDX-License-Identifier: OSL-3.0
   <h1 v-if="!getStore().showDeleteForm" class="--tr-header-h1">Manage Account</h1>
   <h1 v-else class="--tr-header-h1">Delete Account</h1>
 
-  <div class="DefaultView__message" id="DefaultView__message">
-    <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
-  </div>
-
   <div class="LayoutAccount__main" v-if="isLoaded()">
     <div v-show="!getStore().showDeleteForm">
       <div v-for="(account, index) in [getStore().accountJson]" :key="index">

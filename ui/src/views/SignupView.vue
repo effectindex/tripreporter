@@ -7,11 +7,10 @@ SPDX-License-Identifier: OSL-3.0
 <template>
   <div class="signup">
     <div v-if="!store.activeSession" class="no-session">
-      <h1 class="--tr-header-h1">Create a <subjective-report-link /> account 🚀</h1>
-
-      <div class="DefaultView__message" id="DefaultView__message">
-        <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
-      </div>
+      <h1 class="--tr-header-h1">Create a
+        <subjective-report-link/>
+        account 🚀
+      </h1>
 
       <div class="DefaultView__form">
         <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
@@ -77,7 +76,7 @@ SPDX-License-Identifier: OSL-3.0
       </div>
     </div>
     <div v-else>
-      <already-logged-in />
+      <already-logged-in/>
     </div>
   </div>
 </template>
@@ -111,7 +110,6 @@ import { useSessionStore } from "@/assets/lib/sessionstore";
 import AlreadyLoggedIn from "@/components/AlreadyLoggedIn.vue";
 import SubjectiveReportLink from "@/components/SubjectiveReportLink.vue";
 
-const router = inject('router')
 const axios = inject('axios')
 const store = useSessionStore();
 
@@ -167,15 +165,17 @@ const submitForm = async (fields, handlers) => {
       validationCache.value = {};
       if (success.value === true) {
         store.updateSession(axios);
-      }      setMessage(response.data.msg, messageSuccess, success.value, router);
+      }
+      setMessage(response.data.msg, messageSuccess, success.value);
     }).catch(function (error) {
       success.value = error.response.status === 201;
       submitting.value = false;
       validationCache.value = {};
       if (success.value === true) {
         store.updateSession(axios);
+      } else {
+        setMessage(error.response.data.msg, messageSuccess, success.value);
       }
-      setMessage(error.response.data.msg, messageSuccess, success.value, router);
       handleMessageError(error);
     })
   }

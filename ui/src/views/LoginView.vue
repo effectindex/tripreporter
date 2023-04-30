@@ -7,11 +7,11 @@ SPDX-License-Identifier: OSL-3.0
 <template>
   <div class="login">
     <div v-if="!store.activeSession" class="no-session">
-      <h1 class="--tr-header-h1">Login to your <subjective-report-link /> account ✨</h1>
+      <h1 class="--tr-header-h1">Login to your
+        <subjective-report-link/>
+        account ✨
+      </h1>
 
-      <div class="DefaultView__message" id="DefaultView__message">
-        <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
-      </div>
       <div class="DefaultView__form">
         <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
           <FormKit
@@ -38,7 +38,7 @@ SPDX-License-Identifier: OSL-3.0
       </div>
     </div>
     <div v-else>
-      <already-logged-in />
+      <already-logged-in/>
     </div>
   </div>
 </template>
@@ -72,14 +72,15 @@ const submitForm = async (fields) => {
   store.lastUsername = fields.username;
   submitting.value = true;
 
+  // router is intentionally undefined here, because we don't actually want to redirect but do want a location set for hiding success message
   await axios.post('/account/login', fields).then(function (response) {
     success.value = response.status === 200;
     submitting.value = false;
-    setMessage(response.data.msg, messageSuccess, success.value);
+    setMessage(response.data.msg, messageSuccess, success.value, undefined, "/login");
   }).catch(function (error) {
     success.value = error.response.status === 200;
     submitting.value = false;
-    setMessage(error.response.data.msg, messageSuccess, success.value);
+    setMessage(error.response.data.msg, messageSuccess, success.value, undefined, "/login");
     handleMessageError(error);
   })
 

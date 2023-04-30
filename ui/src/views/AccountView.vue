@@ -10,9 +10,6 @@ SPDX-License-Identifier: OSL-3.0
       <Suspense>
         <account-box />
       </Suspense>
-      <div v-if="!store.hideMessage" class="DefaultView__message" id="DefaultView__message">
-        <div class="DefaultView__message_text" id="DefaultView__message_text"></div>
-      </div>
     </div>
   </AuthWrapper>
 </template>
@@ -33,10 +30,7 @@ export default {
 </script>
 
 <script setup>
-import { useAccountStore } from "@/assets/lib/accountstore";
 import AuthWrapper from "@/components/AuthWrapper.vue";
-
-const store = useAccountStore();
 </script>
 
 <style>
