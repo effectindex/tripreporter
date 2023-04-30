@@ -60,6 +60,7 @@ var (
 			db := c.DB()
 			defer db.Commit(context.Background())
 
+			//goland:noinspection SqlResolve
 			if _, err := db.Exec(context.Background(), `UPDATE accounts SET display_name = users.display_name FROM users WHERE accounts.id = users.account_id;`); err != nil {
 				_ = db.Rollback(context.Background())
 				c.Logger.Warnw("Patch: Failed to copy users.display_name to accounts.display_name", zap.Error(err))
@@ -73,6 +74,7 @@ var (
 			db := c.DB()
 			defer db.Commit(context.Background())
 
+			//goland:noinspection SqlResolve
 			if _, err := db.Exec(context.Background(), `ALTER TABLE users DROP COLUMN display_name;`); err != nil {
 				_ = db.Rollback(context.Background())
 				c.Logger.Warnw("Patch: Failed to drop column display_name", zap.Error(err))
@@ -94,7 +96,7 @@ type Patch struct {
 }
 
 // Confirm will insert a Patch into the database, with patched being true on a successful patch
-func (p *PatchFn) Confirm(c types.Context, index int, exists, patched bool) {
+func (p *PatchFn) Confirm(c types.Context, index int, exists, patched bool) bool {
 	db := c.DB()
 	defer db.Commit(context.Background())
 
@@ -109,6 +111,8 @@ func (p *PatchFn) Confirm(c types.Context, index int, exists, patched bool) {
 			c.Logger.Warnw("Patch: Failed to confirm", zap.Error(err))
 		}
 	}
+
+	return patched
 }
 
 // SetupPatches will check the database for which patches have been done and were successful, and run any patches that are new / unsuccessful.
@@ -139,6 +143,9 @@ func SetupPatches(c types.Context) {
 			exists = ok
 		}
 
-		p.Confirm(c, n, exists, p(c))
+		// Stop on failed patch
+		if !p.Confirm(c, n, exists, p(c)) {
+			break
+		}
 	}
 }
