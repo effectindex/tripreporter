@@ -23,11 +23,11 @@ var (
 		`create table if not exists accounts (
 			id uuid primary key,
 			email varchar(255) not null unique,
+			email_verified bool default false,
 			username varchar(255) not null unique,
 			display_name varchar(255) not null default '',
 			password_salt bytea not null unique,
 			password_hash bytea not null,
-			email_verified bool default false,
 			CHECK (accounts.email <> ''),
 			CHECK (accounts.username <> ''),
 			CHECK (accounts.password_salt <> ''),
