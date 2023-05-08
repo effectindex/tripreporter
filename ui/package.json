@@ -12,7 +12,7 @@
     "@formkit/core": "^0.16.5",
     "@formkit/pro": "^1.0.0-alpha.108",
     "@formkit/themes": "^0.16.5",
-    "core-js": "^3.30.1",
+    "core-js": "^3.30.2",
     "dotenv": "^16.0.3",
     "pinia": "^2.0.35",
     "vue": "^3.2.47",
