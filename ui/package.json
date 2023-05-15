@@ -16,7 +16,7 @@
     "dotenv": "^16.0.3",
     "pinia": "^2.0.35",
     "vue": "^3.2.47",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.8",
