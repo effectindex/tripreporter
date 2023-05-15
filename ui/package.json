@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@formkit/addons": "^0.16.5",
-    "@formkit/core": "^0.16.5",
+    "@formkit/core": "^0.17.0",
     "@formkit/pro": "^1.0.0-alpha.108",
     "@formkit/themes": "^0.16.5",
     "core-js": "^3.30.1",
