@@ -15,7 +15,7 @@
     "core-js": "^3.30.1",
     "dotenv": "^16.0.3",
     "pinia": "^2.0.35",
-    "vue": "^3.2.47",
+    "vue": "^3.3.4",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
