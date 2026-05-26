@@ -77,12 +77,18 @@ func (e ErrorString) PrefixedError(s string) error {
 }
 
 // PrefixedError will return e with any "String" prefix removed and s prefixed instead. TODO: #107
-func PrefixedError(e error, s string) error {
+func PrefixedError(e error, prefix string) error {
 	if e == nil {
 		return nil
 	}
 
-	return errors.New(s + strings.TrimPrefix(e.Error(), "String"))
+	msg := strings.TrimPrefix(e.Error(), "String")
+
+	if !strings.HasSuffix(prefix, " ") {
+		prefix += " "
+	}
+
+	return errors.New(prefix + strings.ToLower(msg))
 }
 
 func (e ErrorString) ContextError(ctx ...any) error {
@@ -94,8 +100,8 @@ func (e ErrorString) ContextError(ctx ...any) error {
 	// Make the error singular if context is 1.
 	err := strings.TrimSuffix(e.Error(), ".")
 	if strings.HasSuffix(err, "s") && len(ctx) == 1 {
-		strings.TrimSuffix(err, "s")
-	}
+	err = strings.TrimSuffix(err, "s")
+}
 
 	fmtSpace := func(s string) string {
 		if s == " " {
